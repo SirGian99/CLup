@@ -1,0 +1,81 @@
+%\documentclass[a4paper,oneside,12pt]{report} % n.pag scritto in basso
+ \documentclass[a4paper,oneside,11pt]{book}   % Capitolo e n.pag scritti in alto 
+
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}    % Per la bibliografia
+\usepackage{graphicx}  % Per gestire le immagini
+\usepackage{scrextend} % Per inserire margini laterali
+\usepackage{titling}
+
+\title{CLup: RASD}
+\author{Sorrentino Giancarlo, Riccio Vincenzo, Triuzzi Emanuele}
+\date{\today}
+\begin{document}
+\begin{titlingpage} %This starts the title page
+    \begin{center}
+        \includegraphics[height=6cm]{pictures/polimi}\\ %Put the logo you want here
+        \begin{large}
+            Software Engineering 2 \\ %The name your university
+            A.Y. 2020-2021\\
+        \end{large}
+        \vspace{4cm} %You can control the vertical distance
+        \begin{large} 
+            \textbf{\thetitle} \\
+        \end{large}
+        \theauthor\\
+        \vspace{8cm} %Put the distance you need.
+        \thedate
+    \end{center}
+\end{titlingpage}
+
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\chapter{Introduction}
+    Testo introduzione
+    
+    \section{Purpose}
+    The aim of CLup is to provide a reliable solution to the problem of people gathering inside and outside stores.
+    
+    To face the problem, the application focuses on its principal causes, which are the management of people inside the store, that often leads to overcrowding, the effectiveness of standard queuing systems and the way people are allowed to access the store. 
+    
+    In particular, the main goals that CLup aims to achieve, summarized in the table below, are the following: 
+    \begin{itemize}
+        \item[-] Prevent the store from being overcrowded, in order to avoid indoor gatherings while maximizing its occupancy, by means of a better access management system;
+        \item[-] Reduce the possibility of queues forming outside the store, providing an effective way to virtualize them;
+        \item[-] Provide a more efficient way to access stores, reducing the overall time spent waiting to enter.
+    \end{itemize}
+    
+    \begin{center}
+        \begin{tabular}{ |c|p{9cm}|}
+            \hline
+            \multicolumn{2}{|c|}{Goals} \\
+            \hline
+            G1 & Prevent the store from being overcrowded while maximizing its occupancy \\
+            \hline
+            G2 & Reduce the possibility of queues forming in front of the stores         \\
+            \hline
+            G3 & Provide a more efficient way to access the stores                       \\
+            \hline
+        \end{tabular}
+    \end{center}
+    
+    \section{Scope}
+    During the current situation of emergency, it is fundamental to prevent contacts among people. For this reason, governments impose strict rules concerning social distancing, both for indoor and outdoor contexts.
+    
+    However, crowding management inside stores like supermarkets and grocery shops could be challenging. Currently, stores limit the maximum number of people allowed, and therefore long queues arise: entering a store for a few minutes might even require hours. Moreover, customers who see a crowded store might avoid lining up to save time and prevent contact with others.
+    
+    CLup fits into this context allowing customers to remotely line up in a queue and being notified when they should head toward the store. Furthermore, it allows the customer to book a visit for a store in a specific day and time, which grants him priority over the queue. 
+    
+    CLup interacts with the outside world thanks to two distinct clients: one is an easy-to-use smartphone application designed for the customers, while the other is an administrative tool that allows store managers to add their shop to the system, modify its parameters and adopt some access policies.
+    
+    Moreover, CLup also provides a physical proxy outside the stores as a fallback option for users who do not have access to a smartphone.
+    
+\newpage
+\bibliographystyle{plain}
+\bibliography{references}
+\tableofcontents
+\end{document}
