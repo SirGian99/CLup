@@ -1,29 +1,44 @@
 %\documentclass[a4paper,oneside,12pt]{report} % n.pag scritto in basso
  \documentclass[a4paper,oneside,11pt]{book}   % Capitolo e n.pag scritti in alto 
 
-\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc} % Tutto il testo e' convertito in TeX encoding, cosi' si indica 
 \usepackage{natbib}    % Per la bibliografia
 \usepackage{graphicx}  % Per gestire le immagini
 \usepackage{scrextend} % Per inserire margini laterali
-\usepackage{titling}
+\usepackage{titling}   % Per fare la title page con immagine
+\usepackage{float}     % Utile per usare H per svuotare la cache dei floating objects come le table
+\usepackage{longtable} % Necessario per rappresentare tabelle su più pagine
+\usepackage{array}     % Necessario per creare un nuovi tipi di colonna per le tabelle
+\usepackage[a4paper, top=3.5cm, bottom=3.5cm, left=2.5cm, right=3cm, heightrounded, bindingoffset=5mm]{geometry}
 
-\title{CLup: RASD}
-\author{Sorrentino Giancarlo, Riccio Vincenzo, Triuzzi Emanuele}
+\newcolumntype{X}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{P}[1]{>{\arraybackslash}p{#1}}
+\newcolumntype{V}[1]{>{\arraybackslash}m{#1}}
+
+\usepackage{caption}   % Aggiunge funzionalità alle captions
+\captionsetup[table]{skip=8pt} % Distacca le caption dalle table (verticalmente)
+\setlength{\tabcolsep}{10pt}      % Default: 6pt - Margine laterale  tra le celle delle tabelle
+\renewcommand{\arraystretch}{1.7} % Default: 1   - Margine verticale tra le celle delle tabelle
+
+
+\title{RASD in \LaTeX}
+\author{Vincenzo Riccio, Giancarlo Sorrentino, Emanuele Triuzzi}
 \date{\today}
 \begin{document}
-\begin{titlingpage} %This starts the title page
+\begin{titlingpage} % Inizia la title page
     \begin{center}
-        \includegraphics[height=6cm]{pictures/polimi}\\ %Put the logo you want here
+        \includegraphics[height=0.52\linewidth]{pictures/polimi}\\ % Logo
         \begin{large}
-            Software Engineering 2 \\ %The name your university
+            Software Engineering 2 \\ % Info
             A.Y. 2020-2021\\
         \end{large}
-        \vspace{4cm} %You can control the vertical distance
+        \vspace{4cm} % Spaziatura verticale
         \begin{large} 
             \textbf{\thetitle} \\
         \end{large}
         \theauthor\\
-        \vspace{8cm} %Put the distance you need.
+        \vspace{8cm} % Spaziatura verticale
         \thedate
     \end{center}
 \end{titlingpage}
@@ -31,51 +46,540 @@
 \newpage
 \pagenumbering{roman}
 \tableofcontents
-
 \newpage
 \pagenumbering{arabic}
 \chapter{Introduction}
-    Testo introduzione
     
     \section{Purpose}
-    The aim of CLup is to provide a reliable solution to the problem of people gathering inside and outside stores.
-    
-    To face the problem, the application focuses on its principal causes, which are the management of people inside the store, that often leads to overcrowding, the effectiveness of standard queuing systems and the way people are allowed to access the store. 
-    
-    In particular, the main goals that CLup aims to achieve, summarized in the table below, are the following: 
+    CLup aims to provide chains of stores with a reliable solution to the problem of people gathering inside and outside the shops. \par
+    To face the problem, the application focuses on its principal causes, which are the management of people inside the store, that often leads to overcrowding, the effectiveness of standard queuing systems and the way people are allowed to visit the stores. Moreover, the system aims to provide a useful tool for store managers in order to help them in administering stores and monitoring their status. In particular, the main goals that CLup aims to achieve, summarized in the table below, are the following: 
+
     \begin{itemize}
-        \item[-] Prevent the store from being overcrowded, in order to avoid indoor gatherings while maximizing its occupancy, by means of a better access management system;
-        \item[-] Reduce the possibility of queues forming outside the store, providing an effective way to virtualize them;
-        \item[-] Provide a more efficient way to access stores, reducing the overall time spent waiting to enter.
+        \item Prevent the store from being overcrowded, in order to avoid indoor gatherings while maximizing its occupancy, by means of a better access management system;
+        \item Reduce gatherings of people waiting to enter outside the store, providing a way to virtualize queues;
+        \item Provide a more efficient way to access stores, reducing the time customers waste while waiting to do it;
+        \item Help store managers in monitoring the status of the store and regulating the influx of people.
     \end{itemize}
-    
-    \begin{center}
-        \begin{tabular}{ |c|p{9cm}|}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|>{\bfseries{}}X{0.1\textwidth}|V{0.6\textwidth}|}
             \hline
-            \multicolumn{2}{|c|}{Goals} \\
+            \multicolumn{2}{|c|}{\textbf{Goals}} \\
             \hline
             G1 & Prevent the store from being overcrowded while maximizing its occupancy \\
             \hline
-            G2 & Reduce the possibility of queues forming in front of the stores         \\
+            G2 & Reduce gatherings of people waiting to enter outside the store          \\
             \hline
-            G3 & Provide a more efficient way to access the stores                       \\
+            G3 & Reduce the time customers waste while waiting to access the store       \\
+            \hline
+            G4 & Help store managers in monitoring the status of the store and regulating the influx of people \\
             \hline
         \end{tabular}
-    \end{center}
+        \caption{Goals}
+        \label{table:goals}
+    \end{table}
     
     \section{Scope}
-    During the current situation of emergency, it is fundamental to prevent contacts among people. For this reason, governments impose strict rules concerning social distancing, both for indoor and outdoor contexts.
+    During the current situation of emergency, it is fundamental to prevent contacts among people. For this reason, governments impose strict rules concerning social distancing, both for indoor and outdoor contexts. \par
+    However, crowding management inside stores like supermarkets and grocery shops could be challenging. Currently, stores limit the maximum number of people allowed, and therefore long queues arise: entering a store for a few minutes might even require hours. Moreover, customers who see a crowded store might avoid lining up to save time and prevent contact with others. \par
+    CLup fits into this context allowing customers to remotely line up in a queue of a given store and to be notified when they should head toward it. Furthermore, it allows the customer to book a visit for a store on a specific day and time, which grants him priority over the queued customer. \par
+    Users can interact with CLup thanks to two distinct interfaces: one is an easy-to-use application designed for the customers, while the other one is an administrative tool that allows store managers to monitor their stores and modify their parameters. \par
+    Moreover, CLup also provides physical proxies outside the stores as a fallback option for users who want to line up but do not have access to the application.
     
-    However, crowding management inside stores like supermarkets and grocery shops could be challenging. Currently, stores limit the maximum number of people allowed, and therefore long queues arise: entering a store for a few minutes might even require hours. Moreover, customers who see a crowded store might avoid lining up to save time and prevent contact with others.
+    \subsection{World Phenomena}
+    The following table illustrates the phenomena that happen in the real world and affect the system, which cannot control or detect them.
+    \begin{longtable}[c]{|>{\bfseries{}}c|V{.65\textwidth}|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{World phenomena}} \\
+        \hline
+        WP1 & A person reaches the store \\ \hline
+        WP2 & Some people gather in a specific area of the store \\ \hline
+        WP3 & People wait in front of the store \\ \hline
+        WP4 & The store opens \\ \hline
+        WP5 & The store closes \\
+        \hline
+        \caption{World phenomena}
+        \label{table:world_phenomena}
+    \end{longtable}
+        
+    \subsection{Shared Phenomena}
+    The following table illustrates the phenomena that happen in the real world and can be observed or managed by the system. The following notation is used:
+    \begin{itemize}
+        \item \emph{MC} for machine controlled phenomena (observed by the world)
+        \item \emph{MO} for machine observed phenomena (controlled by the world)
+    \end{itemize}
+
+    \begin{longtable}[c] { |>{\bfseries{}}c|V{0.65\textwidth}|>{\em}X{0.05\textwidth}| }
+        \hline
+        \multicolumn{3}{|c|}{\textbf{Shared phenomena}} \\
+        \hline
+        SP1   & A customer joins the queue from the application & MO \\ \hline
+        SP2   & A customer joins the queue using the physical proxy & MO \\ \hline
+        SP3   & An alert is sent to the customer when he should reach the store & MC \\ \hline
+        SP4   & A customer cannot reach the store in time anymore & MO \\ \hline
+        SP5   & A customer is allowed to enter the store & MC \\ \hline
+        SP5.1 & A customer enters the store & MO \\ \hline
+        SP6   & A customer leaves the store & MO \\ \hline
+        SP7   & A customer request to book a visit to the store & MC \\ \hline
+        SP7.1 & A customer specifies the estimated duration of the visit & MO \\ \hline
+        SP7.2 & A customer specifies which kind of products wants to buy & MO \\ \hline
+        SP7.3 & The system suggests booking alternatives to the customer & MC \\ \hline
+        SP7.4 & The system accepts a booking request & MC \\ \hline
+        SP7.5 & The system rejects a booking request & MC \\ \hline
+        SP8   & The system notifies the customer when specific stores are becoming unavailable & MC \\ \hline
+        SP9   & The store manager specifies the maximum occupancy of the store & MO \\ \hline
+        SP10  & The store manager specifies the maximum occupancy of the product sections & MO \\ \hline
+        SP11  & The manager monitors the status of the store & MO \\
+        \hline
+        \caption{Shared phenomena}
+        \label{table:shared_phenomena}
+    \end{longtable}
     
-    CLup fits into this context allowing customers to remotely line up in a queue and being notified when they should head toward the store. Furthermore, it allows the customer to book a visit for a store in a specific day and time, which grants him priority over the queue. 
+    \subsection{Definitions, acronyms, abbreviations}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Definitions, acronyms, abbreviations}} \\
+        \hline
+        WP\boldmath$x$ & World phenomena number $x$, according to the table of world phenomena \\ \hline
+        SP\boldmath$x$ & Shared phenomena number $x$, according to the table of shared phenomena \\ \hline
+        CLup & Also known as the system. It is the software to be developed \\ \hline
+        Customer application & Also known as application. It is used to access the functions provided by CLup \\ \hline
+        Administrative tool & The tool provided to store managers in order to administer stores \\ \hline
+        Proxy & The physical fallback option for customers that want to use CLup but cannot use the application \\ \hline
+        Turn Announcement System & AAn external system which informs customers about who hais been allowed by CLup to enter the store \\ \hline
+        Access Management System & An external system which regulates physical entrances and exits to the store it is associated with by interacting with CLup \\ \hline
+        App-customer & A customer who uses CLup functions through the application \\ \hline
+        Proxy-customer & A customer who uses CLup functions through the proxy \\ \hline
+        Long-term customer & With respect to a certain chain, a customer who already used CLup to visit a store of that chain at least 10 times \\ \hline
+        Current occupancy & Also known as occupancy. It can be referred to the store or one of its sections. It is the number of people inside it \\ \hline
+        Maximum occupancy & Refers to the store or one of its sections. It is the maximum number of people allowed to be in that area \\ \hline
+        Visit & With respect to a customer and a store, it is the representative event of entering, doing the shopping and exiting \\ \hline
+        Virtual queue & Also known as access queue or simply queue. It represents the set of customers who lined up through the app or the proxy \\ \hline
+        Line up & With respect to a customer and a store, it is the event of joining the queue \\ \hline
+        Visit request & A customer’s request to visit a store. It can be either a line-up request or a booking request \\ \hline
+        Line-up request & A request made by the customer  to line up for a store \\ \hline
+        Booking request & A request made by the customer  to book a visit for a store \\ \hline 
+        Visit token & A unique token bound to a visit request. It allows the Customer to enter and exit the store \\
+        \hline
+    \caption{Definition, acronyms, abbreviations}
+    \label{table:definitions_acronyms_abbreviations}
+    \end{longtable} % Controllo warning
     
-    CLup interacts with the outside world thanks to two distinct clients: one is an easy-to-use smartphone application designed for the customers, while the other is an administrative tool that allows store managers to add their shop to the system, modify its parameters and adopt some access policies.
+    \subsection{Revision history}
     
-    Moreover, CLup also provides a physical proxy outside the stores as a fallback option for users who do not have access to a smartphone.
+    \subsection{Reference documents}
+    IEEE standard for Software Requirements Specifications, IEEE 29148-2018 
+    R\&DD Assignment A.Y. 2020-2021
+
+    \subsection{Document structure}
+    The reference structure used for the document is the one suggested by professor Matteo Rossi of Politecnico of Milan. It is derived from the one suggested by IEEE, which is used as a detailed reference source (IEEE standard for Software Requirements Specifications, IEEE 29148-2018).
+    
+    \begin{itemize}
+        \item \emph{Chapter 1} is an introduction to the software to be designed and developed and to the problem that it addresses. It presents the goals that should be achieved and an analysis of the context in which the system will be placed.
+        \item \emph{Chapter 2} is a more detailed description of the system to be realized, focused especially on a more detailed description of the context, e.g. presenting scenarios and the actors involved, on the product functions and on its requirements. Furthermore, it contains explicit constraints, dependencies and domain assumptions.
+        \item \emph{Chapter 3} includes specific requirements, with a level of detail sufficient to enable designers to design a system to satisfy those requirements, and testers to test that the system satisfies those requirements. It includes the description of all the functional and nonfunctional requirements, together with the description of the external interfaces, of the use cases and of eventual design constraints.
+        \item \emph{Chapter 4} is a formal analysis of the system using the Alloy model, showing also some worlds obtained running the model.
+        \item \emph{Chapter 5} contains a report on the effort spent by all the members of the group while writing the current document.
+    \end{itemize}
+
+\chapter{Overall description}
+    \section{Product perspective}
+    \subsection{UML Class Diagram Description}
+    The provided UML Class Diagram is intended to provide a high-level model of the reality in which CLup is collocated. The following description aims to better highlight the main characteristics of the model. \par
+    CLup is intended to manage stores of different chains, which are managed individually. In particular each store, which is composed of different product sections, is associated with its managers and with the chain it belongs to. A store is also characterized by its name, its address, its maximum occupancy, its working hours and its product sections, which are parameters specified by store managers. Moreover, other significant attributes inferred by the system are the store current occupancy and the average time customers spend inside it. \par
+    Each product section is identified by its name and is characterized by a current occupancy and by a maximum occupancy. \par
+    Customers can visit the store by making a visit request, and are divided into app-customers and proxy customers. \par
+    A visit request has different attributes, such as the number of people willing to visit the store and the visit token that will allow them to visit it. CLup provides two kinds of visit requests: line-up requests and booking requests. \par
+    Each store maintains a queue of line-up requests, characterized by its length and its estimated disposal time, and holds booking requests made by app-customers. \par
+    Booking requests are characterized by attributes such as the date and time requested by the customer and the expected duration of the visit. Moreover, each booking request can also be associated with the store product sections that the app-customer has specified while placing the booking.
+
+    \subsection{UML Class Diagram} 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{pictures/uml_class_diagram}
+        \caption{UML Class Diagram}
+        \label{figure:uml}
+    \end{figure}
+    \subsection{State charts}
+    \subsection{Scenarios}
+        \subsubsection{Remotely line up for a store}
+        Alice is at home and wants to do some grocery shopping at the store at the end of the street. She opens CLup and checks the store’s current queue and the estimated time required to enter. She decides to get in line and starts doing something else. After some time, she receives a notification that suggests her to start heading the store. Thus, she reaches the store. Once there, she opens the app and notices that it is her turn,  so she retrieves the visit token in the app in order to get access to the store. When she is done with her shopping and payment, she opens the app in order to exit the store.
+        \subsubsection{Line up for a store using the proxy}
+        Bob is a 70-year-old man who is not so keen on using a smartphone, so he has not got any. He has to buy something at the minimarket near his house. He uses the proxy located outside the store to line up and to receive a visit token, and then waits along the street waiting for his turn to come. When it is his turn, he is informed by the Turn Announcement System of the store and enters it by showing the visit token to the Access Management System.  When he is done with his shopping and payment, he uses the visit token in order to exit the store.
+        \subsubsection{Booking a visit for a store}
+        Chuck is at work and he wants to do some shopping before coming back home. Since there are often many people in line to enter the store he wants to go to, he opens the CLup client and books a visit to the store for a specific time interval. Before reaching the store he must pick up his son from school, so he specifies that two people will visit it. When the time arrives, they have priority over the people in the queue. Since it is their turn, Chuck opens the app in order to get access to the store. After the payment, he opens the app in order to exit the store.
+        \subsubsection{Active suggestions for long-term customers}
+        Isaac wants to book a visit for Saturday at noon at his local shop. Since he is a long term customer of that chain of stores, CLup provides him with an estimated duration of his visit, based on his previous statistics. However, the system also informs him that, for the selected time interval, the store is often crowded, and so suggests to him different alternatives. Sadly, George can only do shopping in the indicated one, so he places his booking anyway.
+        \subsubsection{Booking alternatives are suggested}
+        Emanuele lives near a store in “via Rubattino” and wants to do some grocery shopping next Saturday morning at 11 a.m. However, that store is already at its maximum occupancy in the selected time interval due to previous bookings by other users. So, when Emanuele tries to place a Booking Request, the system provides him with two alternatives: the first one is to book a visit on the same day at 6 p.m., when the store, according to bookings and statistics, will be less crowded; the second one is to book a visit for the same time interval in another store of the same chain, which has not reached its maximum occupancy yet. Emanuele chooses an option and fulfils his need. 
+        \subsubsection{There is always a way out}
+        Giancarlo is a customer who is currently visiting a store. While in the store, he notices that his phone ran out of battery. After he is done with his shopping, he asks for the help of a store manager, who manually allows him to exit the shop. The occupancy of the shop is then automatically updated.
+        \subsubsection{Overlapping bookings}
+        Yesterday, Christian booked a visit to the local shop for Monday morning at 9 a.m., specifying the kind of products he intends to buy. \par
+        Davide is now trying to book a visit for the same time interval but is not sure about what he will buy, so he does not specify anything. However, since the system does not know where Davide will be inside the store, it assumes that Davide wants to visit the whole store. Thus, it rejects his booking request because, if accepted, the store would exceed its maximum occupancy. \par
+        Later, Lia tries to book a visit for that time interval too. She specifies what kind of products she intends to buy, which happen to be different from Christian’s ones. The system then accepts her booking request, since the two will not meet inside the store and then its occupancy will still be under its maximum.
+    
+    \section{Product Functions}
+    CLup is intended to reach the goals introduced in Section 1.1. \par
+    It regulates the influx of people in a store to prevent it from being overcrowded. To do so, CLup provides a way to authorize the entrances to the shop with respect to the number of people inside it. \par
+    CLup uses unique visit tokens to authorize each customer to enter and exit the store. If the customer uses the application, the visit token will be available in the application itself. Instead, each time a customer uses the proxy of a given store, a visit token is physically provided by the proxy itself. \par
+    All the accesses are granted with respect to the store maximum occupancy. This parameter, the maximum occupancy of each product section and other details are specified by store managers in the administrative tool offered by CLup, from which they can also monitor the shop status and statistics, such as how many people are inside the store and the average time spent in the shop. \par
+    In order to reduce the possibility of queues forming outside the store, CLup provides the possibility to remotely line up in a queue. A customer can join the queue either using the application offered by CLup or by means of the proxy placed outside the store. To reduce the risk of people reaching the store too early or too late, the system allows customers to see the number of people ahead of them. It also provides a reasonably precise estimation of the waiting time both before and after joining the queue. Furthermore, CLup alerts app-customers when they need to reach the store, taking into account the time they need to get to the shop from their current position with respect to the time at which they will be authorized to enter it. Eventually, the system informs customers when they are allowed to enter the store through the Turn Announcement System and notifications for app-customers. \par
+    An app-customer can also use the application to book a visit to the shop. Doing so, he has to specify when he wants to reach the store, the expected duration of the visit and, if he wants, which kind of products he intends to buy. In case of long-term customers, the estimated duration of the visit can also be provided by CLup, based on statistics. \par
+    All these data are used by the system to manage who can enter the store in a specific time interval. \par
+    When a booking is placed, the system can also decide to reject it if, across the specified time interval, the bookings placed by other customers already maximize the store occupancy. The system also tries to balance the number of customers across all the working hours of the store. In both cases, it suggests alternative time intervals or alternative stores of the same chain when a customer is booking a visit. \par
+    CLup is able to manage the case in which, for any reason, a customer does not show up while he is allowed to enter the store and other people are waiting to enter it. Moreover, app-customers can always cancel their visit requests (both line-up and booking requests), if needed. \par
+    CLup monitors customer attitudes in order to build the previously mentioned statistics. App-customer attitudes are collected through the application itself. Data about customers who use the physical proxy are collected too, but they cannot be used to build individual statistics.
+    App-customers can choose to be notified about the availability of specified stores. Indeed, a customer can specify one or more recurrent time intervals in which he is interested in visiting the store. These intervals can also be inferred by the system based on the customer’s statistics, if they are available. The system will notify him if, during one of those time intervals, the store is reaching its maximum occupancy. Doing so, the customer can take the opportunity to visit the store by booking or lining up.
+
+    \section{User characteristics}
+    \subsubsection{Store manager}: he adds his chain store to CLup and modifies its parameters, such as the working hours and the maximum occupancy. He also specifies the different product sections that compose the store and their relative maximum occupancies. He can also keep track of the real-time store occupancy, and might let people in and out of the store, if needed.
+    \subsubsection{Customer}: he uses CLup in order to visit a store of a given chain. To do so, he can either line up in the CLup queue, by means of the application or the proxy, or also book a visit through the application. 
+    \subsubsection{Access Management System}: it is the system which regulates physical entrances and exits to the store it is associated with. It communicates with CLup in order to determine if a customer is allowed to enter it or not, and informs CLup whether the visit begins or ends.
+    \subsubsection{Turn Announcement System}: it receives information from CLup about customers allowed to enter the store it is associated with, in order to inform the ones waiting outside the store.
+    
+    \section{Assumptions, dependencies and constraints}
+    \subsection{Table of domain assumptions}
+    \begin{longtable}[c]{|>{\bfseries{}}c|V{.62\textwidth}|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Domain assumptions}} \\
+        \hline
+        A1   & Opening and closing time of the store are respected \\ \hline
+        A2   & If the number of people inside each product section is below their maximum occupancy specified by store managers, then safety is guaranteed inside the store \\ \hline
+        A3   & Only customers authorized by CLup can enter and exit the store \\ \hline
+        A4   & On average, the information provided by customers is correct \\ \hline
+        A4.1 & The number of people associated with each line-up request and with each booking request is never exceeded when the visit takes place \\ \hline
+        A5   & Customers who have access to the application prefer to use it rather than the proxy \\
+        \hline
+        \caption{Domain assumptions}
+        \label{table:domain_assumptions}
+    \end{longtable}
+    
+    \subsection{Table of dependencies}
+    \begin{longtable}[c] {|V{.83\textwidth}|}
+        \hline
+        \multicolumn{1}{|c|}{\textbf{Dependencies}} \\
+        \hline
+        CLup depends on an external system, the Turn Announcement System. Their interaction allows all the customers to be informed about who is allowed to enter the store. This system must be able to reach every type of customer and be able to provide other useful information \\ \hline
+        CLup depends on an external system, the Access Management System. Their communication lets only customers authorized by CLup visit the store \\
+        \hline
+        \caption{Table of dependencies}
+        \label{table:dependencies}
+    \end{longtable}
+    
+    \subsection{Constraints} 
+    The system must provide a fallback option that allows customers who cannot use the application to line up and visit the store.
+    
+    
+\chapter{Specific Requirements}
+    \section{External interface requirements}
+    \subsection{User interfaces}
+    CLup should provide two different user interfaces: the first one is designed for store managers, where the other one is designed for app-customers. First mock-ups of both the interfaces follow.
+    
+    \subsection{Hardware interfaces}
+    \subsubsection{Customer's device} 
+    The customer is supposed to use a smartphone to interact with CLup. In order to interact with the system, the smartphone should have an internet connection.
+    
+    \subsubsection{Manager's device} 
+    The manager is supposed to use a smartphone or a personal computer to interact with CLup. In order to interact with the system, they should have an internet connection.
+    
+    \subsubsection{Proxy} 
+    Since the proxy should provide customers with an easy way to line up, it must have at least:
+    \begin{itemize}
+        \item An internet connection
+        \item A way to allows customers to make a line-up request for a single person
+        \item A way to physically provide them with the visit token associated with the line-up request
+    \end{itemize}
+    
+    \subsection{Software interfaces}
+    \subsubsection{Turn Announcement System}
+    It should offer an interface that allows CLup to inform it about the needed information to be provided to the customers.
+    \subsubsection{Access Management System}
+    CLup provides a set of APIs to be used by the Access Management System in order to authorize the visit of a customer and inform CLup about the beginning and ending of the visit.
+    \subsubsection{Map API's}
+    In order to properly send notifications, the system must estimate the time needed for the customer to reach the store. Thus, a map service should be used to get that estimation based on the customer current position.
+    \subsection{Communication interfaces}
+    No specific communication interfaces are required.
+    
+    \section{Functional requirements}
+    \subsection{Table of functional requirements}
+    The following requirements refer to a given store of a given chain, both managed by CLup.
+    \begin{longtable}[c]{|>{\bfseries{}}c|V{.65\textwidth}|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Functional requirements}} \\
+        \hline
+        R1   & The system shall allow managers to specify the maximum occupancy of the store \\ \hline
+        R2   & The system shall allow managers to monitor entrances \\ \hline
+        R3   & The system shall allow managers to monitor exits \\ \hline
+        R4   & The system shall authorize accesses to the store \\ \hline
+        R4.1 & The system shall authorize customers to enter if and only if the store would not exceed the maximum number of people allowed inside it \\ \hline
+        R5   & The system shall provide a way to line up in the virtual queue of the store \\ \hline
+        R6   & The system shall provide a way to exit the queue before entering the store \\ \hline
+        R7   & The system shall alert the customer when it is time to reach the store \\ \hline
+        R8   & The system shall provide the possibility to book a time interval for visiting the store \\ \hline
+        R9   & The system must not allow customers to book a visit in a time interval if, over its duration, bookings by other users already maximize store occupancy \\ \hline
+        R10  & When booking a visit, the system shall allow customers to specify what kind of products they intend to buy \\ \hline
+        R11  & The system shall provide the possibility to cancel a booked visit before entering the store \\ \hline
+        R12  & While making a booking request, the system shall suggest alternative time intervals if the demand of the chosen one is too high \\ \hline
+        R13  & While making a booking request, the system shall suggest alternative stores of the same chain if the demand for the chosen time interval in the selected store is too high \\ \hline
+        R14  & The system shall allow managers to regulate entrances  \\ \hline
+        R15  & The system shall allow managers to regulate exits \\ \hline
+        R16  & The system shall notify a customer when, during a specific time interval, a specified store is reaching its maximum occupancy \\ \hline
+        R17  & The system shall keep track of the average duration of a generic visit to the store \\ \hline
+        R18  & The system shall manage the case in which customers do not show up when it is their turn to enter the store \\ \hline
+        \caption{Functional requirements}
+        \label{table:functional_requirements}
+    \end{longtable}
+    
+    \subsection{Mapping goals-assumptions-requirements}
+    \begin{longtable}[c] { |>{\bfseries{}}c|P{0.22\textwidth}|>{\em}V{0.40\textwidth}| }
+        \hline
+        \textbf{Goals} & \textbf{Assumptions} & \emph{\textbf{Requirements}} \\
+        \hline
+        G1 & A2, A3, A4, A4.1 & R1, R4, R4.1, R5, R9, R10, R12, R13, R14, R15, R18 \\ \hline
+        G2 & A1, A4, A5       & R5, R7, R8, R9, R12, R13, R17, R18 \\ \hline
+        G3 & A1, A4           & R5, R6, R7, R8, R9, R11, R12, R13, R16, R17, R18 \\ \hline
+        G4 & A3, A4.1         & R1, R2, R3, R14, R15, R17 \\
+        \hline
+        \caption{Mapping of goals-assumptions-requirements}
+        \label{table:map_goals_assumptions_requirements}
+    \end{longtable}
+
+    \subsection{Use cases}
+    \subsubsection{Use case 1}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline \multicolumn{2}{|c|}{\textbf{Checking the turn}} \\
+        \hline
+        Name            & Checking the turn \\ \hline
+        Actor           & Customer\\ \hline
+        Entry condition & The customer has a visit token \\ \hline
+        Event flow      &
+        \texttt{1.}The Customer checks if can enter the store \newline
+        \texttt{2.}The system provides him with the required information \\\hline 
+        Exit condition  & The customer is aware if he can or cannot enter the store \\ \hline
+        Exception       & None \\
+        \hline
+    \caption{Use case 1 - "Checking the turn"}
+    \label{table:use_case_01}
+    \end{longtable}
+    
+    \subsubsection{Use case 2}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Checking the turn using the application\\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer has a visit token obtained through the application \\ \hline
+        Event flow      & 
+        \texttt{1.}The Customer opens the application \newline
+        \texttt{2.}The Customer checks if he can enter the store for which he made the visit request \newline
+        \texttt{3.}The application provides him with the required information \\ \hline
+        Exit condition  & The Customer is aware if he can or cannot enter the store \\ \hline
+        Exception       & None\\
+        \hline
+    \caption{Use case 2 - "Checking the turn using the application"}
+    \label{table:use_case_02}
+    \end{longtable}
+    
+    \subsubsection{Use case 3}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}|}
+        \hline
+        Name            & Checking the turn in presence \\ \hline
+        Actor           & Customer, Turn Announcement System \\ \hline
+        Entry condition & The Customer has a visit token \\ \hline
+        Event flow      & 
+        \texttt{1.}The customer reaches the store for which he made the visit request \newline
+        \texttt{2.}The Customer checks Turn Announcement System \newline
+        \texttt{3.}The Turn Announcement System provides him with the required information obtained by CLup\\ \hline
+        Exit condition  & The Customer is aware if he can or cannot enter the store \\ \hline
+        Exception       & None \\
+        \hline
+    \caption{Use case 3 - "Checking the turn via the Turn Announcement System"}
+    \label{table:use_case_03}
+    \end{longtable}
+    
+    \subsubsection{Use case 4}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Visiting the store \\ \hline
+        Actor           & Customer, Access Management System \\ \hline
+        Entry condition & The Customer is allowed to enter the store. The number of people specified in the visit request is respected  \\ \hline
+        Event flow      & 
+        \texttt{1.}The Customer moves toward the entrance of the store \newline
+        \texttt{2.}The Customer is granted to enter by the external Access Management System using his visit token \newline
+        \texttt{3.}The Customer enters the store together with the other people specified in the visit request \newline
+        \texttt{4.}The external Access Management System informs CLup that the Customer is inside the store \newline
+        \texttt{5.}The Customer does his shopping and is going to exit the store \newline
+        \texttt{6.}The Customer is granted to exit by the external Access Management System using his visit token \newline
+        \texttt{7.}The Customer exits the store together with the other people specified in the visit request \newline
+        \texttt{8.}The external Access Management System informs CLup that the Customer has exited the store
+        \\ \hline
+        Exit condition  & CLup is aware of the actual number of people inside the store \\ \hline
+        Exception       & Different exceptions can arise: \newline
+        -- The Customer is not yet allowed to enter the store \newline
+        -- The Customer has lost or does not have access to his visit token. If the Customer is not already in the store, he loses the possibility to enter. If the Customer is already in the store, he can exit it only with the help of a store manager \newline
+        -- The Customer does not show up \\
+        \hline
+    \caption{Use case 4 - "Visiting the store"}
+    \label{table:use_case_04}
+    \end{longtable}
+    
+    \subsubsection{Use case 5}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Place a visit request \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer wants to visit a store \\ \hline
+        Event flow      & 
+        \texttt{1.}The customer chooses to line up or to book a visit \newline
+        \texttt{2.}The Customer uses the dedicated function provided by CLup \newline
+        \texttt{3.}The Customer has what he needs to access the store \\ \hline
+        Exit condition  & The Customer has what he needs to access the store \\ \hline
+        Exception       & Exceptions can arise while lining up or booking a visit \\
+        \hline
+    \caption{Use case 5 - "Place a visit request"}
+    \label{table:use_case_05}
+    \end{longtable}
+    
+    \subsubsection{Use case 6}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Place a line-up request (lining up) \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer wants to line up for a store and the store is open \\ \hline
+        Event flow      & 
+        \texttt{1.}The Customer interacts with one of the interfaces provided to him by CLup. He can use both the application or the proxy \newline
+        \texttt{2.}The Customer uses the function to line up offered by CLup. In case of app-customers, they also indicate the number of people who want to visit the store \newline
+        \texttt{3.}An access request is generated with an associated visit token, which is provided to the Customer \newline 
+        \texttt{4.}The Customer receives a visit token \\ \hline
+        Exit condition  & The Customer has what he needs to access the store \\ \hline
+        Exception       & The visit request cannot be generated. This can happen due to different causes: \newline
+        -- a communication error occurs \newline
+        -- the store is closed \newline
+        An error is shown to the Customer and the lining up operation is not completed \\
+        \hline
+    \caption{Use case 6 - "Place a line-up request (lining up)"}
+    \label{table:use_case_06}
+    \end{longtable}
+    
+    \subsubsection{Use case 7}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Booking a visit (place a booking request) \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer wants to book a visit to a store \\ \hline
+        Event flow      & 
+        \texttt{1.}The Customer opens the application and uses the function for booking a visit to the desired store \newline
+        \texttt{2.}The Customer receives information about the store from CLup \newline
+        \texttt{3.}The Customer specifies when he wants to enter the store \newline
+        \texttt{4.}The Customer specifies the estimated duration of the visit. If he is a long-term customer, an approximate duration is suggested by CLup \newline
+        \texttt{5.}The Customer can specify which kind of products he intends to buy \newline
+        \texttt{6.}The Customer specifies the number of additional people who wants to visit the store with him \newline
+        \texttt{7.}The Customer confirms that he wants to book a visit \newline
+        \texttt{8.}A booking is generated and a visit token is associated to it \newline
+        \texttt{9.}The Customer receives a visit token \\ \hline
+        Exit condition  & The Customer has what he needs to access the store \\ \hline
+        Exception       & Different exceptions can arise: \newline
+        -- The selected store is closed during the time interval specified by the customer \newline
+        -- The store has already reached its maximum occupancy during the chosen time interval. Then the application suggests alternative time intervals or alternative available stores of the same chain. However, if the Customer does not specify a different time interval or a different store he cannot place the booking \newline
+        -- The store is likely to reach its maximum occupancy during the chosen time interval. Then the application suggests an alternative time interval or other stores of the same chain in order to balance the number of people inside the store selected by the Customer. However, the Customer can book the visit anyway \newline
+        -- A communication problem occurs after step 6 \newline
+        An error is shown to the Customer and the booking operation is not completed \\
+        \hline
+    \caption{Use case 7 - "Booking a visit (place a booking request)"}
+    \label{table:use_case_07}
+    \end{longtable}
+    
+    \subsubsection{Use case 8}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Reaching the store \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer who used the application to request the visit should now head to the store if he wants to arrive in time  \\ \hline
+        Event flow      & 
+        \texttt{1.}CLup retrieves the Customer’s position \newline
+        \texttt{2.}Considering the distance between his position and the store, a notification is sent to the Customer when he should head to the store in order to arrive in time. This is done with respect to the estimated time in which the Customer should be able to enter the store \newline
+        \texttt{3.}CLup notifies the Customer about it \newline \\ \hline
+        Exit condition  & The Customer is aware that he should head to the store \\ \hline
+        Exception       & The Customer location cannot be sent to CLup. Possible causes: \newline
+        -- the position is not available \newline
+        -- a communication error occurs \newline
+        For this reason, no notification is sent \\
+        \hline
+    \caption{Use case 8 - "Reaching the store"}
+    \label{table:use_case_08}
+    \end{longtable}
+    
+    \subsubsection{Use case 9}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        % \hline \multicolumn{2}{|c|}{\textbf{Checking the turn}} \\
+        \hline
+        Name            & The store is filling up \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer expresses the will to be notified about the availability of a store in specific time intervals \\ \hline
+        Event flow      & 
+        \texttt{1.}The information about the store and the time interval the Customer wants to be notified about is either inferred by CLup or specified by the Customer himself \newline
+        \texttt{2.}That time interval is likely to be saturated (i.e. no other bookings in that time interval are going to be allowed or the current estimated disposal time of the queue is going to reach the end of the time interval) \newline
+        \texttt{3.}CLup notifies the Customer about it \\ \hline
+        Exit condition  & The Customer is aware that the store is reaching its maximum occupancy during the time intervals he is interested in \\ \hline
+        Exception       & None \\
+        \hline
+    \caption{Use case 9 - "The store is filling up"}
+    \label{table:use_case_09}
+    \end{longtable}
+    
+    \subsubsection{Use case 10}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Administrating the store \\ \hline
+        Actor           & Manager \\ \hline
+        Entry condition & The Manager wants to edit some parameters of one of the stores he manages \\ \hline
+        Event flow      & 
+        \texttt{1.}The manager uses the tool to check the current status of the store \newline
+        \texttt{2.}If needed, the manager adjusts store parameters \newline \\ \hline
+        Exit condition  & The Manager is aware of the status of the store and CLup is up to date with Manager choices \\ \hline
+        Exception       & The parameters specified by the Manager are not valid \\
+        \hline
+    \caption{Use case 10 - "Administrating the store"}
+    \label{table:use_case_10}
+    \end{longtable}
+    
+    \subsubsection{Use case 11}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Let a customer exit the store \\ \hline
+        Actor           & Customer, Manager, Access Management System \\ \hline
+        Entry condition & The Customer has asked the Manager to exit the store because he has lost his visit token \\ \hline
+        Event flow      & 
+        \texttt{1.}The Manager uses the administrative tool to allow the Customer to exit the store \newline
+        \texttt{2.}The Customer exits the store by means of the Access Management System \newline
+        \texttt{3.}CLup updates the store occupancy \\ \hline
+        Exit condition  & CLup is aware of the actual number of people in the store. The customer has left the store \\ \hline
+        Exception       & None \\
+        \hline
+    \caption{Use case 11 - "Let a customer exit the store"}
+    \label{table:use_case_11}
+    \end{longtable}
+    
+    \subsubsection{Use case 12}
+    \begin{longtable}[c] { |>{\bfseries{}}C{0.25\textwidth}|V{0.55\textwidth}| }
+        \hline
+        Name            & Cancel visit \\ \hline
+        Actor           & Customer \\ \hline
+        Entry condition & The Customer has a visit token and is not already in the store \\ \hline
+        Event flow      & 
+        \texttt{1.}The Customer asks CLup to delete a visit request he made before \newline
+        \texttt{2.}CLup processes and deletes the request \\ \hline
+        Exit condition  & The Customer’s visit token is not valid anymore \\ \hline
+        Exception       & None \\
+        \hline
+    \caption{Use case 12 - "Cancel visit"}
+    \label{table:use_case_12}
+    \end{longtable}
     
 \newpage
+\listoftables
+\listoffigures
+\citep{triuzzisorrentinoriccio}
 \bibliographystyle{plain}
 \bibliography{references}
-\tableofcontents
 \end{document}
