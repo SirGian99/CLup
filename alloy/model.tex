@@ -1,0 +1,104 @@
+\begin{lstlisting}[language=alloy]
+sig Date {}
+sig TimeInterval {
+    start : Int,
+    end   : Int
+} {
+    start >= 0 and
+    start < end
+}
+sig Token {} {
+    Token = Visit_Request.visit_token
+}
+
+sig ID {} {
+    ID = Manager.id
+}
+
+sig Manager {
+    id     : ID,
+    stores : some Store
+}
+
+sig Chain {
+    stores : some Store
+}
+
+sig Store {
+    parent_chain      : Chain,
+    current_occupancy : Int,
+    maximum_occupancy : Int,
+    working_hours     : some TimeInterval,
+    sections          : some Product_Section,
+    visit_request 	  : set Visit_Request,
+    queue             : Queue,
+    managers          : some Manager
+} {
+    current_occupancy >= 0 and
+    current_occupancy <= maximum_occupancy
+}
+
+sig Queue {
+    store                   : Store,
+    length                  : Int,
+    estimated_disposal_time : Int,
+    requests                : set LineUp_Request
+} {
+    estimated_disposal_time >= 0 and
+    length = #requests
+}
+
+sig Product_Section {
+    store             : Store,
+    current_occupancy : Int,
+    maximum_occupancy : Int
+} {
+    current_occupancy >= 0 and
+    maximum_occupancy >  0 and
+    current_occupancy <= maximum_occupancy
+}
+
+abstract sig Visit_Request {
+    store            : Store,
+    number_of_people : Int,
+    date_of_creation : Date,
+    time_of_creation : Int,
+    visit_token      : Token,
+    customer         : Customer,
+    visit			 : lone Visit
+} {
+    number_of_people > 0 and
+    time_of_creation >= 0
+}
+
+sig LineUp_Request extends Visit_Request {
+}
+
+sig Booking_Request extends Visit_Request {
+    desired_date     : Date,
+    desired_interval : TimeInterval,
+    product_sections : set Product_Section
+}
+
+sig Visit {
+    request	        : Visit_Request,
+    starting_time	: Int,
+    ending_time	    : lone Int 
+}{
+    starting_time >= ending_time
+}
+
+abstract sig Customer {
+    lineUp_requests : set LineUp_Request
+}
+
+sig App_Customer extends Customer {
+    booking_requests : set Booking_Request
+}
+
+sig Proxy_Customer extends Customer {
+} {
+    #lineUp_requests = 1
+}
+
+\end{lstlisting}
