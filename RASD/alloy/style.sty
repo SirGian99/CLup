@@ -1,0 +1,64 @@
+% alloy.sty
+% Alloy mode for the LaTeX listings package.
+% This is public domain
+
+\lstdefinelanguage{alloy}{
+  keywords={
+      assert, pred, all, no, lone, one, some, check, run,
+      but, let, implies, not, iff, in, and, or, set, sig, Int, int,
+      if, then, else, exactly, disj, fact, fun, module, abstract,
+      extends, open, none, univ, iden, seq,
+      for, as, sum, 
+  },
+  literate=
+    *{:}  {{{\color[HTML]{2835C0}{$:$}}}}1
+    {>}   {{{\color[HTML]{2835C0}{$>$}}}}1
+    {<}   {{{\color[HTML]{2835C0}{$<$}}}}1
+    {|}   {{{\color[HTML]{2835C0}{$|$}}}}1
+    {==}  {{{\color[HTML]{2835C0}{$=$}}}}1
+    {=}   {{{\color[HTML]{2835C0}{$=$}}}}1
+    {!=}  {{{\color[HTML]{2835C0}{$!=$}}}}2
+    {&&}  {{{\color[HTML]{2835C0}{$&&$}}}}1
+    {||}  {{{\color[HTML]{2835C0}{$||$}}}}2
+    {<=}  {{{\color[HTML]{2835C0}{$<=$}}}}3
+    {>=}  {{{\color[HTML]{2835C0}{$>=$}}}}3
+    {!in} {{{\color[HTML]{2835C0}{$!in$}}}}1
+    {\\in}{{{\color[HTML]{2835C0}{$\in$}}}}1
+    {=>}  {{{\color[HTML]{2835C0}{$=>$}}}}3,
+  sensitive=true,  % case sensitive
+  morecomment=[l]//,%
+  morecomment=[l]{--},%
+  morecomment=[s]{/*}{*/},%
+  morestring=[b]",
+  numbers=none,
+  firstnumber=1,
+  numberstyle=\tiny,
+  stepnumber=2,
+  basicstyle=\scriptsize\ttfamily,
+  commentstyle=\color[HTML]{00A108}\itshape,
+  keywordstyle=\color[HTML]{2835C0}\bfseries,
+  ndkeywordstyle=\bfseries,
+}
+
+% inline
+\def\A{%
+    \lstinline[language=alloy,basicstyle=\ttfamily,columns=fixed]}
+
+% paragraph
+\lstnewenvironment{alloy}[1][]{%
+  \lstset{language=alloy,
+    floatplacement={tbp},captionpos=b,
+    xleftmargin=8pt,xrightmargin=8pt,basicstyle=\ttfamily,#1}}{}
+
+% paragraph from file
+\newcommand{\alloyfile}[1]{
+  \lstinputlisting[language=alloy,%
+    frame=lines,xleftmargin=8pt,xrightmargin=8pt,basicstyle=\ttfamily,columns=fixed]{#1}
+}
+
+\lstset{
+    %Add this if you want to display border around your code  
+    %frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
+}
