@@ -43,7 +43,7 @@
 
 \title{\LARGE{CLup -- Requirements Analysis and \newline Specification Document}}
 \author{Vincenzo Riccio, Giancarlo Sorrentino, Emanuele Triuzzi}
-\date{December 23rd, 2020}
+\date{December 26th, 2020}
 \begin{document}
 
 \begin{titlingpage} 
@@ -71,8 +71,8 @@
         \textbf{Deliverable:}   & RASD\\
         \textbf{Title:}         & Requirement Analysis and Verification Document \\
         \textbf{Authors:}       & Vincenzo Riccio, Giancarlo Sorrentino, \newline Emanuele Triuzzi \\
-        \textbf{Version:}       & 1.0 \\ 
-        \textbf{Date:}          & December 23rd, 2020 \\
+        \textbf{Version:}       & 1.1 \\ 
+        \textbf{Date:}          & December 26th, 2020 \\
         \textbf{Download page:} & https://github.com/SirGian99/RiccioSorrentinoTriuzzi \\
         \textbf{Copyright:}     & Copyright © 2020, Vincenzo Riccio, Giancarlo Sorrentino, Emanuele Triuzzi -- All rights reserved \\
         \hline
@@ -204,6 +204,7 @@
     
     \section{Revision history}
     1.0 -- First version of the document (December 23rd, 2020)
+    1.1 -- Second version of the document (December 26th, 2020). Changes on the functional requirements table: one of the functions of the application already described in the document was not listed in the functional requirement table.
     
     \section{Reference documents}
     \begin{itemize}
@@ -431,6 +432,7 @@
         R16  & The system shall notify a customer when, during a specific time interval, a specified store is reaching its maximum occupancy \\ \hline
         R17  & The system shall keep track of the average duration of a generic visit to the store \\ \hline
         R18  & The system shall manage the case in which customers do not show up when it is their turn to enter the store \\ \hline
+        R19  & The system shall inform customers when they are allowed to enter the store \\ \hline
         \caption{Functional requirements}
         \label{table:functional_requirements}
     \end{longtable}
@@ -441,9 +443,9 @@
         \hline
         \textbf{Goals} & \textbf{Assumptions} & \emph{\textbf{Requirements}} \\
         \hline
-        G1 & A2, A2.1, A3, A4, A4.1 & R1, R4, R4.1, R5, R9, R9.1, R10, R12, R13, R14, R15, R18 \\ \hline
-        G2 & A1, A4, A5       & R5, R7, R8, R9, R9.1, R12, R13, R17, R18 \\ \hline
-        G3 & A1, A4           & R5, R6, R7, R8, R9, R9.1, R11, R12, R13, R16, R17, R18 \\ \hline
+        G1 & A2, A2.1, A3, A4, A4.1 & R1, R4, R4.1, R5, R9, R9.1, R10, R12, R13, R14, R15, R18, R19 \\ \hline
+        G2 & A1, A4, A5       & R5, R7, R8, R9, R9.1, R12, R13, R17, R18, R19 \\ \hline
+        G3 & A1, A4           & R5, R6, R7, R8, R9, R9.1, R11, R12, R13, R16, R17, R18, R19 \\ \hline
         G4 & A3, A4.1         & R1, R2, R3, R14, R15, R17 \\
         \hline
         \caption{Mapping of goals-assumptions-requirements}
@@ -747,8 +749,8 @@
         Goal & \textbf{Requirements} & \textbf{Use cases} \\
         \hline
         G1 & R1, R4, R4.1, R5, R9, R9.1, R10, R12, R13, R14, R15, R18 & UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC11 \\ \hline
-        G2 & R5, R7, R8, R9, R9.1, R12, R13, R17, R18 & UC1, UC2, UC3, UC5, UC6, UC7, UC8 \\ \hline
-        G3 & R5, R6, R7, R8, R9, R9.1, R11, R12, R13, R16, R17, R18 & UC1, UC2, UC5, UC6, UC7, UC8, UC9, UC12 \\ \hline
+        G2 & R5, R7, R8, R9, R9.1, R12, R13, R17, R18, R19 & UC1, UC2, UC3, UC5, UC6, UC7, UC8 \\ \hline
+        G3 & R5, R6, R7, R8, R9, R9.1, R11, R12, R13, R16, R17, R18, R19 & UC1, UC2, UC5, UC6, UC7, UC8, UC9, UC12 \\ \hline
         G4 & R1, R2, R3, R14, R15, R17 & UC4, UC10, UC11 \\
         \hline
         \caption{Traceability matrix}
