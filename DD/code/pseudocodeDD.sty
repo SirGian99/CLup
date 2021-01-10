@@ -1,0 +1,37 @@
+% alloy.sty
+% Alloy mode for the LaTeX listings package.
+% This is public domain
+
+\lstdefinelanguage{pseudocodeDD}{
+  keywords={
+      assert, for, if, else, foreach, is, in, empty, and, or, return, 0, has, not, Store, LineUpRequest, BookingRequest, int, =, min, +, <=
+  },
+  literate=
+    *{:}  {{{\color{delim}{$:$}}}}1
+    {*}   {{{\color{delim}{$*$}}}}1
+    {@/}   {{{\color{delim}{$/$}}}}1
+    {=}   {{{\color{delim}{$=$}}}}1
+    {==}  {{{\color{delim}{$==$}}}}2
+    {=}   {{{\color{delim}{$=$}}}}1
+    {!=}  {{{\color{delim}{$!=$}}}}2
+    {+=}  {{{\color{delim}{$+=$}}}}3
+    {-=}  {{{\color{delim}{$-=$}}}}3
+    {+}  {{{\color{delim}{$+$}}}}1
+    {-}  {{{\color{delim}{$-$}}}}1
+    {<=}  {{{\color{delim}{$<=$}}}}3
+    {>=}  {{{\color{delim}{$>=$}}}}3
+    {!in} {{{\color{delim}{$!in$}}}}1
+    {\\in}{{{\color{delim}{$\in$}}}}1
+    {>}  {{{\color{delim}{$>$}}}}2,
+  sensitive=true,  % case sensitive
+  morecomment=[l]//,%
+  morecomment=[l]{--},%
+  morecomment=[s]{/*}{*/},%
+  morestring=[b]",
+  basicstyle=\fontsize{11}{13}\ttfamily,
+  commentstyle=\color[HTML]{00A108},
+  keywordstyle=\color{delim}\bfseries,
+  ndkeywordstyle=\bfseries,
+  breaklines=true,
+  frame = single, 
+}
