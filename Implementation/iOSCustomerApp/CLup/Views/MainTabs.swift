@@ -5,22 +5,18 @@ struct FirstTab: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                SizedDivider(height: 10)
+                SizedDivider(height: 15)
                 Text("Select a chain or an independent store")
-                SizedDivider(height: 5)
+                SizedDivider(height: 10)
                 ScrollView(.vertical, showsIndicators: false) {
                     ForEach(repo.chainsArray(), id: \.name) { chain in
-                        SizedDivider(height: 10)
-                        NavigationLink(destination: StoreList(stores: Array(chain.stores.values))) {
-                            ChainView(chain: chain)
-                        }
+                        ChainView(chain: chain).cornerRadius(10).padding()
                     }
                     ForEach(repo.storesArray(), id: \.name) { store in
-                        SizedDivider(height: 10)
-                        StoreView(store: store)
+                        StoreView(store: store).cornerRadius(10).padding()
                     }
                 }
-            }
+            }.navigationBarHidden(true).navigationBarTitleDisplayMode(.inline).transparentNavBar()
         }
     }
 }

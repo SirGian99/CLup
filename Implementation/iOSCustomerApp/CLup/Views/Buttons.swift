@@ -14,31 +14,41 @@ struct CloseButton: View {
 }
 
 struct LineUpButton: View {
-    let ete: String
+    let store: Store
+    @State var showModal = false
     var body: some View {
-        Button(action: {print("LINE-UP!!")}){
+        Button(action: {self.showModal.toggle()}){
             VStack {
+                SizedDivider(height: 5)
                 Text("Line-up now")
                     .fontWeight(.semibold)
                     .font(.body)
-                Text("Estimated waiting: \(ete) min")
+                Text("Estimated waiting: \(store.estimatedQueueDisposalTime) min")
                     .font(.subheadline)
+                SizedDivider(height: 5)
             }
             .tint(.blueLabel)
+            .sheet(isPresented: $showModal) {NewLURView(store: store)}
         }.customButtonStyle()
     }
 }
 
 struct BookingButton: View {
+    let store: Store
+    @State var showModal = false
     var body: some View {
-        Button(action: {print("BOOOKKKKK!!")}){
+        Button(action: {self.showModal.toggle()}){
             VStack {
+                SizedDivider(height: 5)
                 Text("Book a visit")
                     .fontWeight(.semibold)
                     .font(.body)
+                SizedDivider(height: 5)
             }
             .tint(.blueLabel)
-        }.customButtonStyle()
+            .sheet(isPresented: $showModal) {NewBRView(store: store)}
+        }
+        .customButtonStyle()
     }
 }
 

@@ -7,71 +7,44 @@ struct ChainView: View {
     let chain: Chain
 
     var body: some View {
-//        NavigationLink(destination: ChainView(chain: Chain())) {
-//            HStack {
-//                Text("Your tasks")
-//                    .font(.system(.title, design: .rounded))
-//                Spacer()
-//                Image(systemName: "chevron.right")
-//                    .font(.headline)
-//                    .orange()
-//            }.padding(.horizontal, 20)
-//        }.accentColor(getColor(.orange))
-        Button(action: {self.showModal.toggle()}) {
+        NavigationLink(destination: StoreList(stores: Array(chain.stores.values))) {
             VStack(spacing: 0) {
                 Image(uiImage: chain.image).resizable().scaledToFit()
                 Text(chain.name)
                     .fontWeight(.medium)
                     .font(.title3)
                     .tint(.blueLabel)
-                    .frame(width: screenWidth-screenWidth/10, height: 50)
-                    .background(.blueHeaderBG)
-            }
-            .frame(width: screenWidth-screenWidth/10)
-            .cornerRadius(10)
+                    .frame(height: 50)
+            }.background(.blueHeaderBG)
         }
-        .customButtonStyle()
-        .shadow(color: Color(.systemGray3), radius: 3)
     }
 }
 
 struct StoreList: View {
     let stores: [Store]
     var body: some View {
-        VStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                ForEach(stores, id: \.id) { store in
-                    SizedDivider(height: 10)
-                    NavigationLink(destination: StoreDetails(store: store)) {
-                        StoreView(store: store)
-                    }
-                }
+        ScrollView(.vertical, showsIndicators: false) {
+            ForEach(stores, id: \.id) { store in
+                StoreView(store: store).cornerRadius(10).padding()
             }
         }
     }
 }
 
 struct StoreView: View {
-    @State var showModal: Bool = false
     let store: Store
 
     var body: some View {
-        Button(action: {self.showModal.toggle()}) {
+        NavigationLink(destination: StoreDetails(store: store)) {
             VStack(spacing: 0) {
-                Image(uiImage: store.image).resizable()
+                Image(uiImage: store.image).resizable().scaledToFit()
                 Text(store.name)
                     .fontWeight(.medium)
                     .font(.title3)
                     .tint(.blueLabel)
-                    .frame(width: screenWidth-screenWidth/10, height: 50)
-                    .background(.blueHeaderBG)
+                    .frame(height: 50)
             }
-            .frame(width: screenWidth-screenWidth/10, height: 220)
-            .cornerRadius(10)
-        }
-        .customButtonStyle()
-        .shadow(color: Color(.systemGray3), radius: 3)
-        .sheet(isPresented: self.$showModal) { StoreDetails(store: store) }
+        }.background(.blueHeaderBG)
     }
 }
 
@@ -88,7 +61,7 @@ struct StoreDetails: View {
                 .fontWeight(.medium)
                 .font(.headline)
             VStack(spacing: 0) {
-                SizedDivider(height: 5)
+                SizedDivider(height: 7)
                 Text("Working hours")
                     .fontWeight(.bold)
                     .font(.headline)
@@ -190,19 +163,12 @@ struct StoreDetails: View {
                     SizedDivider(height: 10)
                 }
             }
-            .frame(width: screenWidth-screenWidth/10)
-            .cornerRadius(10)
-            .background(.blueHeaderBG)
-            LineUpButton(ete: "50")
-                .frame(width: screenWidth-screenWidth/10)
-                .cornerRadius(10)
-                .background(.blueHeaderBG)
-            BookingButton()
-                .frame(width: screenWidth-screenWidth/10)
-                .cornerRadius(10)
-                .background(.blueHeaderBG)
+            .lightBlueCard()
+            HStack {Spacer(); LineUpButton(store: store); Spacer()}
+                .lightBlueCard()
+            HStack {Spacer(); BookingButton(store: store); Spacer()}
+                .lightBlueCard()
         }
         .tint(.blueLabel)
-//        .sheet(isPresented: self.$showModal) { DetailedView(need: task, user: needer, isDiscoverSheet: false) }
     }
 }

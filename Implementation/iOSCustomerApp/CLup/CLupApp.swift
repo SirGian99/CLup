@@ -13,7 +13,7 @@ struct CLupApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TabViewController().environmentObject(repo)
+            TabViewController().environmentObject(repo).accentColor(getColor(.blueLabel))
         }
     }
 }

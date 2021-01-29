@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		141BD6B225BF6416006D987A /* AddBookingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 141BD6B125BF6416006D987A /* AddBookingView.swift */; };
+		141BD6B225BF6416006D987A /* NewRequestForms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 141BD6B125BF6416006D987A /* NewRequestForms.swift */; };
 		14C8CD8925B749EC00B4DD44 /* CLupApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8CD8825B749EC00B4DD44 /* CLupApp.swift */; };
 		14C8CD8B25B749EC00B4DD44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8CD8A25B749EC00B4DD44 /* ContentView.swift */; };
 		14C8CD8D25B749EF00B4DD44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14C8CD8C25B749EF00B4DD44 /* Assets.xcassets */; };
@@ -29,7 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		141BD6B125BF6416006D987A /* AddBookingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddBookingView.swift; sourceTree = "<group>"; };
+		141BD6B125BF6416006D987A /* NewRequestForms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRequestForms.swift; sourceTree = "<group>"; };
 		14C8CD8525B749EC00B4DD44 /* CLup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CLup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C8CD8825B749EC00B4DD44 /* CLupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLupApp.swift; sourceTree = "<group>"; };
 		14C8CD8A25B749EC00B4DD44 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 		14EE03C025B8D749003F7A86 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				141BD6B125BF6416006D987A /* AddBookingView.swift */,
+				141BD6B125BF6416006D987A /* NewRequestForms.swift */,
 				14DA83F525BA221800AFF820 /* ChainViews.swift */,
 				14EE03C125B8D793003F7A86 /* ListViews.swift */,
 				14EE03C525B8D794003F7A86 /* MainTabs.swift */,
@@ -202,7 +202,7 @@
 				14EE03D125B8DA9F003F7A86 /* ViewExtensions.swift in Sources */,
 				14EE03CB25B8D794003F7A86 /* MainTabs.swift in Sources */,
 				14EE03C825B8D794003F7A86 /* Buttons.swift in Sources */,
-				141BD6B225BF6416006D987A /* AddBookingView.swift in Sources */,
+				141BD6B225BF6416006D987A /* NewRequestForms.swift in Sources */,
 				14EE03C725B8D794003F7A86 /* ListViews.swift in Sources */,
 				14DA83F025BA1E2000AFF820 /* SwiftyJSON.swift in Sources */,
 				14C8CD8B25B749EC00B4DD44 /* ContentView.swift in Sources */,
