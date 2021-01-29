@@ -49,6 +49,7 @@ struct NavigationConfigurator: UIViewControllerRepresentable {
     }
 }
 
+
 extension UIViewController {
     func toggleEditMode(observedVar: Binding<Bool>) {
         isEditing ? setEditing(false, animated: true) : setEditing(true, animated: true)
