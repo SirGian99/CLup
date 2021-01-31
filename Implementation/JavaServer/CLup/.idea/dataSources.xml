@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="RPi" uuid="977b5148-3841-46b8-9df9-e6445567d3f9">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://109.116.11.75:33333/clup_db</jdbc-url>
+    </data-source>
+  </component>
+</project>
