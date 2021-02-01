@@ -27,7 +27,6 @@ public class Lineup implements Serializable {
     public String getUuid() {
         return uuid;
     }
-
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
@@ -35,7 +34,6 @@ public class Lineup implements Serializable {
     public String getHfid() {
         return hfid;
     }
-
     public void setHfid(String hfid) {
         this.hfid = hfid;
     }
@@ -43,7 +41,6 @@ public class Lineup implements Serializable {
     public Store getStore() {
         return store;
     }
-
     public void setStore(Store store) {
         this.store = store;
     }
@@ -51,7 +48,6 @@ public class Lineup implements Serializable {
     public Customer getCustomer() {
         return customer;
     }
-
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
@@ -59,15 +55,11 @@ public class Lineup implements Serializable {
     public Timestamp getEstimatedTimeOfEntrance() {
         return estimatedTimeOfEntrance;
     }
-
-    public void setEstimatedTimeOfEntrance(Timestamp estimatedTimeOfEntrance) {
-        this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
-    }
+    public void setEstimatedTimeOfEntrance(Timestamp estimatedTimeOfEntrance) { this.estimatedTimeOfEntrance = estimatedTimeOfEntrance; }
 
     public Integer getNumberOfPeople() {
         return numberOfPeople;
     }
-
     public void setNumberOfPeople(Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
     }
@@ -75,7 +67,6 @@ public class Lineup implements Serializable {
     public Integer getState() {
         return state;
     }
-
     public void setState(Integer state) {
         this.state = state;
     }
@@ -83,7 +74,6 @@ public class Lineup implements Serializable {
     public Timestamp getDateTimeOfCreation() {
         return dateTimeOfCreation;
     }
-
     public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
         this.dateTimeOfCreation = dateTimeOfCreation;
     }

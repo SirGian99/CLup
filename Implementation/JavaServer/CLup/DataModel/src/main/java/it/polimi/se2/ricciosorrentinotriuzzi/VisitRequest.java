@@ -12,7 +12,4 @@ public abstract class VisitRequest {
     private Timestamp dateTimeOfCreation;
     private Timestamp visitStartingTime;
     private Timestamp visitCompletionTime;
-
-
-
 }

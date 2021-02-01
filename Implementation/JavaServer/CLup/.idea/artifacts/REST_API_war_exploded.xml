@@ -14,9 +14,6 @@
           <element id="module-output" name="REST-API" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="REST-API-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="REST-API" />
-          </element>
           <element id="archive" name="DataModel-1.0.jar">
             <element id="module-output" name="DataModel" />
           </element>
