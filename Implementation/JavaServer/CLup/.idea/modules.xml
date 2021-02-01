@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BusinessModule/BusinessModule.iml" filepath="$PROJECT_DIR$/BusinessModule/BusinessModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CLup.iml" filepath="$PROJECT_DIR$/CLup.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataModel/DataModel.iml" filepath="$PROJECT_DIR$/DataModel/DataModel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/REST-API/REST-API.iml" filepath="$PROJECT_DIR$/REST-API/REST-API.iml" />
+    </modules>
+  </component>
+</project>
