@@ -1,15 +1,15 @@
-import Foundation
+import SwiftUI
 
 struct ServerRoutes {
-    private static let baseURL = "https://serverlessbackon.now.sh/api"
-    static let signUp = {baseURL+"/signin.js"}()
-    static let getMyBonds = {baseURL+"/getMyBonds.js"}()
-    static let removeTask = {baseURL+"/cancelTask.js"}()
-    static let removeRequest = {baseURL+"/deleteRequest.js"}()
-    static let discover = {baseURL+"/discover.js"}()
-    static let addRequest = {baseURL+"/addRequest.js"}()
-    static let addTask = {baseURL+"/addTask.js"}()
-    static let reportTask = {baseURL+"/reportTask.js"}()
-    static let updateProfile = {baseURL+"/updateProfile.js"}()
-    static let sendNotification = {baseURL+"/sendPush.js"}()
+    private static let baseURL = "https://localhost:8080/api"
+    //CustomerInt
+    static let registerApp = baseURL+"/customer/registerApp" //TEST!
+    static func customerData(_ id: String) -> String { return baseURL+"/customer/\(id)" }
+    //StoreInfoInt
+    static func chainstore(city: String) -> String { return baseURL+"/chainstore?city=\(city)" }
+    static func stores(chain: String, city: String) -> String { return baseURL+"/chain/\(chain)/stores?city=\(city)" }
+    //BookingInt
+    static let booking = baseURL+"/booking" //TEST!
+    //LineUpInt
+    static let lineup = baseURL+"/lineup" //TEST!
 }

@@ -9,51 +9,34 @@ import SwiftUI
 
 @main
 struct CLupApp: App {
-    var repo = Repository()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
-            TabViewController().environmentObject(repo).accentColor(getColor(.blueLabel))
+            TabViewController().accentColor(getColor(.blueLabel))
         }
     }
 }
 
-let chain1 = Chain()
-let chain2 = Chain()
-let chain3 = Chain()
-let chain4 = Chain()
-let chain5 = Chain()
-let chain6 = Chain()
-let store1 = Store()
-let store2 = Store()
-let store3 = Store()
-let store4 = Store(chain: chain4)
-let store5 = Store(chain: chain5)
-let store6 = Store(chain: chain6)
-let lur1 = LineUpRequest(store: store4)
-let br1 = BookingRequest(store: store5)
-
-class Repository: ObservableObject {
-    @Published var activeView = "HomeView"
-    @Published var mainWindow = "CustomTabView"
-    @Published var stores: [String:Store] = ["1":store1, "2":store2, "3":store3, "4":store4, "5":store5, "6":store6]
-    @Published var chains: [String:Chain] = ["1":chain1, "2":chain2, "3":chain3, "4":chain4, "5":chain5, "6":chain6]
-    @Published var lur: LineUpRequest? = lur1
-    @Published var brs: [String:BookingRequest] = [br1.visitToken.uuid.uuidString:br1]
-
-    
-    func storesArray() -> [Store] {
-        return Array(stores.values)
-    }
-    
-    func chainsArray() -> [Chain] {
-        return Array(chains.values)
-    }
-    
-    func brsArray() -> [BookingRequest] {
-        return Array(brs.values).sorted { (br1, br2) -> Bool in
-            return br1.desiredTimeInterval.startingDateTime < br2.desiredTimeInterval.startingDateTime
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    @AppStorage("deviceToken") var devToken: String = ""
+    override init() {
+        //registra l'app
+        super.init()
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .provisional]) { granted, error in
+            guard error == nil else {return}
+            DispatchQueue.main.sync { UIApplication.shared.registerForRemoteNotifications() }
         }
     }
     
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenParts = deviceToken.map { data in return String(format: "%02.2hhx", data) }
+        devToken = tokenParts.joined()
+        print("Registered for remote notifications with deviceToken \(devToken)")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for remote notifications: \(error.localizedDescription)")
+    }
 }

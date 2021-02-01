@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FirstTab: View {
-    @EnvironmentObject var repo: Repository
+    @ObservedObject var repo = Repository.singleton
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -22,7 +22,7 @@ struct FirstTab: View {
 }
 
 struct SecondTab: View {
-    @EnvironmentObject var repo: Repository
+    @ObservedObject var repo = Repository.singleton
     @State var showLURModal = false
     @State var showBRModal = false
     var body: some View {

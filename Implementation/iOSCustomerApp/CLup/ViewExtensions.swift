@@ -91,6 +91,9 @@ extension View {
     func lightBlueCard() -> some View {
         return self.background(.lightBlueHeaderBG).cornerRadius(10).padding(.horizontal).padding(.vertical, 10)
     }
+    func blueCard() -> some View {
+        return self.background(.blueHeaderBG).cornerRadius(10).padding(.horizontal).padding(.vertical, 10)
+    }
 }
 
 extension Text {

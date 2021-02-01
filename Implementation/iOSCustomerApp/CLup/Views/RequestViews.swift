@@ -26,10 +26,10 @@ struct LURDetails: View {
     let lur: LineUpRequest
     
     var body: some View {
-        let timeToWait = Date(timeIntervalSinceNow: 0).distance(to: lur.estimatedTimeOfEntrance)/60
-        let timeToWaitStr = timeToWait >= 60 ? ">1hr" : "\(timeToWait) min"
-        return VStack(alignment: .center, spacing: 25) {
-            SizedDivider(height: 1)
+        let timeToWait = lur.ete != nil ? Date(timeIntervalSinceNow: 0).distance(to: lur.ete!)/60 : 0
+        let timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Now"
+        return VStack(alignment: .center, spacing: 10) {
+            SizedDivider(height: 5)
             VStack (spacing: 0) {
                 Text(lur.store.name)
                     .fontWeight(.medium)
@@ -46,67 +46,42 @@ struct LURDetails: View {
                 SizedDivider(height: 6)
                 VStack(spacing: 0) {
                     HStack {
-                        Text("Time when lining-up")
+                        Text("Number of people")
                         Spacer()
-                        Text(lur.creation.getTime() ?? "Not available")
+                        Text("\(lur.numberOfPeople)")
                     }.font(.subheadline)
                     SizedDivider(height: 5)
                     Rectangle().frame(height: 1)
                     SizedDivider(height: 5)
                     HStack {
-                        Text("Number of people")
+                        Text("Estimated time of entrance")
                         Spacer()
-                        Text("\(lur.numberOfPeople)")
+                        Text(lur.ete?.getTime() ?? "Now")
                     }.font(.subheadline)
                 }.padding(.horizontal)
                 SizedDivider(height: 6)
             }
-            .frame(width: screenWidth-screenWidth/10)
             .lightBlueCard()
-            HStack(spacing: 0) {
-                Spacer()
-                VStack(alignment: .center, spacing: 0) {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(getColor(.lightBlueHeaderBG))
-                        Text(lur.estimatedTimeOfEntrance.getTime()!)
-                            .fontWeight(.medium)
-                            .font(.largeTitle)
-                            .tint(.blueLabel)
-                    }
-                    Text("Estimated time of entrance")
-                        .font(.subheadline)
-                        .padding(.vertical, 5)
-                        .tint(.blueLabel)
+            VStack(alignment: .center, spacing: 0) {
+                //SizedDivider(height: 5)
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(getColor(.lightBlueHeaderBG))
+                    Text(timeToWaitStr)
+                        .fontWeight(.medium)
+                        .font(.largeTitle)
                 }
-                .background(.blueHeaderBG)
-                .cornerRadius(10)
-                .frame(width: screenWidth/2+screenWidth/50, height: 86)
-                Spacer()
-                VStack(alignment: .center, spacing: 0) {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(getColor(.lightBlueHeaderBG))
-                        Text(timeToWaitStr)
-                            .fontWeight(.medium)
-                            .font(.largeTitle)
-                            .tint(.blueLabel)
-                    }
-                    Text("Time to wait")
-                        .font(.subheadline)
-                        .padding(.vertical, 5)
-                        .tint(.blueLabel)
-                }
-                .background(.blueHeaderBG)
-                .cornerRadius(10)
-                .frame(height: 86)
-            }.padding(.horizontal)
-            VStack(alignment: .center, spacing: 5) {
                 SizedDivider(height: 5)
+                Text("Time to wait")
+                    .font(.subheadline)
+                SizedDivider(height: 5)
+            }
+            .blueCard()
+            VStack(alignment: .center, spacing: 5) {
                 Text(lur.state != .ready ? "Please wait for this code to be announced before entering the store" : "Please show the following code to access the store")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
-                    .tint(.blueLabel)
+                    .padding()
                 Text(lur.visitToken.hfid)
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -118,13 +93,12 @@ struct LURDetails: View {
                     //.blur(radius: 7, opaque: lur.state != .ready)
                 SizedDivider(height: 5)
             }
-            .frame(width: screenWidth-screenWidth/10)
-            .background(.lightBlueHeaderBG)
-            .cornerRadius(10)
-            CancelButton()
-                .frame(width: screenWidth-screenWidth/10, height: 50)
-                .background(.blueHeaderBG)
-                .cornerRadius(10)
+            .lightBlueCard()
+            VStack(spacing: 0) {
+                CancelButton()
+                HStack{Spacer()}
+            }
+            .blueCard()
             Spacer()
         }.tint(.blueLabel)
     }
@@ -134,8 +108,8 @@ struct BRDetails: View {
     let br: BookingRequest
     
     var body: some View {
-        VStack(alignment: .center, spacing: 25) {
-            SizedDivider(height: 1)
+        VStack(alignment: .center, spacing: 10) {
+            SizedDivider(height: 5)
             VStack (spacing: 0) {
                 Text(br.store.name)
                     .fontWeight(.medium)
@@ -179,10 +153,10 @@ struct BRDetails: View {
                 }.padding(.horizontal)
                 SizedDivider(height: 6)
             }
-            .frame(width: screenWidth-screenWidth/10)
             .lightBlueCard()
             
             VStack(alignment: .center, spacing: 5) {
+                SizedDivider(height: 6)
                 Text(br.state != .ready ? "Please wait for this code to be announced before entering the store" : "Please show the following code to access the store")
                     .multilineTextAlignment(.center)
                     .font(.subheadline)
@@ -195,16 +169,16 @@ struct BRDetails: View {
                     .scaledToFit()
                     .frame(width: 250, height: 250)
                     //.blur(radius: 7, opaque: lur.state != .ready)
+                SizedDivider(height: 6)
+                HStack{Spacer()}
             }
-            .padding()
-            .frame(width: screenWidth-screenWidth/10)
-            .background(.lightBlueHeaderBG)
-            .cornerRadius(10)
+            .lightBlueCard()
             
-            CancelButton()
-                .frame(width: screenWidth-screenWidth/10, height: 50)
-                .background(.blueHeaderBG)
-                .cornerRadius(10)
+            VStack(spacing: 0) {
+                CancelButton()
+                HStack{Spacer()}
+            }
+            .blueCard()
             Spacer()
         }.tint(.blueLabel)
     }

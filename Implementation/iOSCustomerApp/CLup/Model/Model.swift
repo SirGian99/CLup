@@ -67,9 +67,11 @@ let wh = WorkingHours(
     saturday: []
 )
 
-enum VRState {
-    case pending
-    case ready
+enum VRState: Int {
+    case pending = 0
+    case ready = 1
+    case fulfilled = 2
+    case completed = 3
 }
 
 class Chain {
@@ -160,7 +162,6 @@ class Store {
 
 protocol VisitRequest: ObservableObject, CustomStringConvertible {
     var numberOfPeople: Int { get }
-    var creation: Date { get }
     var store: Store { get }
     var visitToken: Token { get }
     var state: VRState { get }
@@ -169,38 +170,32 @@ protocol VisitRequest: ObservableObject, CustomStringConvertible {
 
 class LineUpRequest: VisitRequest {
     let numberOfPeople: Int
-    let creation: Date
     let visitToken: Token
     let state: VRState
     let store: Store
-    
-    let estimatedTimeOfEntrance: Date
-    var ete: Date {get {estimatedTimeOfEntrance}}
+    let ete: Date?
     
     public var description: String {return "LUR with token \(visitToken)"}
     
-    init(numberOfPeople: Int, creation: Date, visitToken: Token, state: VRState, ete: Date, store: Store) {
+    init(numberOfPeople: Int, visitToken: Token, state: VRState, ete: Date?, store: Store) {
         self.numberOfPeople = numberOfPeople
-        self.creation = creation
         self.visitToken = visitToken
         self.state = state
-        self.estimatedTimeOfEntrance = ete
+        self.ete = ete
         self.store = store
     }
     
     init(store: Store) {
         self.numberOfPeople = 3
-        self.creation = Date(timeIntervalSinceNow: -60)
         self.visitToken = Token(hfid: "L\(Int.random(in: 1..<100))", uuid: CUUID())
         self.state = .pending
-        self.estimatedTimeOfEntrance = Date(timeIntervalSinceNow: 6000)
+        self.ete = Date(timeIntervalSinceNow: 6000)
         self.store = store
     }
 }
 
 class BookingRequest: VisitRequest {
     let numberOfPeople: Int
-    let creation: Date
     let visitToken: Token
     let state: VRState
     let store: Store
@@ -210,9 +205,8 @@ class BookingRequest: VisitRequest {
     
     public var description: String {return "BR with token \(visitToken)"}
     
-    init(numberOfPeople: Int, creation: Date, visitToken: Token, state: VRState, desiredTimeInterval: CTimeInterval, sections: [Section], store: Store) {
+    init(numberOfPeople: Int, visitToken: Token, state: VRState, desiredTimeInterval: CTimeInterval, sections: [Section], store: Store) {
         self.numberOfPeople = numberOfPeople
-        self.creation = creation
         self.visitToken = visitToken
         self.state = state
         self.desiredTimeInterval = desiredTimeInterval
@@ -222,7 +216,6 @@ class BookingRequest: VisitRequest {
     
     init(store: Store) {
         self.numberOfPeople = 3
-        self.creation = Date(timeIntervalSinceNow: -60)
         self.visitToken = Token(hfid: "B\(Int.random(in: 1..<100))", uuid: CUUID())
         self.state = .pending
         self.desiredTimeInterval = CTimeInterval(startingDateTime: Date(timeIntervalSinceNow: 60000), duration: 600)
