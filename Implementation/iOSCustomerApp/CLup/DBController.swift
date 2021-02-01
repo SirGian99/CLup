@@ -27,6 +27,7 @@ class DB {
             let brArray = jsonResponse["bookingRequests"].arrayValue
             var lur: LineUpRequest? = nil
             var brDict: [String:BookingRequest] = [:]
+            //TODO MANCA ANCHE IL FOR PER I BOOKING
             if jsonResponse["lineupRequest"].exists() {
                 let lurJson = jsonResponse["lineupRequest"]
                 let hfid = lurJson["visitToken"]["hfid"].stringValue
@@ -130,13 +131,54 @@ class DB {
         }.resume()
     }
     
-//    private func parseJSON(jsonResponse: JSON) -> (name: String, surname: String?, photoURL: URL?, phoneNumber: String?) {
-//        let name = jsonResponse["name"].stringValue
-//        let surname = jsonResponse["surname"].string
-//        let photoURL = URL(string: jsonResponse["photo"].string)
-//        let phoneNumber = jsonResponse["phoneNumber"].string
-//        return (name, surname, photoURL, phoneNumber)
-//    }
+    func getChainStore(city: String, completion: @escaping ([String:Chain]?, [String:Store]?, String?) -> Void) { // (chainDict, storeDict, error)
+        print("*** DB - \(#function) ***")
+        let request = initJSONRequest(urlString: ServerRoutes.chainstore(city: city), body: Data(), httpMethod: "GET")
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {return completion(nil, nil, "Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil, nil, "Error in \(#function). Invalid response!")}
+            guard responseCode == 200 else {return completion(nil, nil, "Response code != 200 in \(#function): \(responseCode)")}
+            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, nil, "Error with returned data in \(#function)")}
+            let chainArray = jsonResponse["chains"].arrayValue
+            let storeArray = jsonResponse["autonomousStores"].arrayValue
+            var chainDict: [String:Chain] = [:]
+            var storeDict: [String:Store] = [:]
+            for chainJson in chainArray {
+                let name = chainJson["name"].stringValue
+                let description = chainJson["description"].stringValue
+                //let image = chainJson["image"].stringValue
+                let chain = Chain(name: name, description: description, image: UIImage(named: "MissingImg")!)
+                chainDict[name] = chain
+            }
+            for storeJson in storeArray {
+                let id = storeJson["id"].stringValue
+                let name = storeJson["name"].stringValue
+                let description = storeJson["description"].string
+                let currOcc = storeJson["currentOccupancy"].intValue
+                let estimatedQueueDTime = storeJson["estimatedQueueDisposalTime"].intValue
+                let addressJson = storeJson["address"]
+                let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
+                let whArray = storeJson["workingHours"].arrayValue
+                var whs = WorkingHours()
+                for whJson in whArray {
+                    let day = whJson["day"].intValue
+                    let start = whJson["start"].stringValue
+                    let end = whJson["end"].stringValue
+                    (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+                }
+                let sectionsArray = storeJson["sections"].arrayValue
+                var sections: [Section] = []
+                for sectJson in sectionsArray {
+                    let id = sectJson["id"].stringValue
+                    let name = sectJson["name"].stringValue
+                    sections.append(Section(id: id, name: name))
+                }
+                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: nil)
+                storeDict[id] = store
+            }
+            completion(chainDict, storeDict, nil)
+        }.resume()
+    }
     
     
     private func initJSONRequest(urlString: String, body: Data, httpMethod: String = "POST") -> URLRequest {
