@@ -107,6 +107,9 @@ public class Booking extends VisitRequest implements Serializable {
         this.visitStartingTime = visitStartingTime;
     }
 
+    public List<Productsection> getProductSections() {
+        return productSections;
+    }
 
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;

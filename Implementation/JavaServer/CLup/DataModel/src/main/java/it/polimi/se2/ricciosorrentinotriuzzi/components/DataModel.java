@@ -2,8 +2,14 @@ package it.polimi.se2.ricciosorrentinotriuzzi.components;
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import javax.ejb.*;
 import javax.persistence.*;
+import java.awt.print.Book;
+import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.temporal.TemporalAmount;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Stateless
 public class DataModel {
@@ -30,15 +36,40 @@ public class DataModel {
     public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
+        List<Productsection> productsections = store.getProductSections();
         if (store.getId().equals(storeID)) {
             request.setVisitStartingTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.FULFILLED);
             request.setNumberOfPeople(numberOfPeople);
             store.setCurrentOccupancy(store.getCurrentOccupancy() + numberOfPeople);
+            for (Productsection section: productsections) {
+                double oldOcc = section.getCurrentOccupancy();
+                section.setCurrentOccupancy(oldOcc + numberOfPeople * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy());
+            }
             return true;
         }
         return false;
     }
+
+    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
+    Store store = em.find(Store.class, storeID);
+    LinkedList<Booking> toReturn= new LinkedList<>();
+
+    for(Booking booking : store.getBookings() ){
+        LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
+        LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
+        if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
+            toReturn.addLast(booking);
+    }
+    return toReturn;
+    }
+
+    public void allowVisitRequest(String token){
+        VisitRequest request = getVisitRequest(token);
+        if (request!= null)
+        request.setState(VisitRequestStatus.READY);
+    }
+
     public int checkFulfilledRequest(String storeID, String visitToken){
         VisitRequest request = getVisitRequest(visitToken);
         return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
@@ -47,10 +78,15 @@ public class DataModel {
     public boolean endVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
+        List<Productsection> productsections = store.getProductSections();
         if (store.getId().equals(storeID)) {
             request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.COMPLETED);
             store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
+            for (Productsection section: productsections) {
+                double oldOcc = section.getCurrentOccupancy();
+                section.setCurrentOccupancy(oldOcc - numberOfPeople * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy());
+            }
             return true;
         }
         return false;

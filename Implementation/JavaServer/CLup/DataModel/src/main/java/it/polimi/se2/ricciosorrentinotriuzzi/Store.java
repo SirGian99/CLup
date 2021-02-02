@@ -28,8 +28,10 @@ public class Store implements Serializable {
     private String passepartouthfid;
     private Integer address;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("desiredStartingTime ASC")
     private List<Booking> bookings;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("dateTimeOfCreation ASC")
     private List<Lineup> lineups;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "storemanager",
