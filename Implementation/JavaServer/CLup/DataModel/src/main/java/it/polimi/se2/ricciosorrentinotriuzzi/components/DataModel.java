@@ -57,6 +57,15 @@ public class DataModel {
         return em.find(Customer.class, id);
     }
 
+    public Chain getChain(String storeID) {
+        return em.find(Store.class, storeID).getChain();
+    }
+
+    public Address getAddress(long addressID) {
+        return em.find(Address.class, addressID);
+    }
+
+
     /* public Chain getChains(city: String) -> [Chain]: returns all the available chains and independent stores in the city specified by the homonym parameter
     getChain(storeID: ID) -> Chain: returns the chain of the store identified by parameter storeID
     getStores(chainName: String, city: String) -> [Store]: returns all the stores belonging to the chain specified by parameter chainName and located in the city specified by the homonym parameter. The result depends on which parameters have a defined value

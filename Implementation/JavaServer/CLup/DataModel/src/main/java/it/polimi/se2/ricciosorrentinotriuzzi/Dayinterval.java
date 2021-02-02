@@ -48,4 +48,8 @@ public class Dayinterval implements Serializable {
         this.end = end;
     }
 
+    @Override
+    public String toString() {
+        return "{id:" + id +", dayOfTheWeek:" + dayOfTheWeek + ", start:" + start + ", end:" + end + "}";
+    }
 }
