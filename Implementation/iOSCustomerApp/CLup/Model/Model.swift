@@ -32,6 +32,16 @@ struct Time: CustomStringConvertible, Hashable {
     public var description: String {return "\(hour):\(minute)"}
     let hour: String
     let minute: String
+    
+    init(hour: String, minute: String) {
+        self.hour = hour
+        self.minute = minute
+    }
+    
+    init(time: String) {
+        self.hour = String(time[time.startIndex..<time.firstIndex(of: ":")!])
+        self.minute = String(time[time.index(after: time.firstIndex(of: ":")!)..<time.endIndex])
+    }
 }
 
 struct CTimeInterval {
@@ -48,24 +58,28 @@ struct DayInterval: Hashable {
 }
 
 struct WorkingHours {
-    var sunday: [DayInterval]
-    var monday: [DayInterval]
-    var tuesday: [DayInterval]
-    var wednesday: [DayInterval]
-    var thursday: [DayInterval]
-    var friday: [DayInterval]
-    var saturday: [DayInterval]
+    var wh: [Int:[DayInterval]]
+    var sunday: [DayInterval] {return wh[1]!}
+    var monday: [DayInterval] {return wh[2]!}
+    var tuesday: [DayInterval] {return wh[3]!}
+    var wednesday: [DayInterval] {return wh[4]!}
+    var thursday: [DayInterval] {return wh[5]!}
+    var friday: [DayInterval] {return wh[6]!}
+    var saturday: [DayInterval] {return wh[7]!}
+    
+    init(test: Bool = false) {
+        wh = [:]
+        wh[1] = []; wh[2] = []; wh[3] = []; wh[4] = []; wh[5] = []; wh[6] = []; wh[7] = []
+        if test {
+            wh[1] = [DayInterval(day: 0, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+            wh[2] = [DayInterval(day: 1, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+            wh[3] = [DayInterval(day: 2, start: Time(hour: "09", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "19", minute: "00"))]
+            wh[4] = [DayInterval(day: 3, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+        }
+    }
 }
 
-let wh = WorkingHours(
-    sunday: [DayInterval(day: 0, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))],
-    monday: [DayInterval(day: 1, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))],
-    tuesday: [DayInterval(day: 2, start: Time(hour: "09", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "19", minute: "00"))],
-    wednesday: [DayInterval(day: 3, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))],
-    thursday: [],
-    friday: [],
-    saturday: []
-)
+var wh = WorkingHours(test: true)
 
 enum VRState: Int {
     case pending = 0
