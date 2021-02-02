@@ -15,7 +15,7 @@ public class CustomerInt {
     @PUT
     @Path("registerApp")
     @Consumes("application/json")
-    public Response registerApp2(String body)  {
+    public Response registerApp(String body)  {
         JSONObject json = new JSONObject(body);
         String appid = json.getString("appID");
         System.out.println("Registering app customer with id: "+appid);
