@@ -38,7 +38,7 @@ public class Store implements Serializable {
     private List<Manager> managers;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Productsection> productSections;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "workinghours",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "dayInterval"))
