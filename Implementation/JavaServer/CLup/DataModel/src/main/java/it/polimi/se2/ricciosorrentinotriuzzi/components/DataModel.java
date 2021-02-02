@@ -41,6 +41,22 @@ public class DataModel {
         return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
     }
 
+    public Customer newAppCustomer(String id) {
+        Customer c;
+        c = em.find(Customer.class, id);
+        if (c == null) {
+            c = new Customer();
+            c.setId(id);
+            c.setIsAppCustomer((byte) 1);
+            em.persist(c);
+        }
+        return c;
+    }
+
+    public Customer getCustomer(String id) {
+        return em.find(Customer.class, id);
+    }
+
     /* public Chain getChains(city: String) -> [Chain]: returns all the available chains and independent stores in the city specified by the homonym parameter
     getChain(storeID: ID) -> Chain: returns the chain of the store identified by parameter storeID
     getStores(chainName: String, city: String) -> [Store]: returns all the stores belonging to the chain specified by parameter chainName and located in the city specified by the homonym parameter. The result depends on which parameters have a defined value

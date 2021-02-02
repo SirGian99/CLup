@@ -17,6 +17,7 @@
           <element id="library" level="project" name="Maven: org.eclipse.persistence:eclipselink:2.7.7" />
           <element id="library" level="project" name="Maven: org.eclipse.persistence:jakarta.persistence:2.2.3" />
           <element id="file-copy" path="$PROJECT_DIR$/mariadb-java-client-2.7.2.jar" />
+          <element id="library" level="project" name="Maven: org.json:json:20201115" />
         </element>
         <element id="javaee-facet-resources" facet="BusinessModule/ejb/EJB" />
         <element id="javaee-facet-resources" facet="DataModel/ejb/EJB" />
