@@ -1,8 +1,12 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.eclipse.persistence.annotations.ReturnInsert;
+import org.eclipse.persistence.annotations.UuidGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "lineup")
@@ -23,6 +27,8 @@ public class Lineup extends VisitRequest implements Serializable {
     private VisitRequestStatus state;
     private Timestamp dateTimeOfCreation;
     private Timestamp visitStartingTime;
+
+    public Lineup() {uuid = UUID.randomUUID().toString();}
 
     @Override
     public VisitRequestStatus getState() {
@@ -127,5 +133,15 @@ public class Lineup extends VisitRequest implements Serializable {
 
     public Boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
+    }
+
+    @Override
+    public String toString() {
+        return "Lineup{" +
+                "uuid='" + uuid + '\'' +
+                ", hfid='" + hfid + '\'' +
+                ", state=" + state +
+                ", dateTimeOfCreation=" + dateTimeOfCreation +
+                '}';
     }
 }

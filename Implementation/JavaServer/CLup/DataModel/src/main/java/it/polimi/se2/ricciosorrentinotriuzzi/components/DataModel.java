@@ -84,8 +84,11 @@ public class DataModel {
         return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
     }
 
-    public void insertRequest(VisitRequest request) {
+    public VisitRequest insertRequest(VisitRequest request) {
         em.persist(request);
+        System.out.println("New lur persisted with uuid: "+request.getUuid());
+        //TODO devi fare anche la append to queue se è una lur
+        return request;
     }
 
     public void insertCustomer(Customer c) {

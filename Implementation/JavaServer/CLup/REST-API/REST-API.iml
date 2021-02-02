@@ -19,7 +19,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="EclipseLink" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="REST-API" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>

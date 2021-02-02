@@ -2,9 +2,9 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 
 @Entity
 @Table(name = "store")
@@ -52,8 +52,7 @@ public class Store implements Serializable {
     @Column(name="uri")
     private List<String> tassAddresses;
 
-
-
+    public Store() {id = UUID.randomUUID().toString();}
 
     public String getId() {
         return id;
@@ -198,6 +197,20 @@ public class Store implements Serializable {
     }
     public void setAddress(Integer address) {
         this.address = address;
+    }
+
+    public boolean isOpenAt(LocalDateTime datetime) {
+        int dayOfWeek = datetime.getDayOfWeek().getValue();
+        for (Dayinterval di: workingHours) {
+            if (
+                    dayOfWeek == di.getDayOfTheWeek() &&
+                    datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                    datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

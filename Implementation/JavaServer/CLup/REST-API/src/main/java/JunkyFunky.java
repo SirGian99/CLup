@@ -17,6 +17,7 @@ import java.util.List;
 @Path("/JunkyFunky/")
 
 public class JunkyFunky {
+    //TODO no response.serverError ma status 500 tipo
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.components/DataModel")
     private DataModel dataModel;
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi/VisitManager")
@@ -68,8 +69,8 @@ public class JunkyFunky {
         if (numOfPeople>0){
             return Response.status(Response.Status.OK).entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
                     .type(MediaType.APPLICATION_JSON).build();
-        }else {
-            return Response.serverError().build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -84,7 +85,7 @@ public class JunkyFunky {
             return Response.status(Response.Status.OK).entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
                     .type(MediaType.APPLICATION_JSON).build();
         }else {
-            return Response.serverError().build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -93,7 +94,7 @@ public class JunkyFunky {
     @Produces(MediaType.APPLICATION_JSON)
     public Response confirmAccessRequest(@FormParam("token") String token, @FormParam("storeID") String storeID, @FormParam("numberOfPeople") String numOfPeople) {
         int numberOfP = Integer.parseInt(numOfPeople);
-        return numberOfP > 0 && visitManager.confirmAccess(token, storeID, numberOfP) ? Response.status(Response.Status.OK).build() : Response.serverError().build();
+        return numberOfP > 0 && visitManager.confirmAccess(token, storeID, numberOfP) ? Response.status(Response.Status.OK).build() : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     @POST
@@ -101,7 +102,7 @@ public class JunkyFunky {
     @Produces(MediaType.APPLICATION_JSON)
     public Response confirmExitRequest(@FormParam("token") String token, @FormParam("storeID") String storeID, @FormParam("numberOfPeople") String numOfPeople) {
         int numberOfP = Integer.parseInt(numOfPeople);
-        return numberOfP > 0 && visitManager.confirmExit(token, storeID, numberOfP) ? Response.status(Response.Status.OK).build() : Response.serverError().build();
+        return numberOfP > 0 && visitManager.confirmExit(token, storeID, numberOfP) ? Response.status(Response.Status.OK).build() : Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
     @GET

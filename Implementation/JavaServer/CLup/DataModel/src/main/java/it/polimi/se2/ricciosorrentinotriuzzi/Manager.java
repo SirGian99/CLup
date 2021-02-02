@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "manager")
@@ -20,6 +21,7 @@ public class Manager implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "managers")
     private List<Store> stores;
 
+    public Manager() {id = UUID.randomUUID().toString();}
 
     public String getId() {
         return id;
