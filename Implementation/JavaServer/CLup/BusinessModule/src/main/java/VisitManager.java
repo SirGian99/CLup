@@ -2,15 +2,8 @@ import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import javax.ejb.*;
-import javax.sound.sampled.Line;
-import java.awt.print.Book;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.Timer;
 
@@ -46,7 +39,7 @@ public class VisitManager {
 
     public boolean confirmExit(String visitToken, String storeID, int numberOfPeople) {
         boolean toReturn = dataModel.endVisit(visitToken, storeID, numberOfPeople);
-        checkReadyRequest(storeID);
+        checkNewReadyRequest(storeID);
         return toReturn;
     }
 
@@ -95,7 +88,7 @@ public class VisitManager {
     }
 
     @Asynchronous
-    private void checkReadyRequest(String storeID){
+    public void checkNewReadyRequest(String storeID){
         Store store = dataModel.getStore(storeID);
         int currentReadyOccupancy = store.getCurrentOccupancy();
         for (VisitRequest visitRequest: store.getLineups()) {
