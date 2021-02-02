@@ -21,12 +21,15 @@ struct CLupApp: App {
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     @AppStorage("deviceToken") var devToken: String = ""
     override init() {
-        //registra l'app
         super.init()
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .provisional]) { granted, error in
             guard error == nil else {return}
             DispatchQueue.main.sync { UIApplication.shared.registerForRemoteNotifications() }
+        }
+        if devToken == "" {devToken = UUID().uuidString}
+        DB.controller.register() { error in
+            //if error != nil {fatalError(error!)}
         }
     }
     

@@ -47,8 +47,8 @@ struct Time: CustomStringConvertible, Hashable {
 struct CTimeInterval {
     let startingDateTime: Date
     let duration: Duration
-    var date: DateComponents {return Calendar.current.dateComponents([.day, .month, .year], from: startingDateTime)}
-    var start: DateComponents {return Calendar.current.dateComponents([.day, .minute], from: startingDateTime)}
+    //var date: DateComponents {return Calendar.current.dateComponents([.day, .month, .year], from: startingDateTime)}
+    //var start: DateComponents {return Calendar.current.dateComponents([.day, .minute], from: startingDateTime)}
 }
 
 struct DayInterval: Hashable {
