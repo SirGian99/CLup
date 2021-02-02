@@ -2,12 +2,8 @@ package it.polimi.se2.ricciosorrentinotriuzzi.components;
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import javax.ejb.*;
 import javax.persistence.*;
-import java.awt.print.Book;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
-import java.time.temporal.TemporalAmount;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,14 +13,6 @@ public class DataModel {
     private EntityManager em;
 
     public DataModel() {}
-
-    public VisitRequest getVisitRequest(String visitRequestToken){
-        VisitRequest request = em.find(Lineup.class, visitRequestToken);
-        if (request == null){
-            request = em.find(Booking.class, visitRequestToken);
-        }
-        return request;
-    }
 
     public int checkReadyRequest(String storeID, String visitToken){
         VisitRequest request = getVisitRequest(visitToken);
@@ -120,15 +108,26 @@ public class DataModel {
         return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
     }
 
-    public VisitRequest insertRequest(VisitRequest request) {
+    public void insertRequest(VisitRequest request) {
         em.persist(request);
         System.out.println("New lur persisted with uuid: "+request.getUuid());
         //TODO devi fare anche la append to queue se è una lur
-        return request;
+    }
+
+    public void removeRequest(VisitRequest request) {
+        em.remove(request);
     }
 
     public void insertCustomer(Customer c) {
         em.persist(c);
+    }
+
+    public VisitRequest getVisitRequest(String visitRequestToken) {
+        VisitRequest request = em.find(Lineup.class, visitRequestToken);
+        if (request == null) {
+            request = em.find(Booking.class, visitRequestToken);
+        }
+        return request;
     }
 
     public Customer newAppCustomer(String id) {

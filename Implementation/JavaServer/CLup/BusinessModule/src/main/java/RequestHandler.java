@@ -26,8 +26,12 @@ public class RequestHandler {
         //TODO devi settare anche l'ete (per ora messo pezzotto)
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
         //TODO chiama VisitManager.newRequest(token)
-        lur = (Lineup) dataModel.insertRequest(lur);
+        dataModel.insertRequest(lur);
         //TODO devi fare anche la append to queue se è una lur
         return lur;
+    }
+
+    public void cancelLineup(String uuid) {
+        dataModel.removeRequest(dataModel.getVisitRequest(uuid));
     }
 }

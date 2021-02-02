@@ -5,16 +5,16 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/lineup/")
+@Path("/")
 public class LineUpInt {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.RequestHandler")
     RequestHandler rh;
 
     @POST
-    @Path("place")
+    @Path("lineup")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response lineup(String body)  {
+    public Response lineup(String body) {
         JSONObject json = new JSONObject(body);
         String customerID = json.getString("customerID");
         String storeID = json.getString("storeID");
@@ -30,11 +30,17 @@ public class LineUpInt {
             jsonVisitToken.put("uuid", lur.getUuid());
             jsonVisitToken.put("hfid", lur.getHfid());
             jsonResponse.put("visitToken",jsonVisitToken);
-            return Response.status(Response.Status.OK).entity(jsonResponse).type(MediaType.APPLICATION_JSON).build();
+            return Response.ok().entity(jsonResponse).type(MediaType.APPLICATION_JSON).build();
         } else {
             System.out.println("LUR rejected");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    @DELETE
+    @Path("lineup/{token}")
+    public Response deleteLineup(@PathParam("token") String uuid)  {
+        rh.cancelLineup(uuid);
+        return Response.ok().build();
+    }
 }

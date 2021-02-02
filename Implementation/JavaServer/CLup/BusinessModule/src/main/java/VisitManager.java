@@ -50,7 +50,7 @@ public class VisitManager {
         return toReturn;
     }
 
-    @Asynchronous
+    //@Asynchronous
     public void newRequest(String token){
         VisitRequest request = dataModel.getVisitRequest(token);
         Store store = dataModel.getVisitRequest(token).getStore();
@@ -94,7 +94,7 @@ public class VisitManager {
         dataModel.allowVisitRequest(token);
     }
 
-    @Asynchronous
+    //@Asynchronous
     private void checkReadyRequest(String storeID){
         Store store = dataModel.getStore(storeID);
         int currentReadyOccupancy = store.getCurrentOccupancy();
