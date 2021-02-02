@@ -14,20 +14,17 @@ class DB {
     static var controller = DB()
     private init(){}
     
-    func getMyRequests(completion: @escaping (LineUpRequest?, [String:BookingRequest]?, String?) -> Void) {
+    func getMyRequests(completion: @escaping (String?) -> Void) {
         //(lur, brDict, error)
         print("*** DB - \(#function) ***")
         let request = initJSONRequest(urlString: ServerRoutes.customerData(deviceToken), body: Data(), httpMethod: "GET")
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {return completion(nil,nil,"Error in \(#function). The error is:\n\(error!.localizedDescription)")}
-            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in \(#function). Invalid response!")}
-            guard responseCode == 200 else {return completion(nil,nil,"Bad response code in \(#function): \(responseCode)")}
-            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil,nil,"Error with returned data in \(#function)")}
+            guard error == nil else {return completion("Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in \(#function). Invalid response!")}
+            guard responseCode == 200 else {return completion("Bad response code in \(#function): \(responseCode)")}
+            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion("Error with returned data in \(#function)")}
             
             let brArray = jsonResponse["bookingRequests"].arrayValue
-            var lur: LineUpRequest? = nil
-            var brDict: [String:BookingRequest] = [:]
-            //TODO MANCA ANCHE IL FOR PER I BOOKING
             if jsonResponse["lineupRequest"].exists() {
                 let lurJson = jsonResponse["lineupRequest"]
                 let hfid = lurJson["visitToken"]["hfid"].stringValue
@@ -35,12 +32,80 @@ class DB {
                 let state = lurJson["state"].intValue
                 let numberOfPeople = lurJson["numberOfPeople"].intValue
                 let storeID = lurJson["storeID"].stringValue
-                // TODO  CHIAMA LA GET INFO DELLO STORE!!!!!
-                let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : Date(timeIntervalSinceNow: 600), store: store1)
+                self.getStoreFromID(storeID: storeID) { (store, error) in
+                    guard error == nil else {return completion(error!)}
+                    let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : Date(timeIntervalSinceNow: 600), store: store!)
+                    DispatchQueue.main.async { Repository.singleton.lur = lur }
+                }
             }
-            completion(lur, brDict, nil)
+            for brJson in brArray {
+                let hfid = brJson["visitToken"]["hfid"].stringValue
+                let uuid = brJson["visitToken"]["uuid"].stringValue
+                let state = brJson["state"].intValue
+                let numberOfPeople = brJson["numberOfPeople"].intValue
+                let storeID = brJson["storeID"].stringValue
+                let start = brJson["desideredTimeInterval"]["start"].stringValue
+                let duration = brJson["desideredTimeInterval"]["duration"].intValue
+                let desiredTimeInterval = CTimeInterval(startingDateTime: self.serverDateFormatter(date: start), duration: duration)
+                let sections = brJson["sections"].arrayObject! as! [String]
+                self.getStoreFromID(storeID: storeID) { (store, error) in
+                    guard error == nil else {return completion(error!)}
+                    var sectionArray: [Section] = []
+                    for sectName in sections {
+                        sectionArray.append(store!.sections.compactMap{sect in
+                            sect.name == sectName ? sect : nil
+                        }.first!)
+                    }
+                    print(sectionArray)
+                    let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sectionArray, store: store!)
+                    DispatchQueue.main.async { Repository.singleton.brs[uuid] = br }
+                }
+            }
+            completion(nil)
         }.resume()
     }
+    
+//    func getMyRequests(completion: @escaping ([String:String]?, [[String:String]]?, String?) -> Void) {
+//        //(lur, brDict, error)
+//        print("*** DB - \(#function) ***")
+//        let request = initJSONRequest(urlString: ServerRoutes.customerData(deviceToken), body: Data(), httpMethod: "GET")
+//        URLSession.shared.dataTask(with: request) { data, response, error in
+//            guard error == nil else {return completion(nil,nil,"Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+//            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in \(#function). Invalid response!")}
+//            guard responseCode == 200 else {return completion(nil,nil,"Bad response code in \(#function): \(responseCode)")}
+//            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil,nil,"Error with returned data in \(#function)")}
+//
+//            let brArray = jsonResponse["bookingRequests"].arrayValue
+//            var lurParams: [String:String]? = nil
+//            var brsParams: [[String:String]] = []
+//            //TODO MANCA ANCHE IL FOR PER I BOOKING
+//            if jsonResponse["lineupRequest"].exists() {
+//                lurParams = [:]
+//                let lurJson = jsonResponse["lineupRequest"]
+//                let hfid = lurJson["visitToken"]["hfid"].stringValue
+//                lurParams!["hfid"] = hfid
+//                let uuid = lurJson["visitToken"]["uuid"].stringValue
+//                lurParams!["uuid"] = uuid
+//                let state = lurJson["state"].intValue
+//                lurParams!["state"] = "\(state)"
+//                let numberOfPeople = lurJson["numberOfPeople"].intValue
+//                lurParams!["numberOfPeople"] = "\(numberOfPeople)"
+//                let storeID = lurJson["storeID"].stringValue
+//                lurParams!["storeID"] = storeID
+//            }
+//            for brJson in brArray {
+//                var brParams: [String:String] = [:]
+//                let hfid = brJson["visitToken"]["hfid"].stringValue
+//                brParams["hfid"] = hfid
+//                let uuid = brJson["visitToken"]["uuid"].stringValue
+//                let state = brJson["state"].intValue
+//                let numberOfPeople = brJson["numberOfPeople"].intValue
+//                let storeID = brJson["storeID"].stringValue
+//            }
+//            // TODO  CHIAMA LA GET INFO DELLO STORE!!!!!
+//            completion(lurParams, brsParams, nil)
+//        }.resume()
+//    }
 
     func register(completion: @escaping (String?) -> Void) { // (error)
         do {
@@ -180,6 +245,80 @@ class DB {
         }.resume()
     }
     
+    func getStores(chainName: String, city: String, completion: @escaping ([String:Store]?, String?) -> Void) { // (storeDict, error)
+        print("*** DB - \(#function) ***")
+        let request = initJSONRequest(urlString: ServerRoutes.stores(chain: chainName, city: city), body: Data(), httpMethod: "GET")
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {return completion(nil, "Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil, "Error in \(#function). Invalid response!")}
+            guard responseCode == 200 else {return completion(nil, "Response code != 200 in \(#function): \(responseCode)")}
+            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in \(#function)")}
+            let storeArray = jsonResponse["stores"].arrayValue
+            var storeDict: [String:Store] = [:]
+            for storeJson in storeArray {
+                let id = storeJson["id"].stringValue
+                let name = storeJson["name"].stringValue
+                let description = storeJson["description"].string
+                let currOcc = storeJson["currentOccupancy"].intValue
+                let estimatedQueueDTime = storeJson["estimatedQueueDisposalTime"].intValue
+                let addressJson = storeJson["address"]
+                let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
+                let whArray = storeJson["workingHours"].arrayValue
+                var whs = WorkingHours()
+                for whJson in whArray {
+                    let day = whJson["day"].intValue
+                    let start = whJson["start"].stringValue
+                    let end = whJson["end"].stringValue
+                    (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+                }
+                let sectionsArray = storeJson["sections"].arrayValue
+                var sections: [Section] = []
+                for sectJson in sectionsArray {
+                    let id = sectJson["id"].stringValue
+                    let name = sectJson["name"].stringValue
+                    sections.append(Section(id: id, name: name))
+                }
+                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: nil)
+                storeDict[id] = store
+            }
+            completion(storeDict, nil)
+        }.resume()
+    }
+    
+    func getStoreFromID(storeID: String, completion: @escaping (Store?, String?) -> Void) { // (store, error)
+        print("*** DB - \(#function) ***")
+        let request = initJSONRequest(urlString: ServerRoutes.store(id: storeID), body: Data(), httpMethod: "GET")
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil else {return completion(nil, "Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil, "Error in \(#function). Invalid response!")}
+            guard responseCode == 200 else {return completion(nil, "Response code != 200 in \(#function): \(responseCode)")}
+            guard let data = data, let storeJson = try? JSON(data: data) else {return completion(nil, "Error with returned data in \(#function)")}
+            let id = storeJson["id"].stringValue
+            let name = storeJson["name"].stringValue
+            let description = storeJson["description"].string
+            let currOcc = storeJson["currentOccupancy"].intValue
+            let estimatedQueueDTime = storeJson["estimatedQueueDisposalTime"].intValue
+            let addressJson = storeJson["address"]
+            let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
+            let whArray = storeJson["workingHours"].arrayValue
+            var whs = WorkingHours()
+            for whJson in whArray {
+                let day = whJson["day"].intValue
+                let start = whJson["start"].stringValue
+                let end = whJson["end"].stringValue
+                (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+            }
+            let sectionsArray = storeJson["sections"].arrayValue
+            var sections: [Section] = []
+            for sectJson in sectionsArray {
+                let id = sectJson["id"].stringValue
+                let name = sectJson["name"].stringValue
+                sections.append(Section(id: id, name: name))
+            }
+            let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: nil)
+            completion(store, nil)
+        }.resume()
+    }
     
     private func initJSONRequest(urlString: String, body: Data, httpMethod: String = "POST") -> URLRequest {
         var request = URLRequest(url: URL(string: urlString)!)
@@ -194,7 +333,7 @@ class DB {
     private func serverDateFormatter(date: String) -> Date {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         if let parsedDate = formatter.date(from: date) {
             return parsedDate
         }
