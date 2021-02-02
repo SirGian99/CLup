@@ -15,6 +15,32 @@ public class DataModel {
         return em.find(Store.class, storeID).getName();
     }
 
+    public void insertNewStore(String name, String chain, int currentOcc, int maxOcc, double safetyTh, String managerUsername){
+
+        Store store = new Store();
+        store.setName(name);
+        store.setChain(em.find(Chain.class, chain));
+        store.setCurrentOccupancy(currentOcc);
+        store.setMaximumOccupancy(maxOcc);
+        store.addManager(getManager(managerUsername));
+        store.setSafetyThreshold(safetyTh);
+        em.persist(store);
+    }
+
+    public void addManager(String storeID, String managerUser){
+        Store store = em.find(Store.class, storeID);
+        Manager manager = getManager(managerUser);
+        store.addManager(manager);
+    }
+
+    public Store getStore(String storeID){
+        return em.find(Store.class, storeID);
+    }
+
+    public Manager getManager(String managerUsername){
+        return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
+    }
+
     /* public Chain getChains(city: String) -> [Chain]: returns all the available chains and independent stores in the city specified by the homonym parameter
     getChain(storeID: ID) -> Chain: returns the chain of the store identified by parameter storeID
     getStores(chainName: String, city: String) -> [Store]: returns all the stores belonging to the chain specified by parameter chainName and located in the city specified by the homonym parameter. The result depends on which parameters have a defined value
