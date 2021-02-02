@@ -63,7 +63,7 @@ public class JunkyFunky {
 
     @GET
     @Path("store/{storeID}/generalInfo")
-    @Produces( "application/json" )
+    @Produces("application/json")
     public StoreInfo getStoreGeneralInfo(@PathParam("storeID") String storeID) {
         Chain chain = dataModel.getChain(storeID);
         Store store = dataModel.getStore(storeID);

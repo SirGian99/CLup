@@ -6,8 +6,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "lineup")
-
-public class Lineup implements Serializable {
+public class Lineup extends VisitRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -23,6 +22,8 @@ public class Lineup implements Serializable {
     private Integer numberOfPeople;
     private Integer state;
     private Timestamp dateTimeOfCreation;
+
+    public Lineup(){}
 
     public String getUuid() {
         return uuid;

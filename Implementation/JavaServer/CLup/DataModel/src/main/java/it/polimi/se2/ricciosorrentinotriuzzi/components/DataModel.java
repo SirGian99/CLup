@@ -8,15 +8,13 @@ public class DataModel {
     @PersistenceContext(unitName = "PCLup")
     private EntityManager em;
 
-    public DataModel() {
-    }
+    public DataModel() {}
 
     public String getStoreName(String storeID){
         return em.find(Store.class, storeID).getName();
     }
 
     public void insertNewStore(String name, String chain, int currentOcc, int maxOcc, double safetyTh, String managerUsername){
-
         Store store = new Store();
         store.setName(name);
         store.setChain(em.find(Chain.class, chain));
@@ -27,7 +25,7 @@ public class DataModel {
         em.persist(store);
     }
 
-    public void addManager(String storeID, String managerUser){
+    public void addManager(String storeID, String managerUser) {
         Store store = em.find(Store.class, storeID);
         Manager manager = getManager(managerUser);
         store.addManager(manager);
@@ -39,6 +37,14 @@ public class DataModel {
 
     public Manager getManager(String managerUsername){
         return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
+    }
+
+    public void insertRequest(VisitRequest request) {
+        em.persist(request);
+    }
+
+    public void insertCustomer(Customer c) {
+        em.persist(c);
     }
 
     public Customer newAppCustomer(String id) {
