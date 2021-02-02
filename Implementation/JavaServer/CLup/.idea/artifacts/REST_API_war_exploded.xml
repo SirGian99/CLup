@@ -22,6 +22,9 @@
           <element id="library" level="project" name="Maven: org.eclipse.persistence:eclipselink:2.7.7" />
           <element id="library" level="project" name="Maven: org.eclipse.persistence:jakarta.persistence:2.2.3" />
           <element id="library" level="project" name="Maven: org.eclipse.persistence:commonj.sdo:2.1.1" />
+          <element id="archive" name="BusinessModule-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="BusinessModule" />
+          </element>
         </element>
       </element>
       <element id="directory" name="META-INF">

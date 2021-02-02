@@ -31,20 +31,20 @@ public class Store implements Serializable {
     private List<Booking> bookings;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lineup> lineups;
-    @ManyToMany( fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "storemanager",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "manager"))
     private List<Manager> managers;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Productsection> productSections;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "workinghours",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "dayInterval"))
     private List<Dayinterval> workingHours;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name="tassaddresses",
             joinColumns=@JoinColumn(name="store")

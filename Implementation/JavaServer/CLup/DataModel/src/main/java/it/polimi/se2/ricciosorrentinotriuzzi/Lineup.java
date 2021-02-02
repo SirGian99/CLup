@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "lineup")
 
-public class Lineup implements Serializable {
+public class Lineup extends VisitRequest implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -21,8 +21,41 @@ public class Lineup implements Serializable {
     private Customer customer;
     private Timestamp estimatedTimeOfEntrance;
     private Integer numberOfPeople;
-    private Integer state;
+    private VisitRequestStatus state;
     private Timestamp dateTimeOfCreation;
+    private Timestamp visitStartingTime;
+
+    @Override
+    public VisitRequestStatus getState() {
+        return state;
+    }
+
+    @Override
+    public void setState(VisitRequestStatus state) {
+        this.state = state;
+    }
+
+    @Override
+    public Timestamp getVisitStartingTime() {
+        return visitStartingTime;
+    }
+
+    @Override
+    public void setVisitStartingTime(Timestamp visitStartingTime) {
+        this.visitStartingTime = visitStartingTime;
+    }
+
+    @Override
+    public Timestamp getVisitCompletionTime() {
+        return visitCompletionTime;
+    }
+
+    @Override
+    public void setVisitCompletionTime(Timestamp visitCompletionTime) {
+        this.visitCompletionTime = visitCompletionTime;
+    }
+
+    private Timestamp visitCompletionTime;
 
     public String getUuid() {
         return uuid;
@@ -64,17 +97,36 @@ public class Lineup implements Serializable {
         this.numberOfPeople = numberOfPeople;
     }
 
-    public Integer getState() {
+    /*public VisitRequestStatus getState() {
         return state;
     }
-    public void setState(Integer state) {
+    public void setState(VisitRequestStatus state) {
         this.state = state;
-    }
+    }*/
 
     public Timestamp getDateTimeOfCreation() {
         return dateTimeOfCreation;
     }
     public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
         this.dateTimeOfCreation = dateTimeOfCreation;
+    }
+    public Boolean isPending() {
+        return (state == VisitRequestStatus.PENDING);
+    }
+
+    public Boolean isReady() {
+        return (state == VisitRequestStatus.READY);
+    }
+
+    public Boolean isFulfilled() {
+        return (state == VisitRequestStatus.FULFILLED);
+    }
+
+    public Boolean isCompleted() {
+        return (state == VisitRequestStatus.COMPLETED);
+    }
+
+    public Boolean isActive() {
+        return (state != VisitRequestStatus.COMPLETED);
     }
 }

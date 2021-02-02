@@ -21,7 +21,7 @@ public class Booking extends VisitRequest implements Serializable {
     @JoinColumn(name = "appCustomer")
     private Customer appCustomer;
     private Integer numberOfPeople;
-    private Integer state;
+    private VisitRequestStatus state;
     private Timestamp dateTimeOfCreation;
     private Timestamp desiredStartingTime;
     private Time desiredDuration;
@@ -65,10 +65,10 @@ public class Booking extends VisitRequest implements Serializable {
     }
 
 
-    public Integer getState() {
+    public VisitRequestStatus getState() {
         return state;
     }
-    public void setState(Integer state) {
+    public void setState(VisitRequestStatus state) {
         this.state = state;
     }
 
@@ -112,4 +112,24 @@ public class Booking extends VisitRequest implements Serializable {
         return visitCompletionTime;
     }
     public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
+
+    public Boolean isPending() {
+        return (state == VisitRequestStatus.PENDING);
+    }
+
+    public Boolean isReady() {
+        return (state == VisitRequestStatus.READY);
+    }
+
+    public Boolean isFulfilled() {
+        return (state == VisitRequestStatus.FULFILLED);
+    }
+
+    public Boolean isCompleted() {
+        return (state == VisitRequestStatus.COMPLETED);
+    }
+
+    public Boolean isActive() {
+        return (state != VisitRequestStatus.COMPLETED);
+    }
 }

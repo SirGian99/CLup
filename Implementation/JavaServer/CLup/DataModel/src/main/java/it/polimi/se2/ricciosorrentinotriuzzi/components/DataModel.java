@@ -2,6 +2,8 @@ package it.polimi.se2.ricciosorrentinotriuzzi.components;
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import javax.ejb.*;
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Stateless
 public class DataModel {
@@ -9,6 +11,49 @@ public class DataModel {
     private EntityManager em;
 
     public DataModel() {
+    }
+
+    public VisitRequest getVisitRequest(String visitRequestToken){
+        VisitRequest request = em.find(Lineup.class, visitRequestToken);
+        if (request == null){
+            request = em.find(Booking.class, visitRequestToken);
+        }
+        return request;
+    }
+
+    public int checkReadyRequest(String storeID, String visitToken){
+        VisitRequest request = getVisitRequest(visitToken);
+        //System.out.println("checkreadyReq: " + request.isReady() +" status: " + request.getState()+"\n");
+        return  (request != null && request.getStore().getId().equals(storeID) && request.isReady()) ? request.getNumberOfPeople() : 0;
+    }
+
+    public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
+        VisitRequest request = getVisitRequest(visitToken);
+        Store store = request.getStore();
+        if (store.getId().equals(storeID)) {
+            request.setVisitStartingTime(Timestamp.valueOf(LocalDateTime.now()));
+            request.setState(VisitRequestStatus.FULFILLED);
+            request.setNumberOfPeople(numberOfPeople);
+            store.setCurrentOccupancy(store.getCurrentOccupancy() + numberOfPeople);
+            return true;
+        }
+        return false;
+    }
+    public int checkFulfilledRequest(String storeID, String visitToken){
+        VisitRequest request = getVisitRequest(visitToken);
+        return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
+    }
+
+    public boolean endVisit(String visitToken, String storeID, int numberOfPeople){
+        VisitRequest request = getVisitRequest(visitToken);
+        Store store = request.getStore();
+        if (store.getId().equals(storeID)) {
+            request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
+            request.setState(VisitRequestStatus.COMPLETED);
+            store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
+            return true;
+        }
+        return false;
     }
 
     public String getStoreName(String storeID){
