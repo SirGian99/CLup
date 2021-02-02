@@ -73,5 +73,4 @@ public class AccessControlInt {
         int numberOfPeople = json.getInt("numberOfPeople");
         return numberOfPeople > 0 && visitManager.confirmExit(token, storeID, numberOfPeople) ? Response.status(Response.Status.OK).build() : Response.serverError().build();
     }
-
 }
