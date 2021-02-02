@@ -16,8 +16,7 @@ public class DataModel {
     @PersistenceContext(unitName = "PCLup")
     private EntityManager em;
 
-    public DataModel() {
-    }
+    public DataModel() {}
 
     public VisitRequest getVisitRequest(String visitRequestToken){
         VisitRequest request = em.find(Lineup.class, visitRequestToken);
@@ -97,7 +96,6 @@ public class DataModel {
     }
 
     public void insertNewStore(String name, String chain, int currentOcc, int maxOcc, double safetyTh, String managerUsername){
-
         Store store = new Store();
         store.setName(name);
         store.setChain(em.find(Chain.class, chain));
@@ -108,7 +106,7 @@ public class DataModel {
         em.persist(store);
     }
 
-    public void addManager(String storeID, String managerUser){
+    public void addManager(String storeID, String managerUser) {
         Store store = em.find(Store.class, storeID);
         Manager manager = getManager(managerUser);
         store.addManager(manager);
@@ -120,6 +118,17 @@ public class DataModel {
 
     public Manager getManager(String managerUsername){
         return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
+    }
+
+    public VisitRequest insertRequest(VisitRequest request) {
+        em.persist(request);
+        System.out.println("New lur persisted with uuid: "+request.getUuid());
+        //TODO devi fare anche la append to queue se è una lur
+        return request;
+    }
+
+    public void insertCustomer(Customer c) {
+        em.persist(c);
     }
 
     public Customer newAppCustomer(String id) {

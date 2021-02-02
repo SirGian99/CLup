@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.sql.*;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "booking")
@@ -32,6 +33,8 @@ public class Booking extends VisitRequest implements Serializable {
                 joinColumns = @JoinColumn(name = "booking"),
                 inverseJoinColumns = @JoinColumn(name = "productSection"))
     private List<Productsection> productSections;
+
+    public Booking() {uuid = UUID.randomUUID().toString();}
 
     public String getUuid() {
         return uuid;

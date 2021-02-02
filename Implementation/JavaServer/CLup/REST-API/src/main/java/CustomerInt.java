@@ -1,5 +1,4 @@
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
-import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 import org.json.JSONObject;
 
 import javax.ejb.EJB;
@@ -9,8 +8,8 @@ import javax.ws.rs.core.*;
 @Path("/customer/")
 
 public class CustomerInt {
-    @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.components/DataModel")
-    private DataModel dataModel;
+    @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.CustomerController")
+    private CustomerController cc;
 
     @PUT
     @Path("registerApp")
@@ -19,13 +18,13 @@ public class CustomerInt {
         JSONObject json = new JSONObject(body);
         String appid = json.getString("appID");
         System.out.println("Registering app customer with id: "+appid);
-        Customer c = dataModel.newAppCustomer(appid);
+        Customer c = cc.registerApp(appid);
         if (c != null) {
             System.out.println("Success while registering appcustomer");
             return Response.ok().build();
         } else {
             System.out.println("Error while registering appcustomer");
-            return Response.serverError().build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

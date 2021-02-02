@@ -24,12 +24,11 @@ public class AccessControlInt {
         String storeID = json.getString("storeID");
         //System.out.println(token + "\npoi\n" + storeID);
         int numOfPeople = visitManager.validateAccess(token, storeID);
-        //System.out.println("Ho ricevuto la richiesta, num:" + numOfPeople);
         if (numOfPeople>0){
-            return Response.status(Response.Status.OK).entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
+            return Response.ok().entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
                     .type(MediaType.APPLICATION_JSON).build();
         }else {
-            return Response.serverError().build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
 
