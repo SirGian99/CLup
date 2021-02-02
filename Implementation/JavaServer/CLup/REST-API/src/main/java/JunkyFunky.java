@@ -21,8 +21,7 @@ public class JunkyFunky {
     @Path("manager/{manager}")
     @Produces("text/plain")
     public String getManagerByUser(@PathParam("manager") String manager) {
-        //return storeID;
-        return dataModel.getManager(manager).getName();
+        return "Username: " + manager + "Name: " + dataModel.getManager(manager).getName();
     }
 
     @GET
@@ -49,6 +48,7 @@ public class JunkyFunky {
     @Path("store/{storeName}/chain/{chain}/manager/{managerUsername}")
     @Produces("text/plain")
     public String insertStore(@PathParam("storeName") String storeName, @PathParam("chain") String chain, @PathParam("managerUsername") String managerUsername){
+        System.out.println(storeName + chain + managerUsername);
         dataModel.insertNewStore(storeName, chain, 1,2,3, managerUsername);
         return "OK!";
     }
