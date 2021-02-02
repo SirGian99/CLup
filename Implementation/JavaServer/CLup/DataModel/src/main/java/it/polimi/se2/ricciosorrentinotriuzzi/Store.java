@@ -3,6 +3,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -30,7 +31,7 @@ public class Store implements Serializable {
     private List<Booking> bookings;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lineup> lineups;
-    @ManyToMany
+    @ManyToMany( fetch = FetchType.EAGER)
     @JoinTable(name = "storemanager",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "manager"))
@@ -159,9 +160,13 @@ public class Store implements Serializable {
     public List<Manager> getManagers() {
         return managers;
     }
-    public void setManagers(List<Manager> managers) {
-        this.managers = managers;
-    }
+    public void addManager(Manager manager) {
+        if (this.managers == null) {
+            this.managers = new LinkedList<>();
+        }
+        this.managers.add(manager);
+        manager.addStore(this);
+        }
 
 
     public List<Productsection> getProductSections() {
