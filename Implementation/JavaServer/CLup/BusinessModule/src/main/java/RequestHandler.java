@@ -4,8 +4,11 @@ import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 import javax.ejb.*;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -45,14 +48,16 @@ public class RequestHandler {
             return null;
         }
         Lineup lur = new Lineup();
-        lur.setCustomer(c); //aggiorna entrambi i lati della relazione
+        System.out.println("Now:" + Timestamp.valueOf(LocalDateTime.now()) +"\nEstimated queue disposal time: " + dataModel.getQueueDisposalTime(storeID));
+        System.out.println("Avg.dur. dello store: " + dataModel.getStore(storeID).getAverageVisitDuration().getTime());
+        lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID).toLocalDateTime().plus(Duration.ofNanos(dataModel.getStore(storeID).getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
+        lur.setCustomer(c);
         lur.setStore(s);
         lur.setNumberOfPeople(numberOfPeople);
         lur.setDateTimeOfCreation(Timestamp.valueOf(now));
         lur.setState(VisitRequestStatus.PENDING);
         lur.setHfid("L-" +(char)( Integer.parseInt(lur.getDateTimeOfCreation().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(lur.getUuid().substring(4, 8), 16) % 999));
         //TODO devi settare anche l'ete (per ora messo pezzotto)
-        lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
         dataModel.insertRequest(lur);
         visitManager.newRequest(lur);
         //TODO devi fare anche la append to queue se è una lur
@@ -74,8 +79,8 @@ public class RequestHandler {
         if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {
             System.out.println("Lo store è chiuso nell'orario selezionato");
             return null;}
-        //|| desiredStart.before(Timestamp.from(Instant.now()))
-        //check sulla current queue disp time
+        if(desiredStart.before(dataModel.getQueueDisposalTime(storeID)))
+            return null;
 
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
         List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
