@@ -1,15 +1,9 @@
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import it.polimi.se2.ricciosorrentinotriuzzi.Store;
-
-import it.polimi.se2.ricciosorrentinotriuzzi.*;
-import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.json.JSONObject;
 
 @Path("/")
 public class StoreInfoInt {
@@ -26,21 +20,25 @@ public class StoreInfoInt {
     @GET
     @Path("store/{storeID}/generalInfo")
     @Produces("application/json")
-    public StoreInfo getStoreGeneralInfo(@PathParam("storeID") String storeID) {
-        return ssh.getStoreGeneralInfo(storeID);
+    public Response getStoreGeneralInfo(@PathParam("storeID") String storeID) {
+        JSONObject jsonResponse = ssh.getStoreGeneralInfo(storeID);
+        return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
 
     @GET
     @Path("chainstore")
     @Produces("application/json")
-    public ChainsAndAutonomousStores getChainsAndAutonomousStores(@QueryParam("city") String city) {
-        return ssh.getChainsAndAutonomousStores(city);
+    public Response getChainsAndAutonomousStores(@QueryParam("city") String city) {
+        JSONObject jsonResponse = ssh.getChainsAndAutonomousStores(city);
+        return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
+
 
     @GET
     @Path("chain/{name}/stores")
     @Produces("application/json")
-    public Stores getChainStores(@PathParam("name") String chain, @QueryParam("city") String city) {
-        return ssh.getChainStores(chain, city);
+    public Response getChainStores(@PathParam("name") String chain, @QueryParam("city") String city) {
+        JSONObject jsonResponse = ssh.getChainStores(chain, city);
+        return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
 }

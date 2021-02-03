@@ -1,5 +1,8 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -45,6 +48,13 @@ public class Chain implements Serializable {
 
     public List<Store> storeList() {
         return stores;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("description", getDescription());
+        return json;
     }
 
 
