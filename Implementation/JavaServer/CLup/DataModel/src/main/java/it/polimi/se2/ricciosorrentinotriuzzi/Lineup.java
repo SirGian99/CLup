@@ -135,7 +135,7 @@ public class Lineup extends VisitRequest implements Serializable {
         jsonVisitToken.put("uuid", getUuid());
         jsonVisitToken.put("hfid", getHfid());
         json.put("visitToken",jsonVisitToken);
-        json.put("numberOfPeople", numberOfPeople);
+        json.put("numberOfPeople", getNumberOfPeople());
         return json;
     }
 }

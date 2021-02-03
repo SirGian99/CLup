@@ -1,5 +1,8 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Duration;
@@ -244,6 +247,28 @@ public class Store implements Serializable {
             }
         }
         return false;
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        if(getAddress() != null)
+            json.put("address", getAddress().toJson());
+        json.put("name", getName());
+        json.put("description", getDescription());
+        if(getChain() != null)
+            json.put("chaiName", getChain());
+        json.put("currentOccupancy", getCurrentOccupancy());
+        json.put("maximumOccupancy", getMaximumOccupancy());
+        json.put("safetyThreshold", getSafetyThreshold());
+        JSONArray productSections = new JSONArray();
+        for (Productsection ps: getProductSections())
+            productSections.put(ps.toJson());
+        json.put("productSections", productSections);
+        JSONArray workingHours = new JSONArray();
+        for (Dayinterval di : getWorkingHours())
+            workingHours.put(di.toJson());
+        json.put("workingHours", workingHours);
+        return json;
     }
 
 }

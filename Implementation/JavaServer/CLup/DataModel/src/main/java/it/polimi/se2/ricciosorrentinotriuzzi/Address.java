@@ -1,5 +1,7 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -74,5 +76,16 @@ public class Address implements Serializable {
     }
     public void setStore(Store store) {
         this.store = store;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("id", getId());
+        json.put("streetName", getStreetName());
+        json.put("streetNumber", getStreetNumber());
+        json.put("postalCode", getPostalCode());
+        json.put("city", getCity());
+        json.put("country", getId());
+        return json;
     }
 }
