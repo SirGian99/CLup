@@ -43,7 +43,7 @@ public class StoreStatusHandler {
              }
         }
         json.put("chains", chains);
-        json.put("stores", stores);
+        json.put("autonomousStores", stores);
         return json;
     }
 
