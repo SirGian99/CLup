@@ -256,7 +256,7 @@ public class Store implements Serializable {
         json.put("name", getName());
         json.put("description", getDescription());
         if(getChain() != null)
-            json.put("chaiName", getChain());
+            json.put("chainName", getChain().getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
         json.put("safetyThreshold", getSafetyThreshold());

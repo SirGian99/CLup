@@ -48,7 +48,7 @@ public class RequestHandler {
         //TODO devi settare anche l'ete (per ora messo pezzotto)
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
         dataModel.insertRequest(lur);
-        visitManager.newRequest(lur.getUuid());
+        visitManager.newRequest(lur);
         //TODO devi fare anche la append to queue se è una lur
         return lur;
     }
@@ -65,12 +65,14 @@ public class RequestHandler {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
-        if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {return null;}
+        if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {
+            System.out.println("Lo store è chiuso nell'orario selezionato");
+            return null;}
         //|| desiredStart.before(Timestamp.from(Instant.now()))
         //check sulla current queue disp time
 
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
-        List<Booking> overlappingBookings = dataModel.getBookings(customerID,desiredStart,end);
+        List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
         if (!overlappingBookings.isEmpty()) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
@@ -90,7 +92,7 @@ public class RequestHandler {
         //TODO check sulle occupancy...
         //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(br);
-        visitManager.newRequest(br.getUuid());
+        visitManager.newRequest(br);
         return br;
     }
 

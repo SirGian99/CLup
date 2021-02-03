@@ -28,7 +28,7 @@ public class DataModel {
             request.setState(VisitRequestStatus.FULFILLED);
             request.setNumberOfPeople(numberOfPeople);
             store.setCurrentOccupancy(store.getCurrentOccupancy() + numberOfPeople);
-            if (request instanceof Booking) {
+            if (request.isBooking()) {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
@@ -41,6 +41,7 @@ public class DataModel {
     }
 
     public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
+        System.out.println("Store ID: " + storeID);
         Store store = em.find(Store.class, storeID);
         LinkedList<Booking> toReturn= new LinkedList<>();
             System.out.println("start: " + start + " end" + end);
@@ -88,7 +89,7 @@ public class DataModel {
             request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.COMPLETED);
             store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
-            if (request instanceof Booking) {
+            if (request.isBooking()) {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
@@ -131,19 +132,21 @@ public class DataModel {
 
     public void insertRequest(VisitRequest request) {
         em.persist(request);
-        System.out.println("New lur persisted with uuid: "+request.getUuid());
+        System.out.println("New request to persist with uuid: "+request.getUuid());
         //TODO devi fare anche la append to queue se è una lur
     }
 
     public void removeRequest(VisitRequest request) {
-        if (request instanceof Lineup) {
-            request.getCustomer().getLineups().remove(request);
-            request.getStore().getLineups().remove(request);
-        } else if (request instanceof Booking) {
-            request.getCustomer().getBookings().remove(request);
-            request.getStore().getBookings().remove(request);
+        if (request!=null) {
+            if (request.isBooking()) {
+                request.getCustomer().getBookings().remove(request);
+                request.getStore().getBookings().remove(request);
+            } else {
+                request.getCustomer().getLineups().remove(request);
+                request.getStore().getLineups().remove(request);
+            }
+            em.remove(request);
         }
-        em.remove(request);
     }
 
     public void insertCustomer(Customer c) {

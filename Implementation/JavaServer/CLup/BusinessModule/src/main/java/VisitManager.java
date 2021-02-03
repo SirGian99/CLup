@@ -5,6 +5,7 @@ import javax.ejb.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.Timer;
 
@@ -40,6 +41,8 @@ public class VisitManager {
 
     public int validateExit(String visitToken, String storeID){
         VisitRequest request = dataModel.getVisitRequest(visitToken);
+        //System.out.println(request.getHfid());
+        //System.out.println(request.getStore());
         return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
     }
 
@@ -49,10 +52,55 @@ public class VisitManager {
         return toReturn;
     }
 
+//    @Asynchronous
+//    public void newRequest(String token){
+//        System.out.println("NEW REQUEST! UUID: " + token);
+//
+//        VisitRequest request = dataModel.getVisitRequest(token);
+//        Store store = dataModel.getVisitRequest(token).getStore();
+//        int currentReadyOccupancy = store.getCurrentOccupancy();
+//        for (VisitRequest visitRequest: store.getLineups()) {
+//            if (visitRequest.isReady())
+//                currentReadyOccupancy += visitRequest.getNumberOfPeople();
+//        }
+//        for (VisitRequest visitRequest: store.getBookings()) {
+//            if (visitRequest.isReady())
+//                currentReadyOccupancy += visitRequest.getNumberOfPeople();
+//        }
+//
+//        if(request.isBooking()){
+//            System.out.println("Parto!");
+//            Date date = ((Booking) request).getDesiredStartingTime();
+//            Timer timer = new Timer();
+//            int finalCurrentReadyOccupancy = currentReadyOccupancy;
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
+//                    for (Productsection section : ((Booking)request).getProductSections()) {
+//                        if(section.getCurrentOccupancy() +
+//                                request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
+//                                section.getMaximumOccupancy())
+//                            return;
+//                    }
+//                    System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
+//                    if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
+//                        setReadyRequest(token);
+//                    }
+//                }
+//            }, date);
+//        }
+//        else {
+//            if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
+//                setReadyRequest(token); ///TODO controlla che si possano passare
+//            }
+//        }
+//    }
+
     @Asynchronous
-    public void newRequest(String token){
-        VisitRequest request = dataModel.getVisitRequest(token);
-        Store store = dataModel.getVisitRequest(token).getStore();
+    public void newRequest(VisitRequest request){
+        System.out.println("NEW REQUEST! UUID: " + request.getUuid());
+        Store store = request.getStore();
         int currentReadyOccupancy = store.getCurrentOccupancy();
         for (VisitRequest visitRequest: store.getLineups()) {
             if (visitRequest.isReady())
@@ -63,31 +111,35 @@ public class VisitManager {
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
 
-        if(request instanceof Booking){
+        if(request.isBooking()){
+            System.out.println("Parto!");
             Date date = ((Booking) request).getDesiredStartingTime();
             Timer timer = new Timer();
             int finalCurrentReadyOccupancy = currentReadyOccupancy;
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
                     for (Productsection section : ((Booking)request).getProductSections()) {
                         if(section.getCurrentOccupancy() +
                                 request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
                                 section.getMaximumOccupancy())
                             return;
                     }
+                    System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
                     if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
-                        setReadyRequest(token);
+                        setReadyRequest(request.getUuid());
                     }
                 }
             }, date);
         }
-        else if (request instanceof Lineup) {
+        else {
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
-                setReadyRequest(token); ///TODO controlla che si possano passare
+                setReadyRequest(request.getUuid()); ///TODO controlla che si possano passare
             }
         }
     }
+
 
     private void setReadyRequest(String token){
         dataModel.allowVisitRequest(token);

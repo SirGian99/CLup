@@ -33,7 +33,7 @@ public class LineUpInt {
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
             System.out.println("LUR rejected");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
 
