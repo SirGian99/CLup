@@ -14,8 +14,7 @@ class DB {
     static var controller = DB()
     private init(){}
     
-    func getMyRequests(completion: @escaping (String?) -> Void) {
-        //(lur, brDict, error)
+    func getMyRequests(completion: @escaping (String?) -> Void) { //(error)
         print("*** DB - \(#function) ***")
         let request = initJSONRequest(urlString: ServerRoutes.customerData(deviceToken), body: Data(), httpMethod: "GET")
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -24,9 +23,9 @@ class DB {
             guard responseCode == 200 else {return completion("Bad response code in \(#function): \(responseCode)")}
             guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion("Error with returned data in \(#function)")}
             
+            let lurJson = jsonResponse["lineupRequests"].arrayValue.first
             let brArray = jsonResponse["bookingRequests"].arrayValue
-            if jsonResponse["lineupRequest"].exists() {
-                let lurJson = jsonResponse["lineupRequest"]
+            if let lurJson = lurJson {
                 let hfid = lurJson["visitToken"]["hfid"].stringValue
                 let uuid = lurJson["visitToken"]["uuid"].stringValue
                 let state = lurJson["state"].intValue
@@ -107,10 +106,10 @@ class DB {
 //        }.resume()
 //    }
 
-    func register(completion: @escaping (String?) -> Void) { // (error)
+    func register(token: String, completion: @escaping (String?) -> Void) { // (error)
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["appID":deviceToken]
+            let parameters: [String: String] = ["appID":token]
             let request = initJSONRequest(urlString: ServerRoutes.registerApp, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in \(#function). The error is:\n\(error!.localizedDescription)")}
@@ -155,10 +154,14 @@ class DB {
     func booking(store: Store, sections: [Section], numberOfPeople: Int, desiredTimeInterval: CTimeInterval, completion: @escaping (BookingRequest?, String?) -> Void) { // (br, error)
         do {
             print("*** DB - \(#function) ***")
+//            let timeIntervalDict: [String:String] = [
+//                "date":serverDateFormatter(date: desiredTimeInterval.startingDateTime),
+//                "start":serverTimeFormatter(date: desiredTimeInterval.startingDateTime),
+//                "duration":"\(desiredTimeInterval.duration)"
+//            ]
             let timeIntervalDict: [String:String] = [
-                "date":serverDateFormatter(date: desiredTimeInterval.startingDateTime),
-                "start":serverTimeFormatter(date: desiredTimeInterval.startingDateTime),
-                "duration":"\(desiredTimeInterval.duration)"
+                "start":serverDateTimeFormatter(date: desiredTimeInterval.startingDateTime),
+                "duration":durationFormatter(d: desiredTimeInterval.duration)
             ]
             let sectionsIDs: [String] = sections.map {section in section.id}
             let parameters: [String: Any] = [
@@ -166,7 +169,7 @@ class DB {
                 "numberOfPeople":"\(numberOfPeople)",
                 "customerID":deviceToken,
                 "desiredTimeInterval":timeIntervalDict,
-                "sectionIDs":sectionsIDs,
+                "sectionsIDs":sectionsIDs,
                 "alternativesDesired":"0"
             ]
             let request = initJSONRequest(urlString: ServerRoutes.booking, body: try JSONSerialization.data(withJSONObject: parameters))
@@ -226,10 +229,10 @@ class DB {
                 let whArray = storeJson["workingHours"].arrayValue
                 var whs = WorkingHours()
                 for whJson in whArray {
-                    let day = whJson["day"].intValue
+                    let day = whJson["dayOfTheWeek"].intValue
                     let start = whJson["start"].stringValue
                     let end = whJson["end"].stringValue
-                    (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+                    (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
                 }
                 let sectionsArray = storeJson["sections"].arrayValue
                 var sections: [Section] = []
@@ -245,14 +248,14 @@ class DB {
         }.resume()
     }
     
-    func getStores(chainName: String, city: String, completion: @escaping ([String:Store]?, String?) -> Void) { // (storeDict, error)
+    func getStores(chain: Chain, city: String, completion: @escaping (String?) -> Void) { // (error)
         print("*** DB - \(#function) ***")
-        let request = initJSONRequest(urlString: ServerRoutes.stores(chain: chainName, city: city), body: Data(), httpMethod: "GET")
+        let request = initJSONRequest(urlString: ServerRoutes.stores(chain: chain.name, city: city), body: Data(), httpMethod: "GET")
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {return completion(nil, "Error in \(#function). The error is:\n\(error!.localizedDescription)")}
-            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil, "Error in \(#function). Invalid response!")}
-            guard responseCode == 200 else {return completion(nil, "Response code != 200 in \(#function): \(responseCode)")}
-            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in \(#function)")}
+            guard error == nil else {return completion("Error in \(#function). The error is:\n\(error!.localizedDescription)")}
+            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in \(#function). Invalid response!")}
+            guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
+            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion("Error with returned data in \(#function)")}
             let storeArray = jsonResponse["stores"].arrayValue
             var storeDict: [String:Store] = [:]
             for storeJson in storeArray {
@@ -266,10 +269,10 @@ class DB {
                 let whArray = storeJson["workingHours"].arrayValue
                 var whs = WorkingHours()
                 for whJson in whArray {
-                    let day = whJson["day"].intValue
+                    let day = whJson["dayOfTheWeek"].intValue
                     let start = whJson["start"].stringValue
                     let end = whJson["end"].stringValue
-                    (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+                    (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
                 }
                 let sectionsArray = storeJson["sections"].arrayValue
                 var sections: [Section] = []
@@ -278,10 +281,10 @@ class DB {
                     let name = sectJson["name"].stringValue
                     sections.append(Section(id: id, name: name))
                 }
-                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: nil)
+                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: chain)
                 storeDict[id] = store
             }
-            completion(storeDict, nil)
+            completion(nil)
         }.resume()
     }
     
@@ -303,10 +306,10 @@ class DB {
             let whArray = storeJson["workingHours"].arrayValue
             var whs = WorkingHours()
             for whJson in whArray {
-                let day = whJson["day"].intValue
+                let day = whJson["dayOfTheWeek"].intValue
                 let start = whJson["start"].stringValue
                 let end = whJson["end"].stringValue
-                (whs.wh[day])!.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
+                (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
             }
             let sectionsArray = storeJson["sections"].arrayValue
             var sections: [Section] = []
@@ -333,25 +336,40 @@ class DB {
     private func serverDateFormatter(date: String) -> Date {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         if let parsedDate = formatter.date(from: date) {
             return parsedDate
         }
         return Date()
     }
     
-    private func serverDateFormatter(date: Date) -> String {
+    private func serverDateTimeFormatter(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter.string(from: date)
     }
     
-    private func serverTimeFormatter(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
+//    private func serverDateFormatter(date: Date) -> String {
+//        let formatter = DateFormatter()
+//        formatter.locale = Locale(identifier: "en_US_POSIX")
+//        formatter.dateFormat = "yyyy-MM-dd"
+//        return formatter.string(from: date)
+//    }
+    
+//    private func serverTimeFormatter(date: Date) -> String {
+//        let formatter = DateFormatter()
+//        formatter.locale = Locale(identifier: "en_US_POSIX")
+//        formatter.dateFormat = "HH:mm:ss"
+//        return formatter.string(from: date)
+//    }
+    
+    private func durationFormatter(d: Duration) -> String {
+        let hour = Int(d/60)
+        let minutes = d - hour*60
+        let hourStr = hour<=9 ? "0\(hour)" : "\(hour)"
+        let minStr = minutes<=9 ? "0\(minutes)" : "\(minutes)"
+        return "\(hourStr):\(minStr):00"
     }
     
 }

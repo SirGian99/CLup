@@ -26,8 +26,8 @@ struct LURDetails: View {
     let lur: LineUpRequest
     
     var body: some View {
-        let timeToWait = lur.ete != nil ? Date(timeIntervalSinceNow: 0).distance(to: lur.ete!)/60 : 0
-        let timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Now"
+        let timeToWait = lur.ete != nil ? Int(Date(timeIntervalSinceNow: 0).distance(to: lur.ete!)/60) : 0
+        let timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Enter now!"
         return VStack(alignment: .center, spacing: 10) {
             SizedDivider(height: 5)
             VStack (spacing: 0) {
@@ -67,21 +67,28 @@ struct LURDetails: View {
                 ZStack {
                     Rectangle()
                         .foregroundColor(getColor(.lightBlueHeaderBG))
-                    Text(timeToWaitStr)
-                        .fontWeight(.medium)
-                        .font(.largeTitle)
+                    VStack(spacing: 0) {
+                        SizedDivider(height: 5)
+                        Text(timeToWaitStr)
+                            .fontWeight(.medium)
+                            .font(.largeTitle)
+                        SizedDivider(height: 5)
+                    }
                 }
-                SizedDivider(height: 5)
+                SizedDivider(height: 8)
                 Text("Time to wait")
                     .font(.subheadline)
-                SizedDivider(height: 5)
+                SizedDivider(height: 8)
             }
             .blueCard()
+            
             VStack(alignment: .center, spacing: 5) {
+                SizedDivider(height: 3)
                 Text(lur.state != .ready ? "Please wait for this code to be announced before entering the store" : "Please show the following code to access the store")
-                    .font(.subheadline)
                     .multilineTextAlignment(.center)
-                    .padding()
+                    .fixedSize(horizontal: false, vertical: true)
+                    .font(.subheadline)
+                    .padding(.horizontal)
                 Text(lur.visitToken.hfid)
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -91,11 +98,12 @@ struct LURDetails: View {
                     .scaledToFit()
                     .frame(width: 250, height: 250)
                     //.blur(radius: 7, opaque: lur.state != .ready)
-                SizedDivider(height: 5)
+                SizedDivider(height: 6)
+                HStack{Spacer()}
             }
             .lightBlueCard()
             VStack(spacing: 0) {
-                CancelButton()
+                CancelButton(req: lur)
                 HStack{Spacer()}
             }
             .blueCard()
@@ -175,7 +183,7 @@ struct BRDetails: View {
             .lightBlueCard()
             
             VStack(spacing: 0) {
-                CancelButton()
+                CancelButton(req: br)
                 HStack{Spacer()}
             }
             .blueCard()
