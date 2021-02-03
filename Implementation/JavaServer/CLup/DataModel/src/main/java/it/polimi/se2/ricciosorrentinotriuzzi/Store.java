@@ -2,7 +2,9 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
 
@@ -47,6 +49,7 @@ public class Store implements Serializable {
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "dayInterval"))
     private List<Dayinterval> workingHours;
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -169,7 +172,7 @@ public class Store implements Serializable {
         }
         this.managers.add(manager);
         manager.addStore(this);
-        }
+    }
 
 
     public List<Productsection> getProductSections() {
@@ -196,6 +199,12 @@ public class Store implements Serializable {
     }
 
 
+    public Address getAddress() {
+        return address;
+    }
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     public boolean isOpenAt(LocalDateTime datetime) {
         int dayOfWeek = datetime.getDayOfWeek().getValue();
@@ -204,6 +213,20 @@ public class Store implements Serializable {
                     dayOfWeek == di.getDayOfTheWeek() &&
                     datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
                     datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOpenAt(LocalDateTime datetime, LocalTime duration) {
+        int dayOfWeek = datetime.getDayOfWeek().getValue();
+        for (Dayinterval di: workingHours) {
+            if (
+                dayOfWeek == di.getDayOfTheWeek() &&
+                datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }

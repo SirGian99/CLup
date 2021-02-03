@@ -1,7 +1,6 @@
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import it.polimi.se2.ricciosorrentinotriuzzi.Manager;

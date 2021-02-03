@@ -20,7 +20,7 @@ public class Booking extends VisitRequest implements Serializable {
     private Store store;
     @ManyToOne
     @JoinColumn(name = "appCustomer")
-    private Customer appCustomer;
+    private Customer customer;
     private Integer numberOfPeople;
     private VisitRequestStatus state;
     private Timestamp dateTimeOfCreation;
@@ -36,64 +36,90 @@ public class Booking extends VisitRequest implements Serializable {
 
     public Booking() {uuid = UUID.randomUUID().toString();}
 
+    @Override
     public String getUuid() {
         return uuid;
     }
+    @Override
     public void setUuid(String token) {
         this.uuid = token;
     }
 
-
+    @Override
     public Store getStore() {
         return store;
     }
+    @Override
     public void setStore(Store store) {
         this.store = store;
     }
 
-
-    public Customer getAppCustomer() {
-        return appCustomer;
+    @Override
+    public Customer getCustomer() {
+        return customer;
     }
-    public void setAppCustomer(Customer appCustomer) {
-        this.appCustomer = appCustomer;
+    @Override
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+        customer.addBooking(this);
     }
 
-
+    @Override
     public Integer getNumberOfPeople() {
         return numberOfPeople;
     }
+    @Override
     public void setNumberOfPeople(Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
     }
 
-
+    @Override
     public VisitRequestStatus getState() {
         return state;
     }
+    @Override
     public void setState(VisitRequestStatus state) {
         this.state = state;
     }
 
-
+    @Override
     public Timestamp getDateTimeOfCreation() {
         return dateTimeOfCreation;
     }
+    @Override
     public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
         this.dateTimeOfCreation = dateTimeOfCreation;
     }
 
-
+    @Override
     public String getHfid() {
         return hfid;
     }
 
+    @Override
+    public Timestamp getVisitStartingTime() {
+        return visitStartingTime;
+    }
+    @Override
+    public void setVisitStartingTime(Timestamp visitStartingTime) {
+        this.visitStartingTime = visitStartingTime;
+    }
+
+    @Override
+    public Timestamp getVisitCompletionTime() {
+        return visitCompletionTime;
+    }
+    @Override
+    public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
+
+    public List<Productsection> getProductSections() {
+        return productSections;
+    }
 
     public Timestamp getDesiredStartingTime() {
         return desiredStartingTime;
     }
     public void setDesiredStartingTime(Timestamp desiredStartingTime) { this.desiredStartingTime = desiredStartingTime; }
-
 
     public Time getDesiredDuration() {
         return desiredDuration;
@@ -102,39 +128,23 @@ public class Booking extends VisitRequest implements Serializable {
         this.desiredDuration = desiredDuration;
     }
 
-
-    public Timestamp getVisitStartingTime() {
-        return visitStartingTime;
-    }
-    public void setVisitStartingTime(Timestamp visitStartingTime) {
-        this.visitStartingTime = visitStartingTime;
-    }
-
-    public List<Productsection> getProductSections() {
-        return productSections;
-    }
-
-    public Timestamp getVisitCompletionTime() {
-        return visitCompletionTime;
-    }
-    public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
-
+    @Override
     public Boolean isPending() {
         return (state == VisitRequestStatus.PENDING);
     }
-
+    @Override
     public Boolean isReady() {
         return (state == VisitRequestStatus.READY);
     }
-
+    @Override
     public Boolean isFulfilled() {
         return (state == VisitRequestStatus.FULFILLED);
     }
-
+    @Override
     public Boolean isCompleted() {
         return (state == VisitRequestStatus.COMPLETED);
     }
-
+    @Override
     public Boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
     }

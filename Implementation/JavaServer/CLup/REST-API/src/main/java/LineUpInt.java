@@ -30,7 +30,7 @@ public class LineUpInt {
             jsonVisitToken.put("uuid", lur.getUuid());
             jsonVisitToken.put("hfid", lur.getHfid());
             jsonResponse.put("visitToken",jsonVisitToken);
-            return Response.ok().entity(jsonResponse).type(MediaType.APPLICATION_JSON).build();
+            return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
             System.out.println("LUR rejected");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -40,7 +40,7 @@ public class LineUpInt {
     @DELETE
     @Path("lineup/{token}")
     public Response deleteLineup(@PathParam("token") String uuid)  {
-        rh.cancelLineup(uuid);
+        rh.cancelRequest(uuid);
         return Response.ok().build();
     }
 }

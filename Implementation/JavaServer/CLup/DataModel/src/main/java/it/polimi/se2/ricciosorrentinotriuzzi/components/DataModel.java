@@ -131,6 +131,11 @@ public class DataModel {
     }
 
     public void removeRequest(VisitRequest request) {
+        if (request instanceof Lineup) {
+            request.getCustomer().getLineups().remove(request);
+        } else if (request instanceof Booking) {
+            request.getCustomer().getBookings().remove(request);
+        }
         em.remove(request);
     }
 
@@ -162,12 +167,20 @@ public class DataModel {
         return em.find(Customer.class, id);
     }
 
-    public Chain getChain(String storeID) {
+    public Chain getChainFromStore(String storeID) {
         return em.find(Store.class, storeID).getChain();
+    }
+
+    public Chain getChainByName(String name) {
+        return em.find(Chain.class, name);
     }
 
     public Address getAddress(long addressID) {
         return em.find(Address.class, addressID);
+    }
+
+    public List<Address> getAddressesByCity(String city){
+        return em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
     }
 
 

@@ -6,6 +6,7 @@ import org.eclipse.persistence.annotations.UuidGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.LinkedList;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +28,7 @@ public class Lineup extends VisitRequest implements Serializable {
     private VisitRequestStatus state;
     private Timestamp dateTimeOfCreation;
     private Timestamp visitStartingTime;
+    private Timestamp visitCompletionTime;
 
     public Lineup() {uuid = UUID.randomUUID().toString();}
 
@@ -34,7 +36,6 @@ public class Lineup extends VisitRequest implements Serializable {
     public VisitRequestStatus getState() {
         return state;
     }
-
     @Override
     public void setState(VisitRequestStatus state) {
         this.state = state;
@@ -44,7 +45,6 @@ public class Lineup extends VisitRequest implements Serializable {
     public Timestamp getVisitStartingTime() {
         return visitStartingTime;
     }
-
     @Override
     public void setVisitStartingTime(Timestamp visitStartingTime) {
         this.visitStartingTime = visitStartingTime;
@@ -54,86 +54,65 @@ public class Lineup extends VisitRequest implements Serializable {
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;
     }
+    @Override
+    public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
 
     @Override
-    public void setVisitCompletionTime(Timestamp visitCompletionTime) {
-        this.visitCompletionTime = visitCompletionTime;
-    }
-
-    private Timestamp visitCompletionTime;
-
     public String getUuid() {
         return uuid;
     }
+    @Override
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
+    @Override
     public String getHfid() {
         return hfid;
     }
+    @Override
     public void setHfid(String hfid) {
         this.hfid = hfid;
     }
 
-    public Store getStore() {
-        return store;
-    }
-    public void setStore(Store store) {
-        this.store = store;
-    }
+    @Override
+    public Store getStore() { return store; }
+    @Override
+    public void setStore(Store store) { this.store = store; }
 
-    public Customer getCustomer() {
-        return customer;
-    }
+    @Override
+    public Customer getCustomer() { return customer; }
+    @Override
     public void setCustomer(Customer customer) {
         this.customer = customer;
+        customer.addLineup(this);
     }
 
-    public Timestamp getEstimatedTimeOfEntrance() {
-        return estimatedTimeOfEntrance;
-    }
-    public void setEstimatedTimeOfEntrance(Timestamp estimatedTimeOfEntrance) { this.estimatedTimeOfEntrance = estimatedTimeOfEntrance; }
+    @Override
+    public Integer getNumberOfPeople() { return numberOfPeople; }
+    @Override
+    public void setNumberOfPeople(Integer numberOfPeople) { this.numberOfPeople = numberOfPeople; }
 
-    public Integer getNumberOfPeople() {
-        return numberOfPeople;
-    }
-    public void setNumberOfPeople(Integer numberOfPeople) {
-        this.numberOfPeople = numberOfPeople;
+    public Timestamp getEstimatedTimeOfEntrance() { return estimatedTimeOfEntrance; }
+    public void setEstimatedTimeOfEntrance(Timestamp estimatedTimeOfEntrance) {
+        this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
     }
 
-    /*public VisitRequestStatus getState() {
-        return state;
-    }
-    public void setState(VisitRequestStatus state) {
-        this.state = state;
-    }*/
+    @Override
+    public Timestamp getDateTimeOfCreation() { return dateTimeOfCreation; }
+    @Override
+    public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) { this.dateTimeOfCreation = dateTimeOfCreation; }
 
-    public Timestamp getDateTimeOfCreation() {
-        return dateTimeOfCreation;
-    }
-    public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
-        this.dateTimeOfCreation = dateTimeOfCreation;
-    }
-    public Boolean isPending() {
-        return (state == VisitRequestStatus.PENDING);
-    }
-
-    public Boolean isReady() {
-        return (state == VisitRequestStatus.READY);
-    }
-
-    public Boolean isFulfilled() {
-        return (state == VisitRequestStatus.FULFILLED);
-    }
-
-    public Boolean isCompleted() {
-        return (state == VisitRequestStatus.COMPLETED);
-    }
-
-    public Boolean isActive() {
-        return (state != VisitRequestStatus.COMPLETED);
-    }
+    @Override
+    public Boolean isPending() { return (state == VisitRequestStatus.PENDING); }
+    @Override
+    public Boolean isReady() { return (state == VisitRequestStatus.READY); }
+    @Override
+    public Boolean isFulfilled() { return (state == VisitRequestStatus.FULFILLED); }
+    @Override
+    public Boolean isCompleted() { return (state == VisitRequestStatus.COMPLETED); }
+    @Override
+    public Boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
 
     @Override
     public String toString() {

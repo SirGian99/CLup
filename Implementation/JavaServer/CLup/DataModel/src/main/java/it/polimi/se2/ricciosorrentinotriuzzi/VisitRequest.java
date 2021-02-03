@@ -41,9 +41,7 @@ public abstract class VisitRequest {
         return dateTimeOfCreation;
     }
 
-    public Timestamp getVisitStartingTime() {
-        return visitStartingTime;
-    }
+    public Timestamp getVisitStartingTime() { return visitStartingTime; }
 
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;
