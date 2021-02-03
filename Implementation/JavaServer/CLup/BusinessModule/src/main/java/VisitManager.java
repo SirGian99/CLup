@@ -2,6 +2,7 @@ import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import javax.ejb.*;
+import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,21 +129,23 @@ public class VisitManager {
                     }
                     System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
                     if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
-                        setReadyRequest(request.getUuid());
+                        setReadyRequest(request);
                     }
                 }
             }, date);
         }
         else {
+            System.out.println("SONO QUI");
+            System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy());
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
-                setReadyRequest(request.getUuid()); ///TODO controlla che si possano passare
+                setReadyRequest(request); ///TODO controlla che si possano passare
             }
         }
     }
 
 
-    private void setReadyRequest(String token){
-        dataModel.allowVisitRequest(token);
+    private void setReadyRequest(VisitRequest request){
+        dataModel.allowVisitRequest(request);
     }
 
     @Asynchronous
@@ -170,7 +173,7 @@ public class VisitManager {
                                 section.getMaximumOccupancy())
                             return;
                     }
-                    dataModel.allowVisitRequest(booking.getUuid());
+                    dataModel.allowVisitRequest(booking);
                     currentReadyOccupancy += booking.getNumberOfPeople();
                 } else return;
             }
@@ -179,7 +182,7 @@ public class VisitManager {
         for (Lineup lineup : store.getLineups()){
             if (lineup.isPending()){
                 if (currentReadyOccupancy + lineup.getNumberOfPeople() <= store.getMaximumOccupancy()){
-                    dataModel.allowVisitRequest(lineup.getUuid());
+                    dataModel.allowVisitRequest(lineup);
                     currentReadyOccupancy += lineup.getNumberOfPeople();
                 }
             }

@@ -71,8 +71,7 @@ public class DataModel {
         return toReturn;
     }
 
-    public void allowVisitRequest(String token){
-        VisitRequest request = getVisitRequest(token);
+    public void allowVisitRequest(VisitRequest request){
         if (request!= null && request.isPending())
             request.setState(VisitRequestStatus.READY);
     }

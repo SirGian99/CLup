@@ -30,9 +30,14 @@ public class RequestHandler {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
-        if (c.getLineups() != null && !c.getLineups().isEmpty()) {
-            System.out.println("Il customer ha già fatto una lineup");
-            return null;
+        List<Lineup> custLineUps = c.getLineups();
+        if (custLineUps != null && !custLineUps.isEmpty()) {
+            for (Lineup l: custLineUps) {
+                if (l.isPending()) {
+                    System.out.println("Il customer ha già in coda per un negozio");
+                    return null;
+                }
+            }
         }
         LocalDateTime now = LocalDateTime.now();
         if (!s.isOpenAt(now)) {

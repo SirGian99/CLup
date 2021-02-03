@@ -5,13 +5,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/")
+@Path("/lineup")
 public class LineUpInt {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.RequestHandler")
     RequestHandler rh;
 
     @POST
-    @Path("lineup")
+    @Path("")
     @Consumes("application/json")
     @Produces("application/json")
     public Response lineup(String body) {
@@ -38,7 +38,7 @@ public class LineUpInt {
     }
 
     @DELETE
-    @Path("lineup/{token}")
+    @Path("/{token}")
     public Response deleteLineup(@PathParam("token") String uuid)  {
         rh.cancelRequest(uuid);
         return Response.ok().build();
