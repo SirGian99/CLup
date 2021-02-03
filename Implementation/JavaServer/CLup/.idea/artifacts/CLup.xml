@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="CLup">
-    <output-path>/Volumes/HighSierra/Applications/tomee/webapps</output-path>
-    <root id="archive" name="CLup.war">
-      <element id="artifact" artifact-name="CLupExploded" />
-    </root>
-  </artifact>
-</component>
