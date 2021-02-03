@@ -4,6 +4,7 @@ import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 import javax.ejb.*;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Random;
 public class RequestHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.components/DataModel")
     private DataModel dataModel;
+    @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi/VisitManager")
+    private VisitManager visitManager;
 
     public RequestHandler() {}
 
@@ -27,9 +30,14 @@ public class RequestHandler {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
-        if (c.getLineups() != null && !c.getLineups().isEmpty()) {
-            System.out.println("Il customer ha già fatto una lineup");
-            return null;
+        List<Lineup> custLineUps = c.getLineups();
+        if (custLineUps != null && !custLineUps.isEmpty()) {
+            for (Lineup l: custLineUps) {
+                if (l.isPending()) {
+                    System.out.println("Il customer ha già in coda per un negozio");
+                    return null;
+                }
+            }
         }
         LocalDateTime now = LocalDateTime.now();
         if (!s.isOpenAt(now)) {
@@ -42,10 +50,11 @@ public class RequestHandler {
         lur.setNumberOfPeople(numberOfPeople);
         lur.setDateTimeOfCreation(Timestamp.valueOf(now));
         lur.setState(VisitRequestStatus.PENDING);
+        lur.setHfid("L-" +(char)( Integer.parseInt(lur.getDateTimeOfCreation().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(lur.getUuid().substring(4, 8), 16) % 999));
         //TODO devi settare anche l'ete (per ora messo pezzotto)
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
-        //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(lur);
+        visitManager.newRequest(lur);
         //TODO devi fare anche la append to queue se è una lur
         return lur;
     }
@@ -62,9 +71,14 @@ public class RequestHandler {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
-        if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {return null;}
+        if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {
+            System.out.println("Lo store è chiuso nell'orario selezionato");
+            return null;}
+        //|| desiredStart.before(Timestamp.from(Instant.now()))
+        //check sulla current queue disp time
+
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
-        List<Booking> overlappingBookings = dataModel.getBookings(customerID,desiredStart,end);
+        List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
         if (!overlappingBookings.isEmpty()) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
@@ -78,16 +92,22 @@ public class RequestHandler {
         br.setDesiredStartingTime(desiredStart);
         br.setDesiredDuration(duration);
         //TODO sistema sto HFID
-        br.setHfid("B"+(new Random(10).nextInt()));
+        br.setHfid("B-" + ((char)( Integer.parseInt(br.getDesiredStartingTime().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(br.getUuid().substring(4, 8), 16) % 999)));
         //TODO controlli sulle sections
         //for (String sid: sectionIDs) { }
         //TODO check sulle occupancy...
         //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(br);
+        visitManager.newRequest(br);
         return br;
     }
 
     public void cancelRequest(String uuid) {
-        dataModel.removeRequest(dataModel.getVisitRequest(uuid));
+        VisitRequest request = dataModel.getVisitRequest(uuid);
+        if (request.isPending() || request.isReady()) {
+            dataModel.removeRequest(request);
+            //check if other customers can enter
+            visitManager.checkNewReadyRequest(request.getStore().getId());
+        }
     }
 }

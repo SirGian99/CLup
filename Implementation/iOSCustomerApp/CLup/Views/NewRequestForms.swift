@@ -16,7 +16,13 @@ struct NewLURView: View {
             
             Spacer()
             
-            Button(action: {print("Confirmmm!!")}){
+            Button(action: {
+                DB.controller.lineup(store: store, numberOfPeople: numberOfPeople) { (lur, error) in
+                    guard error == nil else {print("Error while lining up"); return} //TODO ALERT
+                    DispatchQueue.main.async { Repository.singleton.lur = lur }
+                }
+                UIViewController.foremost.dismiss()
+            }){
                 Text("Confirm")
                     .fontWeight(.semibold)
                     .font(.body)
@@ -95,15 +101,17 @@ struct NewBRView: View {
             }
             .lightBlueCard()
             
-            VStack {
-                SizedDivider(height: 5)
-                ForEach(store.sections, id: \.id) { section in
-                    SectionView(section: section)
+            if (!store.sections.isEmpty) {
+                VStack {
+                    SizedDivider(height: 5)
+                    ForEach(store.sections, id: \.id) { section in
+                        SectionView(section: section)
+                    }
+                    SizedDivider(height: 5)
+                    HStack{Spacer()}
                 }
-                SizedDivider(height: 5)
-                HStack{Spacer()}
+                .lightBlueCard()
             }
-            .lightBlueCard()
             
             Spacer()
             

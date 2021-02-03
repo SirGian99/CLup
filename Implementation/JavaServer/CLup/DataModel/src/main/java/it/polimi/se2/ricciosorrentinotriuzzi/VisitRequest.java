@@ -83,24 +83,26 @@ public abstract class VisitRequest {
         this.visitCompletionTime = visitCompletionTime;
     }
 
-    public Boolean isPending() {
+    public boolean isPending() {
         return (state == VisitRequestStatus.PENDING);
     }
 
-    public Boolean isReady() {
+    public boolean isReady() {
         return (state == VisitRequestStatus.READY);
     }
 
-    public Boolean isFulfilled() {
+    public boolean isFulfilled() {
         return (state == VisitRequestStatus.FULFILLED);
     }
 
-    public Boolean isCompleted() {
+    public boolean isCompleted() {
         return (state == VisitRequestStatus.COMPLETED);
     }
 
-    public Boolean isActive() {
+    public boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
     }
+
+    public boolean isBooking(){return false;}
 
 }

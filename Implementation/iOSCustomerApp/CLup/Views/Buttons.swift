@@ -52,9 +52,24 @@ struct BookingButton: View {
     }
 }
 
-struct CancelButton: View {
+struct CancelButton<Request:VisitRequest>: View {
+    let req: Request
     var body: some View {
-        Button(action: {print("CANCELLLL!!")}){
+        Button(action: {
+            if req is LineUpRequest {
+                DB.controller.deleteLUR(lur: req as! LineUpRequest) { error in
+                    guard error == nil else {print(error!); return}
+                    print("LUR deleted")
+                    DispatchQueue.main.async { Repository.singleton.lur = nil }
+                }
+            } else if req is BookingRequest {
+                DB.controller.deleteBR(br: req as! BookingRequest) { error in
+                    guard error == nil else {print(error!); return}
+                    print("BR deleted")
+                    DispatchQueue.main.async { Repository.singleton.brs[req.visitToken.uuid.uuidString] = nil }
+                }
+            }
+        }){
             VStack {
                 SizedDivider(height: 5)
                 Text("Cancel request")

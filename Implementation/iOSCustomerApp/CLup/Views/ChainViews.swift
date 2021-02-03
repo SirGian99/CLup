@@ -7,7 +7,7 @@ struct ChainView: View {
     let chain: Chain
 
     var body: some View {
-        NavigationLink(destination: StoreList(stores: Array(chain.stores.values))) {
+        NavigationLink(destination: StoresOfChain(chain: chain)) {
             VStack(spacing: 0) {
                 Image(uiImage: chain.image).resizable().scaledToFit()
                 Text(chain.name)
@@ -20,12 +20,22 @@ struct ChainView: View {
     }
 }
 
-struct StoreList: View {
-    let stores: [Store]
+struct StoresOfChain: View {
+    @ObservedObject var chain: Chain
+//    init(chain: Chain) {
+//        self.chain = chain
+//        DB.controller.getStores(chain: chain, city: "Milano") { error in
+//            guard error == nil else {return print(error!)}
+//        }
+//    }
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            ForEach(stores, id: \.id) { store in
+            ForEach(Array(chain.stores.values), id: \.id) { store in
                 StoreView(store: store).cornerRadius(10).padding()
+            }
+        }.onAppear() {
+            DB.controller.getStores(chain: chain, city: "Milano") { error in
+                guard error == nil else {return print(error!)}
             }
         }
     }
@@ -33,7 +43,6 @@ struct StoreList: View {
 
 struct StoreView: View {
     let store: Store
-
     var body: some View {
         NavigationLink(destination: StoreDetails(store: store)) {
             VStack(spacing: 0) {

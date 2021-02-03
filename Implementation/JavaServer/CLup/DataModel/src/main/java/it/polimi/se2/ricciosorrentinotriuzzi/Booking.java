@@ -17,7 +17,7 @@ public class Booking extends VisitRequest implements Serializable {
     @Id
     private String uuid;
     private String hfid;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "store")
     private Store store;
     @ManyToOne
@@ -132,23 +132,23 @@ public class Booking extends VisitRequest implements Serializable {
     }
 
     @Override
-    public Boolean isPending() {
+    public boolean isPending() {
         return (state == VisitRequestStatus.PENDING);
     }
     @Override
-    public Boolean isReady() {
+    public boolean isReady() {
         return (state == VisitRequestStatus.READY);
     }
     @Override
-    public Boolean isFulfilled() {
+    public boolean isFulfilled() {
         return (state == VisitRequestStatus.FULFILLED);
     }
     @Override
-    public Boolean isCompleted() {
+    public boolean isCompleted() {
         return (state == VisitRequestStatus.COMPLETED);
     }
     @Override
-    public Boolean isActive() {
+    public boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
     }
 
@@ -169,5 +169,11 @@ public class Booking extends VisitRequest implements Serializable {
             jsonProductSections.put(ps.getName());
         json.put("productSectionsNames", jsonProductSections);
         return json;
+    }
+
+    @Override
+    public boolean isBooking(){
+        System.out.println("ECCOLO!");
+        return true;
     }
 }

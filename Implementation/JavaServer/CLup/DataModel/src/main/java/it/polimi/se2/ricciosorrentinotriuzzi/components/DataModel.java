@@ -23,12 +23,12 @@ public class DataModel {
     public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        if (store.getId().equals(storeID)) {
+        if (store.getId().equals(storeID) && request.isReady()) {
             request.setVisitStartingTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.FULFILLED);
             request.setNumberOfPeople(numberOfPeople);
             store.setCurrentOccupancy(store.getCurrentOccupancy() + numberOfPeople);
-            if (request instanceof Booking) {
+            if (request.isBooking()) {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
@@ -41,6 +41,7 @@ public class DataModel {
     }
 
     public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
+        System.out.println("Store ID: " + storeID);
         Store store = em.find(Store.class, storeID);
         LinkedList<Booking> toReturn= new LinkedList<>();
             System.out.println("start: " + start + " end" + end);
@@ -70,10 +71,9 @@ public class DataModel {
         return toReturn;
     }
 
-    public void allowVisitRequest(String token){
-        VisitRequest request = getVisitRequest(token);
-        if (request!= null)
-        request.setState(VisitRequestStatus.READY);
+    public void allowVisitRequest(VisitRequest request){
+        if (request!= null && request.isPending())
+            request.setState(VisitRequestStatus.READY);
     }
 
     public int checkFulfilledRequest(String storeID, String visitToken){
@@ -84,11 +84,11 @@ public class DataModel {
     public boolean endVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        if (store.getId().equals(storeID)) {
+        if (store.getId().equals(storeID) && request.isFulfilled()) {
             request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.COMPLETED);
             store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
-            if (request instanceof Booking) {
+            if (request.isBooking()) {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
@@ -131,17 +131,21 @@ public class DataModel {
 
     public void insertRequest(VisitRequest request) {
         em.persist(request);
-        System.out.println("New lur persisted with uuid: "+request.getUuid());
+        System.out.println("New request to persist with uuid: "+request.getUuid());
         //TODO devi fare anche la append to queue se è una lur
     }
 
     public void removeRequest(VisitRequest request) {
-        if (request instanceof Lineup) {
-            request.getCustomer().getLineups().remove(request);
-        } else if (request instanceof Booking) {
-            request.getCustomer().getBookings().remove(request);
+        if (request!=null) {
+            if (request.isBooking()) {
+                request.getCustomer().getBookings().remove(request);
+                request.getStore().getBookings().remove(request);
+            } else {
+                request.getCustomer().getLineups().remove(request);
+                request.getStore().getLineups().remove(request);
+            }
+            em.remove(request);
         }
-        em.remove(request);
     }
 
     public void insertCustomer(Customer c) {

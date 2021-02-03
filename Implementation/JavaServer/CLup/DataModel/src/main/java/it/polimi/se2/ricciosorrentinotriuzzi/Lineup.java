@@ -108,15 +108,15 @@ public class Lineup extends VisitRequest implements Serializable {
     public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) { this.dateTimeOfCreation = dateTimeOfCreation; }
 
     @Override
-    public Boolean isPending() { return (state == VisitRequestStatus.PENDING); }
+    public boolean isPending() { return (state == VisitRequestStatus.PENDING); }
     @Override
-    public Boolean isReady() { return (state == VisitRequestStatus.READY); }
+    public boolean isReady() { return (state == VisitRequestStatus.READY); }
     @Override
-    public Boolean isFulfilled() { return (state == VisitRequestStatus.FULFILLED); }
+    public boolean isFulfilled() { return (state == VisitRequestStatus.FULFILLED); }
     @Override
-    public Boolean isCompleted() { return (state == VisitRequestStatus.COMPLETED); }
+    public boolean isCompleted() { return (state == VisitRequestStatus.COMPLETED); }
     @Override
-    public Boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
+    public boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
 
     @Override
     public String toString() {

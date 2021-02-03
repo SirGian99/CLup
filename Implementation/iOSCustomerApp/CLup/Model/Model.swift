@@ -11,7 +11,7 @@ import UIKit
 
 typealias HFID = String
 typealias CUUID = UUID
-typealias Duration = Int
+typealias Duration = Int //minuti
 
 struct Token: CustomStringConvertible {
     public var description: String {return hfid}
@@ -59,27 +59,27 @@ struct DayInterval: Hashable {
 
 struct WorkingHours {
     var wh: [Int:[DayInterval]]
-    var sunday: [DayInterval] {return wh[1]!}
-    var monday: [DayInterval] {return wh[2]!}
-    var tuesday: [DayInterval] {return wh[3]!}
-    var wednesday: [DayInterval] {return wh[4]!}
-    var thursday: [DayInterval] {return wh[5]!}
-    var friday: [DayInterval] {return wh[6]!}
-    var saturday: [DayInterval] {return wh[7]!}
+    var monday: [DayInterval] {return wh[1]!}
+    var tuesday: [DayInterval] {return wh[2]!}
+    var wednesday: [DayInterval] {return wh[3]!}
+    var thursday: [DayInterval] {return wh[4]!}
+    var friday: [DayInterval] {return wh[5]!}
+    var saturday: [DayInterval] {return wh[6]!}
+    var sunday: [DayInterval] {return wh[7]!}
     
     init(test: Bool = false) {
         wh = [:]
         wh[1] = []; wh[2] = []; wh[3] = []; wh[4] = []; wh[5] = []; wh[6] = []; wh[7] = []
         if test {
-            wh[1] = [DayInterval(day: 0, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
-            wh[2] = [DayInterval(day: 1, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
-            wh[3] = [DayInterval(day: 2, start: Time(hour: "09", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "19", minute: "00"))]
-            wh[4] = [DayInterval(day: 3, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+            wh[1] = [DayInterval(day: 1, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+            wh[2] = [DayInterval(day: 2, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 2, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
+            wh[3] = [DayInterval(day: 3, start: Time(hour: "09", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 3, start: Time(hour: "17", minute: "00"), end: Time(hour: "19", minute: "00"))]
+            wh[4] = [DayInterval(day: 4, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 4, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
         }
     }
 }
 
-var wh = WorkingHours(test: true)
+var whtest = WorkingHours(test: true)
 
 enum VRState: Int {
     case pending = 0
@@ -88,11 +88,11 @@ enum VRState: Int {
     case completed = 3
 }
 
-class Chain {
+class Chain: ObservableObject {
     let name: String
     let description: String
     let image: UIImage
-    var stores: [String:Store] = [:] //Manipolato dall'init degli store
+    @Published var stores: [String:Store] = [:] //Manipolato dall'init degli store
     
     init(name: String, description: String, image: UIImage) {
         self.name = name
@@ -101,7 +101,7 @@ class Chain {
     }
     
     func addStore(_ store: Store) {
-        stores[store.id] = store
+        DispatchQueue.main.async { self.stores[store.id] = store }
     }
     
     init() {
@@ -162,7 +162,7 @@ class Store {
         self._image = nil
         self.address = Address(streetName: "via \(Int.random(in: 1..<100))", streetNumber: "\(Int.random(in: 1..<100))", city: "Prova", postalCode: "01234", country: "Italy")
         self.currentOccupancy = 10
-        self.workingHours = wh
+        self.workingHours = whtest
         self.estimatedQueueDisposalTime = 600
         self.chain = chain
         self.sections = [
