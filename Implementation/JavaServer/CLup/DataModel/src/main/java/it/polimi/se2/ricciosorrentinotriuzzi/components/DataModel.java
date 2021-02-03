@@ -115,6 +115,11 @@ public class DataModel {
     }
 
     public void removeRequest(VisitRequest request) {
+        if (request instanceof Lineup) {
+            request.getCustomer().getLineups().remove(request);
+        } else if (request instanceof Booking) {
+            request.getCustomer().getBookings().remove(request);
+        }
         em.remove(request);
     }
 
