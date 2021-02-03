@@ -26,7 +26,9 @@ public class Store implements Serializable {
     private Chain chain;
     private String passepartoutuuid;
     private String passepartouthfid;
-    private Integer address;
+    @OneToOne
+    @JoinColumn(name = "address")
+    private Address address;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("desiredStartingTime ASC")
     private List<Booking> bookings;
@@ -194,12 +196,6 @@ public class Store implements Serializable {
     }
 
 
-    public Integer getAddress() {
-        return address;
-    }
-    public void setAddress(Integer address) {
-        this.address = address;
-    }
 
     public boolean isOpenAt(LocalDateTime datetime) {
         int dayOfWeek = datetime.getDayOfWeek().getValue();

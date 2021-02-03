@@ -16,6 +16,8 @@ public class Address implements Serializable {
     private String city;
     private String postalCode;
     private String country;
+    @OneToOne(mappedBy = "address")
+    private Store store;
 
     public long getId() {
         return id;
