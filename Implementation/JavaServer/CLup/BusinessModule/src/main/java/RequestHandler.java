@@ -1,12 +1,12 @@
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 import javax.ejb.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Stateless
@@ -63,6 +63,12 @@ public class RequestHandler {
             return null;
         }
         if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {return null;}
+        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
+        List<Booking> overlappingBookings = dataModel.getBookings(customerID,desiredStart,end);
+        if (!overlappingBookings.isEmpty()) {
+            System.out.println("Il customer ha un overlapping booking");
+            return null;
+        }
         Booking br = new Booking();
         br.setCustomer(c);
         br.setStore(s);
@@ -75,7 +81,7 @@ public class RequestHandler {
         br.setHfid("B"+(new Random(10).nextInt()));
         //TODO controlli sulle sections
         //for (String sid: sectionIDs) { }
-
+        //TODO check sulle occupancy...
         //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(br);
         return br;

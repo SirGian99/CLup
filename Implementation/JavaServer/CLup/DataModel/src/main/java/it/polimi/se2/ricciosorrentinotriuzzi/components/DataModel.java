@@ -38,17 +38,30 @@ public class DataModel {
         return false;
     }
 
-    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
-    Store store = em.find(Store.class, storeID);
-    LinkedList<Booking> toReturn= new LinkedList<>();
+    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end) {
+        Store store = em.find(Store.class, storeID);
+        LinkedList<Booking> toReturn= new LinkedList<>();
 
-    for(Booking booking : store.getBookings() ){
-        LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
-        LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
-        if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
-            toReturn.addLast(booking);
+        for(Booking booking : store.getBookings()) {
+            LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
+            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
+            if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
+                toReturn.addLast(booking);
+        }
+        return toReturn;
     }
-    return toReturn;
+
+    public List<Booking> getCustomerBookings(String customerID, Timestamp start, Timestamp end) {
+        Customer c = em.find(Customer.class, customerID);
+        LinkedList<Booking> toReturn = new LinkedList<>();
+
+        for(Booking booking : c.getBookings()) {
+            LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
+            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
+            if (beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
+                toReturn.addLast(booking);
+        }
+        return toReturn;
     }
 
     public void allowVisitRequest(String token){

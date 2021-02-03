@@ -78,7 +78,10 @@ public class Lineup extends VisitRequest implements Serializable {
     @Override
     public Store getStore() { return store; }
     @Override
-    public void setStore(Store store) { this.store = store; }
+    public void setStore(Store store) {
+        this.store = store;
+        store.addLineup(this);
+    }
 
     @Override
     public Customer getCustomer() { return customer; }

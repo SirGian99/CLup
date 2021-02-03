@@ -52,6 +52,7 @@ public class Booking extends VisitRequest implements Serializable {
     @Override
     public void setStore(Store store) {
         this.store = store;
+        store.addBooking(this);
     }
 
     @Override

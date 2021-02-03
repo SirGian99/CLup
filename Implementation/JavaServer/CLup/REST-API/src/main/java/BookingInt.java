@@ -1,5 +1,4 @@
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -8,7 +7,6 @@ import javax.ws.rs.core.Response;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.logging.*;
 
 @Path("/")
 public class BookingInt {
@@ -20,7 +18,6 @@ public class BookingInt {
     @Consumes("application/json")
     @Produces("application/json")
     public Response lineup(String body) {
-        Logger.getGlobal().severe("AOOOOOO");
         JSONObject json = new JSONObject(body);
         System.out.println("\n\nIl body:\n"+body+"\n\n");
         String customerID = json.getString("customerID");

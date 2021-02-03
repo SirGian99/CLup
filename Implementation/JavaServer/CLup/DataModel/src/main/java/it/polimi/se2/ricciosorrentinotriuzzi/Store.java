@@ -153,6 +153,12 @@ public class Store implements Serializable {
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
+    public void addBooking(Booking b) {
+        if (this.bookings == null) {
+            this.bookings = new LinkedList<>();
+        }
+        bookings.add(b);
+    }
 
 
     public List<Lineup> getLineups() {
@@ -160,6 +166,12 @@ public class Store implements Serializable {
     }
     public void setLineups(List<Lineup> lineups) {
         this.lineups = lineups;
+    }
+    public void addLineup(Lineup l) {
+        if (this.lineups == null) {
+            this.lineups = new LinkedList<>();
+        }
+        lineups.add(l);
     }
 
 
