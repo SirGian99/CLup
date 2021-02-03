@@ -107,3 +107,10 @@ class ChainsAndAutonomousStores implements Serializable{
         }
     }
 }
+
+class Stores implements Serializable {
+    public List<StoreInfo> stores;
+    public Stores(ArrayList<StoreInfo> stores){
+        this.stores = stores;
+    }
+}

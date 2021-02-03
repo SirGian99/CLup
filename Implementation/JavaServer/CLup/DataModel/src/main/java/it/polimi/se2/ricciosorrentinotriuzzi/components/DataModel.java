@@ -151,8 +151,12 @@ public class DataModel {
         return em.find(Customer.class, id);
     }
 
-    public Chain getChain(String storeID) {
+    public Chain getChainFromStore(String storeID) {
         return em.find(Store.class, storeID).getChain();
+    }
+
+    public Chain getChainByName(String name) {
+        return em.find(Chain.class, name);
     }
 
     public Address getAddress(long addressID) {
