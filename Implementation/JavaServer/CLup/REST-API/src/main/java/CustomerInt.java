@@ -15,6 +15,7 @@ public class CustomerInt {
     @PUT
     @Path("registerApp")
     @Consumes("application/json")
+    @Produces("application/json")
     public Response registerApp(String body)  {
         JSONObject json = new JSONObject(body);
         String appid = json.getString("appID");

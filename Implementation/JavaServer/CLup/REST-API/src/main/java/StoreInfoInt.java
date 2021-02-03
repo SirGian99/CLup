@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Path("/StoreInfoInt/")
+@Path("/")
 public class StoreInfoInt {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.StoreStatusHandler")
     private StoreStatusHandler ssh;
