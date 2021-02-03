@@ -23,30 +23,36 @@ public class DataModel {
     public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        List<Productsection> productsections = store.getProductSections();
         if (store.getId().equals(storeID)) {
             request.setVisitStartingTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.FULFILLED);
             request.setNumberOfPeople(numberOfPeople);
             store.setCurrentOccupancy(store.getCurrentOccupancy() + numberOfPeople);
-            for (Productsection section: productsections) {
-                double oldOcc = section.getCurrentOccupancy();
-                section.setCurrentOccupancy(oldOcc + numberOfPeople * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy());
+            if (request instanceof Booking) {
+                List<Productsection> productsections = ((Booking) request).getProductSections();
+                for (Productsection section : productsections) {
+                    double oldOcc = section.getCurrentOccupancy();
+                    section.setCurrentOccupancy(oldOcc + numberOfPeople * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
+                }
             }
             return true;
         }
         return false;
     }
 
-    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end) {
+    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
         Store store = em.find(Store.class, storeID);
         LinkedList<Booking> toReturn= new LinkedList<>();
+            System.out.println("start: " + start + " end" + end);
 
-        for(Booking booking : store.getBookings()) {
+        for(Booking booking : store.getBookings() ){
             LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
             LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
-            if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
+            System.out.println("Booking: " + booking.getHfid() + " start: " + beginning + " end: " + ending +" duration: " + booking.getDesiredDuration());
+            if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime())) {
                 toReturn.addLast(booking);
+                System.out.println("Aggiunto");
+            }
         }
         return toReturn;
     }
@@ -78,16 +84,18 @@ public class DataModel {
     public boolean endVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        List<Productsection> productsections = store.getProductSections();
         if (store.getId().equals(storeID)) {
             request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.COMPLETED);
             store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
-            for (Productsection section: productsections) {
-                double oldOcc = section.getCurrentOccupancy();
-                section.setCurrentOccupancy(oldOcc - numberOfPeople * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy());
+            if (request instanceof Booking) {
+                List<Productsection> productsections = ((Booking) request).getProductSections();
+                for (Productsection section : productsections) {
+                    double oldOcc = section.getCurrentOccupancy();
+                    section.setCurrentOccupancy(oldOcc - numberOfPeople * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -164,8 +172,12 @@ public class DataModel {
         return em.find(Customer.class, id);
     }
 
-    public Chain getChain(String storeID) {
+    public Chain getChainFromStore(String storeID) {
         return em.find(Store.class, storeID).getChain();
+    }
+
+    public Chain getChainByName(String name) {
+        return em.find(Chain.class, name);
     }
 
     public Address getAddress(long addressID) {

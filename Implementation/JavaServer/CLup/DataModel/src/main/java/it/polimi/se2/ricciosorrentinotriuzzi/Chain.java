@@ -43,4 +43,9 @@ public class Chain implements Serializable {
         this.image = image;
     }
 
+    public List<Store> storeList() {
+        return stores;
+    }
+
+
 }

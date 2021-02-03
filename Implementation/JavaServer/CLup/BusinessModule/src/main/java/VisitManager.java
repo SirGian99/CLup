@@ -3,6 +3,7 @@ import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import javax.ejb.*;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Timer;
@@ -22,7 +23,12 @@ public class VisitManager {
     }
 
     public boolean confirmAccess(String visitToken, String storeID, int numberOfPeople){
-        return dataModel.startVisit(visitToken, storeID, numberOfPeople);
+        int oldNumberOfPeople = dataModel.getVisitRequest(visitToken).getNumberOfPeople();
+        boolean toReturn = dataModel.startVisit(visitToken, storeID, numberOfPeople);
+        if (oldNumberOfPeople>numberOfPeople){
+            checkNewReadyRequest(storeID);
+        }
+        return toReturn;
         /*VisitRequest request = dataModel.getVisitRequest(visitToken);
         if(request != null && request.getStore().getId().equals(storeID) && request.isFulfilled()){
             //devo aggiornare
@@ -70,14 +76,14 @@ public class VisitManager {
                                 section.getMaximumOccupancy())
                             return;
                     }
-                    if (request.getNumberOfPeople() + finalCurrentReadyOccupancy < store.getMaximumOccupancy()) {
+                    if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
                         setReadyRequest(token);
                     }
                 }
             }, date);
         }
         else if (request instanceof Lineup) {
-            if (request.getNumberOfPeople() + currentReadyOccupancy < store.getMaximumOccupancy()) {
+            if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
                 setReadyRequest(token); ///TODO controlla che si possano passare
             }
         }
@@ -91,6 +97,7 @@ public class VisitManager {
     public void checkNewReadyRequest(String storeID){
         Store store = dataModel.getStore(storeID);
         int currentReadyOccupancy = store.getCurrentOccupancy();
+        System.out.println("Current occ: " + currentReadyOccupancy);
         for (VisitRequest visitRequest: store.getLineups()) {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
@@ -99,10 +106,12 @@ public class VisitManager {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
-        List<Booking> pendingBookings = dataModel.getBookings(storeID, Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)));
+        System.out.println("The current ready occupancy is " + currentReadyOccupancy);
+        List<Booking> pendingBookings = dataModel.getBookings(storeID, Timestamp.valueOf(LocalDate.now().atStartOfDay()), Timestamp.valueOf(LocalDateTime.now()));
         for (Booking booking:pendingBookings) {
+            System.out.println("Booking analyzed: " + booking.getHfid() + " status: " + booking.getState() + " isPending: " + booking.isPending());
             if (booking.isPending()) {
-                if (currentReadyOccupancy + booking.getNumberOfPeople() < store.getMaximumOccupancy()) {
+                if (currentReadyOccupancy + booking.getNumberOfPeople() <= store.getMaximumOccupancy()) {
                     for (Productsection section : booking.getProductSections()) {
                         if(section.getCurrentOccupancy() +
                                 booking.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
@@ -117,7 +126,7 @@ public class VisitManager {
 
         for (Lineup lineup : store.getLineups()){
             if (lineup.isPending()){
-                if (currentReadyOccupancy + lineup.getNumberOfPeople() < store.getMaximumOccupancy()){
+                if (currentReadyOccupancy + lineup.getNumberOfPeople() <= store.getMaximumOccupancy()){
                     dataModel.allowVisitRequest(lineup.getUuid());
                     currentReadyOccupancy += lineup.getNumberOfPeople();
                 }

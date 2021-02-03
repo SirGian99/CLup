@@ -5,16 +5,69 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Stateless
 public class StoreStatusHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.components/DataModel")
     private DataModel dataModel;
-
     public StoreStatusHandler() {
     }
+    public String getStoreNameByID(String storeID) {
+        return dataModel.getStore(storeID).getName();
+    }
 
+    public StoreInfo getStoreGeneralInfo(String storeID) {
+        Chain chain = dataModel.getChainFromStore(storeID);
+        Store store = dataModel.getStore(storeID);
+        Address address = null;
+        if (store.getAddress() != null) {
+            address = dataModel.getAddress(store.getAddress().getId());
+        }
+        return new StoreInfo(chain, store, address);
+    }
+
+    public ChainsAndAutonomousStores getChainsAndAutonomousStores(String city) {
+        List<Address> addresses = new ArrayList<>();
+        if(city != null) {
+            addresses = dataModel.getAddressesByCity(city);
+        }
+        Set<Chain> chains = new HashSet<>();
+        Set<Store> stores = new HashSet<>();
+        for (Address a: addresses) {
+            Store store = a.getStore();
+            if(store != null) {
+                Chain chain = store.getChain();
+                if (chain != null) {
+                    chains.add(chain);
+                } else {
+                    stores.add(store);
+                }
+            }
+        }
+        return new ChainsAndAutonomousStores(new ArrayList<Chain>(chains), new ArrayList<Store>(stores));
+    }
+
+    public Stores getChainStores(String chain, String city) {
+        ArrayList<StoreInfo> stores = new ArrayList<>();
+        if(city != null) {
+            List<Address> addresses = dataModel.getAddressesByCity(city);
+            for (Address a: addresses) {
+                Store store = a.getStore();
+                if(store != null && store.getChain() != null)
+                    if(store.getChain().getName().equals(chain))
+                        stores.add(new StoreInfo(store.getChain(), store, a));
+            }
+        } else {
+            Chain c = dataModel.getChainByName(chain);
+            if(c != null)
+                for(Store s : c.storeList())
+                    stores.add(new StoreInfo(s.getChain(), s, s.getAddress()));
+        }
+        return new Stores(stores);
+    }
 }
 
 class StoreInfo implements Serializable {
@@ -105,5 +158,12 @@ class ChainsAndAutonomousStores implements Serializable{
         for(Store s : stores){
             this.stores.add(new StoreInfo(s.getChain(), s, s.getAddress()));
         }
+    }
+}
+
+class Stores implements Serializable {
+    public List<StoreInfo> stores;
+    public Stores(ArrayList<StoreInfo> stores){
+        this.stores = stores;
     }
 }

@@ -28,4 +28,11 @@ public class CustomerInt {
         }
     }
 
+    @GET
+    @Path("customer/{id}")
+    @Produces("application/json")
+    public Response getCustomerRequests(@PathParam("id") String customer) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
 }
