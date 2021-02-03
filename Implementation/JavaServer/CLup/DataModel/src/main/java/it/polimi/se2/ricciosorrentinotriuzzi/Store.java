@@ -26,7 +26,9 @@ public class Store implements Serializable {
     private Chain chain;
     private String passepartoutuuid;
     private String passepartouthfid;
-    private Integer address;
+    @OneToOne
+    @JoinColumn(name = "address")
+    private Address address;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("desiredStartingTime ASC")
     private List<Booking> bookings;
@@ -45,6 +47,7 @@ public class Store implements Serializable {
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "dayInterval"))
     private List<Dayinterval> workingHours;
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -194,10 +197,10 @@ public class Store implements Serializable {
     }
 
 
-    public Integer getAddress() {
+    public Address getAddress() {
         return address;
     }
-    public void setAddress(Integer address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 

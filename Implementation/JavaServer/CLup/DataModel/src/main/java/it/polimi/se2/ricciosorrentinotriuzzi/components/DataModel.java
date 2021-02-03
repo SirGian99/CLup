@@ -154,6 +154,17 @@ public class DataModel {
         return em.find(Address.class, addressID);
     }
 
+    public List<Address> getAddressesByCity(String city){
+        List<Address> addresses = em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
+        if(addresses != null) {
+            for (Address a : addresses) {
+                System.out.println("\n\n" + a.getId());
+            }
+        }
+        return addresses;
+//        return em.createNamedQuery("Chain.getAllByCity", Chain.class).setParameter(1, city).getResultList();
+    }
+
 
     /* public Chain getChains(city: String) -> [Chain]: returns all the available chains and independent stores in the city specified by the homonym parameter
     getChain(storeID: ID) -> Chain: returns the chain of the store identified by parameter storeID
