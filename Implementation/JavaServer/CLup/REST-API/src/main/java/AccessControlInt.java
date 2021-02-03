@@ -19,7 +19,10 @@ public class AccessControlInt {
         //System.out.println(token + "\npoi\n" + storeID);
         int numOfPeople = visitManager.validateAccess(token, storeID);
         if (numOfPeople>0){
-            return Response.ok().entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("validated", true);
+            jsonResponse.put("numberOfPeople", numOfPeople);
+            return Response.status(Response.Status.OK).entity(jsonResponse.toString())
                     .type(MediaType.APPLICATION_JSON).build();
         }else {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -37,7 +40,10 @@ public class AccessControlInt {
         int numOfPeople = visitManager.validateExit(token, storeID);
         System.out.println("Ho ricevuto la richiesta, num:" + numOfPeople);
         if (numOfPeople>0){
-            return Response.status(Response.Status.OK).entity("{\" validated \" : \"true\", \"numberOfPeople\" : " + numOfPeople + "}")
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("validated", true);
+            jsonResponse.put("numberOfPeople", numOfPeople);
+            return Response.status(Response.Status.OK).entity(jsonResponse.toString())
                     .type(MediaType.APPLICATION_JSON).build();
         }else {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
