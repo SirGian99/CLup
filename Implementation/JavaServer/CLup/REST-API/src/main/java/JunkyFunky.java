@@ -11,6 +11,8 @@ import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,29 @@ public class JunkyFunky {
     public String getManagerByUser(@PathParam("manager") String manager) {
         return "Username: " + manager + "Name: " + dataModel.getManager(manager).getName();
     }
+
+    @GET
+    @Path("test/BookingsBetweenDate")
+    @Produces("text/plain")
+    public String testBookingBetweenDate() {
+        StringBuilder string = new StringBuilder();
+        List<Booking> bookings = dataModel.getBookings("a8224c0b-6552-11eb-a3e0-dca632747890", Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)));
+        for (Booking booking:bookings) {
+            string.append("BookingID: ").append(booking.getUuid()).append("    HFID: ").append(booking.getHfid()).append("\n");
+        }
+        return string.toString();
+    }
+
+    @GET
+    @Path("test/checkNewReadyRequest/{store}")
+    @Produces("text/plain")
+    public String checkNewReadyRequest(@PathParam("store") String storeID) {
+        visitManager.checkNewReadyRequest(storeID);
+        return "ok";
+    }
+
+
+
 
     @GET
     @Path("store/{store}/manager/{manager}")
@@ -112,7 +137,7 @@ public class JunkyFunky {
         return dataModel.getStore(storeID).getName();
     }
 
-
+/*
     @GET
     @Path("store/{storeID}/generalInfo")
     @Produces("application/json")
@@ -125,6 +150,8 @@ public class JunkyFunky {
         }
         return new StoreInfo(chain, store, address);
     }
+
+ */
 
     class StoreInfo implements Serializable {
         public String chainName;
