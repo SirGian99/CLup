@@ -155,14 +155,7 @@ public class DataModel {
     }
 
     public List<Address> getAddressesByCity(String city){
-        List<Address> addresses = em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
-        if(addresses != null) {
-            for (Address a : addresses) {
-                System.out.println("\n\n" + a.getId());
-            }
-        }
-        return addresses;
-//        return em.createNamedQuery("Chain.getAllByCity", Chain.class).setParameter(1, city).getResultList();
+        return em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
     }
 
 

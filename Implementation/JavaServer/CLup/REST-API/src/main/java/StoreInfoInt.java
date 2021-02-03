@@ -37,15 +37,13 @@ public class StoreInfoInt {
     }
 
     @GET
-    @Path("chainstore/city/{value}")
+    @Path("chainstore")
     @Produces("application/json")
-    public ChainsAndAutonomousStores getChainsAndAutonomousStores(@PathParam("value") String city) {
+    public ChainsAndAutonomousStores getChainsAndAutonomousStores(@QueryParam("city") String city) {
         List<Address> addresses = dataModel.getAddressesByCity(city);
-        System.out.println("\n\nCIAO");
         Set<Chain> chains = new HashSet<>();
         Set<Store> stores = new HashSet<>();
         for (Address a: addresses) {
-            System.out.println("\n\nCIAO");
             Store store = a.getStore();
             if(store != null) {
                 Chain chain = store.getChain();
