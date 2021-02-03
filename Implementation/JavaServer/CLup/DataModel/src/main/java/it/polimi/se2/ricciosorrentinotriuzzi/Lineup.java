@@ -2,6 +2,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.UuidGenerator;
+import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -125,5 +126,16 @@ public class Lineup extends VisitRequest implements Serializable {
                 ", state=" + state +
                 ", dateTimeOfCreation=" + dateTimeOfCreation +
                 '}';
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        json.put("estimatedTimeOfEntrance", getEstimatedTimeOfEntrance());
+        JSONObject jsonVisitToken = new JSONObject();
+        jsonVisitToken.put("uuid", getUuid());
+        jsonVisitToken.put("hfid", getHfid());
+        json.put("visitToken",jsonVisitToken);
+        json.put("numberOfPeople", numberOfPeople);
+        return json;
     }
 }
