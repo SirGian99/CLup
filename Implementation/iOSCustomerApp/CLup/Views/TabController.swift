@@ -7,7 +7,15 @@ struct TabViewController: View {
     var body: some View {
         VStack(spacing: 0) {
             if selectedIndex == 0 {
-                tab1
+                tab1.onAppear() {
+                    DB.controller.getChainStore(city: "Milano"){ (chains, autstores, error) in
+                        guard error == nil else {return print(error!)}
+                        DispatchQueue.main.async {
+                            Repository.singleton.chains = chains!
+                            Repository.singleton.stores = autstores!
+                        }
+                    }
+                }
             } else if selectedIndex == 1 {
                 tab2
             }

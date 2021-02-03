@@ -34,8 +34,8 @@ struct SecondTab: View {
                         RequestPreview(req: lur)
                             .sheet(isPresented: $showLURModal){LURDetails(lur: lur)}
                     }
+                    SizedDivider(height: 5)
                 }
-                SizedDivider(height: 5)
                 ForEach(repo.brsArray(), id: \.visitToken.uuid) { br in
                     SizedDivider(height: 10)
                     Button(action: {showBRModal.toggle()}){
