@@ -24,10 +24,10 @@ let br1 = BookingRequest(store: store5)
 
 class Repository: ObservableObject {
     static let singleton = Repository()
-    @Published var stores: [String:Store] = ["1":store1, "2":store2, "3":store3, "4":store4, "5":store5, "6":store6]
-    @Published var chains: [String:Chain] = ["1":chain1, "2":chain2, "3":chain3, "4":chain4, "5":chain5, "6":chain6]
-    @Published var lur: LineUpRequest? = lur1
-    @Published var brs: [String:BookingRequest] = [br1.visitToken.uuid.uuidString:br1]
+    @Published var stores: [String:Store] = [:] //["1":store1, "2":store2, "3":store3, "4":store4, "5":store5, "6":store6]
+    @Published var chains: [String:Chain] = [:] //["1":chain1, "2":chain2, "3":chain3, "4":chain4, "5":chain5, "6":chain6]
+    @Published var lur: LineUpRequest? = nil// lur1
+    @Published var brs: [String:BookingRequest] = [:]// [br1.visitToken.uuid.uuidString:br1]
 
     private init(){}
     
