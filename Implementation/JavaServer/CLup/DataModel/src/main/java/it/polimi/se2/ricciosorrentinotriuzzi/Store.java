@@ -1,10 +1,15 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 
 @Entity
 @Table(name = "store")
@@ -26,25 +31,30 @@ public class Store implements Serializable {
     private Chain chain;
     private String passepartoutuuid;
     private String passepartouthfid;
-    private Integer address;
+    @OneToOne
+    @JoinColumn(name = "address")
+    private Address address;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("desiredStartingTime ASC")
     private List<Booking> bookings;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("dateTimeOfCreation ASC")
     private List<Lineup> lineups;
-    @ManyToMany( fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "storemanager",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "manager"))
     private List<Manager> managers;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Productsection> productSections;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "workinghours",
             joinColumns = @JoinColumn(name = "store"),
             inverseJoinColumns = @JoinColumn(name = "dayInterval"))
     private List<Dayinterval> workingHours;
 
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name="tassaddresses",
             joinColumns=@JoinColumn(name="store")
@@ -52,8 +62,7 @@ public class Store implements Serializable {
     @Column(name="uri")
     private List<String> tassAddresses;
 
-
-
+    public Store() {id = UUID.randomUUID().toString();}
 
     public String getId() {
         return id;
@@ -147,6 +156,12 @@ public class Store implements Serializable {
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
+    public void addBooking(Booking b) {
+        if (this.bookings == null) {
+            this.bookings = new LinkedList<>();
+        }
+        bookings.add(b);
+    }
 
 
     public List<Lineup> getLineups() {
@@ -154,6 +169,12 @@ public class Store implements Serializable {
     }
     public void setLineups(List<Lineup> lineups) {
         this.lineups = lineups;
+    }
+    public void addLineup(Lineup l) {
+        if (this.lineups == null) {
+            this.lineups = new LinkedList<>();
+        }
+        lineups.add(l);
     }
 
 
@@ -166,7 +187,7 @@ public class Store implements Serializable {
         }
         this.managers.add(manager);
         manager.addStore(this);
-        }
+    }
 
 
     public List<Productsection> getProductSections() {
@@ -193,11 +214,61 @@ public class Store implements Serializable {
     }
 
 
-    public Integer getAddress() {
+    public Address getAddress() {
         return address;
     }
-    public void setAddress(Integer address) {
+    public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public boolean isOpenAt(LocalDateTime datetime) {
+        int dayOfWeek = datetime.getDayOfWeek().getValue();
+        for (Dayinterval di: workingHours) {
+            if (
+                    dayOfWeek == di.getDayOfTheWeek() &&
+                    datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                    datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOpenAt(LocalDateTime datetime, LocalTime duration) {
+        int dayOfWeek = datetime.getDayOfWeek().getValue();
+        for (Dayinterval di: workingHours) {
+            if (
+                dayOfWeek == di.getDayOfTheWeek() &&
+                datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        if(getAddress() != null)
+            json.put("address", getAddress().toJson());
+        json.put("name", getName());
+        json.put("description", getDescription());
+        if(getChain() != null)
+            json.put("chainName", getChain().getName());
+        json.put("currentOccupancy", getCurrentOccupancy());
+        json.put("maximumOccupancy", getMaximumOccupancy());
+        json.put("safetyThreshold", getSafetyThreshold());
+        JSONArray productSections = new JSONArray();
+        for (Productsection ps: getProductSections())
+            productSections.put(ps.toJson());
+        json.put("productSections", productSections);
+        JSONArray workingHours = new JSONArray();
+        for (Dayinterval di : getWorkingHours())
+            workingHours.put(di.toJson());
+        json.put("workingHours", workingHours);
+        return json;
     }
 
 }

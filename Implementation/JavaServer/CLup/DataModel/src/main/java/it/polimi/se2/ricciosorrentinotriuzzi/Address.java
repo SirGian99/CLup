@@ -1,10 +1,14 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "address")
+@NamedQuery(name = "Address.getAllByCity", query = "SELECT a FROM Address a WHERE a.city = ?1")
+
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -16,6 +20,8 @@ public class Address implements Serializable {
     private String city;
     private String postalCode;
     private String country;
+    @OneToOne(mappedBy = "address")
+    private Store store;
 
     public long getId() {
         return id;
@@ -64,4 +70,22 @@ public class Address implements Serializable {
         this.country = country;
     }
 
+
+    public Store getStore() {
+        return store;
+    }
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("id", getId());
+        json.put("streetName", getStreetName());
+        json.put("streetNumber", getStreetNumber());
+        json.put("postalCode", getPostalCode());
+        json.put("city", getCity());
+        json.put("country", getId());
+        return json;
+    }
 }

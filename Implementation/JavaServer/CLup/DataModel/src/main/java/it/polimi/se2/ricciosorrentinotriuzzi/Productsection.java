@@ -1,5 +1,7 @@
 package it.polimi.se2.ricciosorrentinotriuzzi;
 
+import org.json.JSONObject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -51,4 +53,11 @@ public class Productsection implements Serializable {
         this.maximumOccupancy = maximumOccupancy;
     }
 
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("currentOccupancy", getCurrentOccupancy());
+        json.put("maximumOccupancy", getMaximumOccupancy());
+        return json;
+    }
 }

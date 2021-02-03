@@ -2,6 +2,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class Customer implements Serializable {
     private Byte isAppCustomer;
     @OneToMany(mappedBy = "appCustomer")
     private List<Attitude> attitudes;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "appCustomer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lineup> lineups;
@@ -33,5 +34,21 @@ public class Customer implements Serializable {
     }
     public void setIsAppCustomer(Byte isAppCustomer) {
         this.isAppCustomer = isAppCustomer;
+    }
+
+    public List<Booking> getBookings() { return bookings; }
+    public void addBooking(Booking b) {
+        if (this.bookings == null) {
+            this.bookings = new LinkedList<>();
+        }
+        bookings.add(b);
+    }
+
+    public List<Lineup> getLineups() { return lineups; }
+    public void addLineup(Lineup l) {
+        if (this.lineups == null) {
+            this.lineups = new LinkedList<>();
+        }
+        lineups.add(l);
     }
 }
