@@ -23,7 +23,7 @@ public class DataModel {
     public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        if (store.getId().equals(storeID)) {
+        if (store.getId().equals(storeID) && request.isReady()) {
             request.setVisitStartingTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.FULFILLED);
             request.setNumberOfPeople(numberOfPeople);
@@ -72,8 +72,8 @@ public class DataModel {
 
     public void allowVisitRequest(String token){
         VisitRequest request = getVisitRequest(token);
-        if (request!= null)
-        request.setState(VisitRequestStatus.READY);
+        if (request!= null && request.isPending())
+            request.setState(VisitRequestStatus.READY);
     }
 
     public int checkFulfilledRequest(String storeID, String visitToken){
@@ -84,7 +84,7 @@ public class DataModel {
     public boolean endVisit(String visitToken, String storeID, int numberOfPeople){
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
-        if (store.getId().equals(storeID)) {
+        if (store.getId().equals(storeID) && request.isFulfilled()) {
             request.setVisitCompletionTime(Timestamp.valueOf(LocalDateTime.now()));
             request.setState(VisitRequestStatus.COMPLETED);
             store.setCurrentOccupancy(store.getCurrentOccupancy() - numberOfPeople);
@@ -138,8 +138,10 @@ public class DataModel {
     public void removeRequest(VisitRequest request) {
         if (request instanceof Lineup) {
             request.getCustomer().getLineups().remove(request);
+            request.getStore().getLineups().remove(request);
         } else if (request instanceof Booking) {
             request.getCustomer().getBookings().remove(request);
+            request.getStore().getBookings().remove(request);
         }
         em.remove(request);
     }

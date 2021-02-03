@@ -51,9 +51,6 @@ public class JunkyFunky {
         return "ok";
     }
 
-
-
-
     @GET
     @Path("store/{store}/manager/{manager}")
     @Produces("text/plain")

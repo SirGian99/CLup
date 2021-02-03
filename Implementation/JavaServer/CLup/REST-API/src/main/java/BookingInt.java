@@ -17,7 +17,7 @@ public class BookingInt {
     @Path("booking")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response lineup(String body) {
+    public Response booking(String body) {
         JSONObject json = new JSONObject(body);
         System.out.println("\n\nIl body:\n"+body+"\n\n");
         String customerID = json.getString("customerID");

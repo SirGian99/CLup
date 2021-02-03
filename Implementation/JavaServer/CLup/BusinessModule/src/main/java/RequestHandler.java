@@ -4,6 +4,7 @@ import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 import javax.ejb.*;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Random;
 public class RequestHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.components/DataModel")
     private DataModel dataModel;
+    @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi/VisitManager")
+    private VisitManager visitManager;
 
     public RequestHandler() {}
 
@@ -44,8 +47,8 @@ public class RequestHandler {
         lur.setState(VisitRequestStatus.PENDING);
         //TODO devi settare anche l'ete (per ora messo pezzotto)
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
-        //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(lur);
+        visitManager.newRequest(lur.getUuid());
         //TODO devi fare anche la append to queue se è una lur
         return lur;
     }
@@ -63,6 +66,9 @@ public class RequestHandler {
             return null;
         }
         if (!s.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {return null;}
+        //|| desiredStart.before(Timestamp.from(Instant.now()))
+        //check sulla current queue disp time
+
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
         List<Booking> overlappingBookings = dataModel.getBookings(customerID,desiredStart,end);
         if (!overlappingBookings.isEmpty()) {
@@ -84,10 +90,16 @@ public class RequestHandler {
         //TODO check sulle occupancy...
         //TODO chiama VisitManager.newRequest(token)
         dataModel.insertRequest(br);
+        visitManager.newRequest(br.getUuid());
         return br;
     }
 
     public void cancelRequest(String uuid) {
-        dataModel.removeRequest(dataModel.getVisitRequest(uuid));
+        VisitRequest request = dataModel.getVisitRequest(uuid);
+        if (request.isPending() || request.isReady()) {
+            dataModel.removeRequest(request);
+            //check if other customers can enter
+            visitManager.checkNewReadyRequest(request.getStore().getId());
+        }
     }
 }
