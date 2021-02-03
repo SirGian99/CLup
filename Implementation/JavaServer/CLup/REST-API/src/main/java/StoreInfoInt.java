@@ -5,7 +5,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
-@Path("/StoreInfoInt/")
+@Path("/")
 public class StoreInfoInt {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.StoreStatusHandler")
     private StoreStatusHandler ssh;

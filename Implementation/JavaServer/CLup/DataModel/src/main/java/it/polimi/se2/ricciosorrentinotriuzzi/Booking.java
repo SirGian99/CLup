@@ -3,7 +3,6 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.*;
-import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
