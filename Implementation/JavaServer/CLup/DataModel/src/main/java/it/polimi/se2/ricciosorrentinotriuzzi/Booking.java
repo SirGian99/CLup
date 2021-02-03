@@ -5,6 +5,9 @@ import java.io.Serializable;
 import java.sql.*;
 import java.util.Date;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.UUID;
 
 @Entity
@@ -148,5 +151,24 @@ public class Booking extends VisitRequest implements Serializable {
     @Override
     public Boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        JSONObject jsonVisitToken = new JSONObject();
+        jsonVisitToken.put("uuid", getUuid());
+        jsonVisitToken.put("hfid", getHfid());
+        json.put("visitToken",jsonVisitToken);
+        json.put("storeID", getStore().getId());
+        json.put("numberOfPeople", getNumberOfPeople());
+        JSONObject jsonTimeInterval = new JSONObject();
+        jsonTimeInterval.put("startingDatetime", desiredStartingTime);
+        jsonTimeInterval.put("duration", desiredDuration);
+        json.put("desiredTimeInterval", jsonTimeInterval);
+        JSONArray jsonProductSections = new JSONArray();
+        for(Productsection ps : getProductSections())
+            jsonProductSections.put(ps.getName());
+        json.put("productSectionsNames", jsonProductSections);
+        return json;
     }
 }

@@ -1,4 +1,5 @@
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.ejb.EJB;
@@ -29,10 +30,22 @@ public class CustomerInt {
     }
 
     @GET
-    @Path("customer/{id}")
+    @Path("{id}")
     @Produces("application/json")
-    public Response getCustomerRequests(@PathParam("id") String customer) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    public Response getCustomerRequests(@PathParam("id") String customerID) {
+        Customer customer = cc.getCustomerByID(customerID);
+        JSONObject jsonResponse = new JSONObject();
+        JSONArray toAppend = new JSONArray();
+        for(Booking b : customer.getBookings()) {
+            toAppend.put(b.toJson());
+        }
+        jsonResponse.put("bookingRequests", toAppend);
+        toAppend = new JSONArray();
+        for(Lineup lu : customer.getLineups()) {
+            toAppend.put(lu.toJson());
+        }
+        jsonResponse.put("lineupRequests", toAppend);
+        return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

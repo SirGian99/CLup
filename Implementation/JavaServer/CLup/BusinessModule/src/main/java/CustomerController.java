@@ -14,4 +14,8 @@ public class CustomerController {
     public Customer registerApp(String appid) {
         return dataModel.newAppCustomer(appid);
     }
+
+    public Customer getCustomerByID(String customerID) {
+        return dataModel.getCustomer(customerID);
+    }
 }
