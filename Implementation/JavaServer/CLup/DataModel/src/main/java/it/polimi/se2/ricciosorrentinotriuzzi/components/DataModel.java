@@ -29,19 +29,15 @@ public class DataModel {
     public Timestamp getQueueDisposalTime(String storeID){
         List<Lineup> queue = getQueue(storeID);
         int size = queue.size();
-        System.out.println("La dimensione è " + size);
+        System.out.println("La dimensione della coda di "+storeID+" è " + size);
         if (size>0){
-            for (Lineup lineup : queue)
+            /*for (Lineup lineup : queue)
                 System.out.println("Sono una lur: " + lineup.getHfid() +" uuid: " + lineup.getUuid() + "timeofc: " + lineup.getDateTimeOfCreation()
-                + " EstTimeOfEntrance: " + lineup.getEstimatedTimeOfEntrance());
-            return queue.get(queue.size()-1).getEstimatedTimeOfEntrance();
+                + " EstTimeOfEntrance: " + lineup.getEstimatedTimeOfEntrance());*/
+            Timestamp ts = queue.get(queue.size()-1).getEstimatedTimeOfEntrance();
+            return ts.before(Timestamp.valueOf(LocalDateTime.now())) ? Timestamp.valueOf(LocalDateTime.now()) : ts;
         }
         return Timestamp.valueOf(LocalDateTime.now());
-        /*Timestamp toReturn = Timestamp.from(Instant.now().plus(
-                getQueue(storeID).size() * getStore(storeID).getAverageVisitDuration().getTime(),
-                ChronoUnit.MILLIS));
-        System.out.println("Appena calcolata: " + toReturn);
-        return toReturn;*/
     }
 
     public int checkReadyRequest(String storeID, String visitToken){
