@@ -3,6 +3,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.*;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -30,13 +31,16 @@ public class Booking extends VisitRequest implements Serializable {
     private Time desiredDuration;
     private Timestamp visitStartingTime;
     private Timestamp visitCompletionTime;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "bookingproduct",
                 joinColumns = @JoinColumn(name = "booking"),
                 inverseJoinColumns = @JoinColumn(name = "productSection"))
     private List<Productsection> productSections;
 
-    public Booking() {uuid = UUID.randomUUID().toString();}
+    public Booking() {
+        uuid = UUID.randomUUID().toString();
+        productSections = new LinkedList<>();
+    }
 
     @Override
     public String getUuid() {
@@ -98,6 +102,10 @@ public class Booking extends VisitRequest implements Serializable {
     public String getHfid() {
         return hfid;
     }
+    @Override
+    public void setHfid(String hfid) {
+        this.hfid = hfid;
+    }
 
     @Override
     public Timestamp getVisitStartingTime() {
@@ -117,6 +125,9 @@ public class Booking extends VisitRequest implements Serializable {
 
     public List<Productsection> getProductSections() {
         return productSections;
+    }
+    public void addProductSection(Productsection ps) {
+        productSections.add(ps);
     }
 
     public Timestamp getDesiredStartingTime() {
@@ -161,7 +172,7 @@ public class Booking extends VisitRequest implements Serializable {
         json.put("storeID", getStore().getId());
         json.put("numberOfPeople", getNumberOfPeople());
         JSONObject jsonTimeInterval = new JSONObject();
-        jsonTimeInterval.put("startingDatetime", getDesiredStartingTime());
+        jsonTimeInterval.put("start", getDesiredStartingTime());
         jsonTimeInterval.put("duration", getDesiredDuration());
         json.put("desiredTimeInterval", jsonTimeInterval);
         JSONArray jsonProductSections = new JSONArray();
@@ -173,7 +184,6 @@ public class Booking extends VisitRequest implements Serializable {
 
     @Override
     public boolean isBooking(){
-        System.out.println("ECCOLO!");
         return true;
     }
 }

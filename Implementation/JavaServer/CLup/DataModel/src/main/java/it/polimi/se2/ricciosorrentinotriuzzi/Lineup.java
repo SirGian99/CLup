@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "lineup")
+//@NamedQuery(name = "Lineup.getStoreQueue", query = "SELECT l FROM Lineup l where (l.store.id LIKE :store) and (l.state = :pending or l.state= :ready" )
 public class Lineup extends VisitRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -30,6 +31,7 @@ public class Lineup extends VisitRequest implements Serializable {
     private Timestamp dateTimeOfCreation;
     private Timestamp visitStartingTime;
     private Timestamp visitCompletionTime;
+
 
     public Lineup() {uuid = UUID.randomUUID().toString();}
 
@@ -131,6 +133,7 @@ public class Lineup extends VisitRequest implements Serializable {
     public JSONObject toJson(){
         JSONObject json = new JSONObject();
         json.put("estimatedTimeOfEntrance", getEstimatedTimeOfEntrance());
+        json.put("storeID", getStore().getId());
         JSONObject jsonVisitToken = new JSONObject();
         jsonVisitToken.put("uuid", getUuid());
         jsonVisitToken.put("hfid", getHfid());

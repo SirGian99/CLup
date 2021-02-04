@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,7 +16,7 @@ import java.util.*;
 @Table(name = "store")
 public class Store implements Serializable {
     private static final long serialVersionUID = 1L;
-    //coda non c'è
+
     @Id
     private String id;
     private String name;
@@ -24,7 +25,7 @@ public class Store implements Serializable {
     private byte[] image;
     private int currentOccupancy;
     private int maximumOccupancy;
-    private double averageVisitDuration;
+    private Time averageVisitDuration;
     private Double safetyThreshold;
     @ManyToOne
     @JoinColumn(name = "chain")
@@ -72,6 +73,10 @@ public class Store implements Serializable {
     }
 
 
+    public void setAverageVisitDuration(Time averageVisitDuration) {
+        this.averageVisitDuration = averageVisitDuration;
+    }
+
     public String getName() {
         return name;
     }
@@ -112,10 +117,9 @@ public class Store implements Serializable {
     }
 
 
-    public double getAverageVisitDuration() {
+    public Time getAverageVisitDuration() {
         return averageVisitDuration;
     }
-    public void setAverageVisitDuration(double averageVisitDuration) { this.averageVisitDuration = averageVisitDuration; }
 
 
     public Double getSafetyThreshold() {
@@ -254,11 +258,14 @@ public class Store implements Serializable {
         if(getAddress() != null)
             json.put("address", getAddress().toJson());
         json.put("name", getName());
+        json.put("id", getId());
         json.put("description", getDescription());
         if(getChain() != null)
             json.put("chainName", getChain().getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
+        //TODO estimated messa a caso
+        //json.put("estimatedQueueDisposalTime", "15");
         json.put("safetyThreshold", getSafetyThreshold());
         JSONArray productSections = new JSONArray();
         for (Productsection ps: getProductSections())
@@ -271,4 +278,11 @@ public class Store implements Serializable {
         return json;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return id.equals(store.id);
+    }
 }

@@ -2,7 +2,6 @@ import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import javax.ejb.*;
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -21,6 +21,8 @@ public class Productsection implements Serializable {
     private Double currentOccupancy;
     private Integer maximumOccupancy;
 
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
     public Store getStore() {
         return store;
@@ -55,6 +57,7 @@ public class Productsection implements Serializable {
 
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
+        json.put("id", getId());
         json.put("name", getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
