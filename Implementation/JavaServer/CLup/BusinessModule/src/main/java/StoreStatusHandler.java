@@ -20,7 +20,7 @@ public class StoreStatusHandler {
 
     public JSONObject getStoreGeneralInfo(String storeID) {
         Store store = dataModel.getStore(storeID);
-        return store.toJson();
+        return store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(storeID));
     }
 
     public JSONObject getChainsAndAutonomousStores(String city) {

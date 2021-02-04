@@ -34,7 +34,6 @@ public class DataModel {
             for (Lineup lineup : queue)
                 System.out.println("Sono una lur: " + lineup.getHfid() +" uuid: " + lineup.getUuid() + "timeofc: " + lineup.getDateTimeOfCreation()
                 + " EstTimeOfEntrance: " + lineup.getEstimatedTimeOfEntrance());
-
             return queue.get(queue.size()-1).getEstimatedTimeOfEntrance();
         }
         return Timestamp.valueOf(LocalDateTime.now());
@@ -167,7 +166,6 @@ public class DataModel {
     public void insertRequest(VisitRequest request) {
         em.persist(request);
         System.out.println("New request to persist with uuid: "+request.getUuid());
-        //TODO devi fare anche la append to queue se è una lur
     }
 
     public void removeRequest(VisitRequest request) {
@@ -225,6 +223,10 @@ public class DataModel {
 
     public List<Address> getAddressesByCity(String city){
         return em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
+    }
+
+    public Productsection getSection(Long id) {
+        return em.find(Productsection.class, id);
     }
 
 
