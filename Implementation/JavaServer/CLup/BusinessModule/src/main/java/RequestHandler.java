@@ -88,10 +88,12 @@ public class RequestHandler {
         // check sulle occupancy...
         List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
         int maxStoreOcc = s.getMaximumOccupancy();
-        for (Booking booking : otherBookings){
+        for (Booking booking : otherBookings) {
             maxStoreOcc -= booking.getNumberOfPeople();
-            if (maxStoreOcc <=0)
+            if (maxStoreOcc <=0) {
+                System.out.println("Non c'è abbastanza spazio nello store per questo booking");
                 return null;
+            }
         }
 
         Booking br = new Booking();
@@ -103,7 +105,6 @@ public class RequestHandler {
         br.setDesiredStartingTime(desiredStart);
         br.setDesiredDuration(duration);
         br.setHfid("B-" + (char)( Integer.parseInt(br.getDesiredStartingTime().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(br.getUuid().substring(4, 8), 16) % 999));
-        //TODO controlli sulle sections
         for (String sid: sectionIDs) {
             Productsection ps = dataModel.getSection(Long.valueOf(sid));
             if (ps.getStore().equals(s)) {
