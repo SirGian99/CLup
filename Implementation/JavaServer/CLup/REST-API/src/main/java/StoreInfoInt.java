@@ -37,8 +37,8 @@ public class StoreInfoInt {
     @GET
     @Path("chain/{name}/stores")
     @Produces("application/json")
-    public Response getChainStores(@PathParam("name") String chain, @QueryParam("city") String city) {
-        JSONObject jsonResponse = ssh.getChainStores(chain, city);
+    public Response getChainStores(@PathParam("name") String chainName, @QueryParam("city") String city) {
+        JSONObject jsonResponse = ssh.getChainStores(chainName, city);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
 }

@@ -18,4 +18,6 @@ public class CustomerController {
     public Customer getCustomerByID(String customerID) {
         return dataModel.getCustomer(customerID);
     }
+
+    //Other much more complex methods are omitted in this prototype
 }

@@ -7,6 +7,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +25,21 @@ public class DataModel {
                 .getResultList();
         //return em.createNamedQuery("Lineup.getStoreQueue", Lineup.class).setParameter(1, storeID).getResultList();
                 //.setParameter("pending", VisitRequestStatus.PENDING).setParameter("ready", VisitRequestStatus.READY).getResultList();
+    }
+
+    public List<Store> getAllStores(){
+        return em.createQuery("select s from Store s").getResultList();
+    }
+
+    public List<VisitRequest> getVisitRequest(String storeID, Timestamp date){
+        List<VisitRequest> toReturn = new LinkedList<>();
+        toReturn.addAll(em.createQuery(
+                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
+                .setParameter("endingTime", date).getResultList());
+        toReturn.addAll(em.createQuery(
+                "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
+                .setParameter("endingTime", date).getResultList());
+        return toReturn;
     }
 
     public Timestamp getQueueDisposalTime(String storeID){
