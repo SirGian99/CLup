@@ -2,8 +2,11 @@ package it.polimi.se2.ricciosorrentinotriuzzi.components;
 import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import javax.ejb.*;
 import javax.persistence.*;
+import javax.sound.sampled.Line;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,6 +16,34 @@ public class DataModel {
     private EntityManager em;
 
     public DataModel() {}
+
+    public List<Lineup> getQueue(String storeID){
+        return em.createQuery(
+                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.state = :pending")
+                .setParameter("storeID", storeID).setParameter("pending", VisitRequestStatus.PENDING)
+                .getResultList();
+        //return em.createNamedQuery("Lineup.getStoreQueue", Lineup.class).setParameter(1, storeID).getResultList();
+                //.setParameter("pending", VisitRequestStatus.PENDING).setParameter("ready", VisitRequestStatus.READY).getResultList();
+    }
+
+    public Timestamp getQueueDisposalTime(String storeID){
+        List<Lineup> queue = getQueue(storeID);
+        int size = queue.size();
+        System.out.println("La dimensione è " + size);
+        if (size>0){
+            for (Lineup lineup : queue)
+                System.out.println("Sono una lur: " + lineup.getHfid() +" uuid: " + lineup.getUuid() + "timeofc: " + lineup.getDateTimeOfCreation()
+                + " EstTimeOfEntrance: " + lineup.getEstimatedTimeOfEntrance());
+
+            return queue.get(queue.size()-1).getEstimatedTimeOfEntrance();
+        }
+        return Timestamp.valueOf(LocalDateTime.now());
+        /*Timestamp toReturn = Timestamp.from(Instant.now().plus(
+                getQueue(storeID).size() * getStore(storeID).getAverageVisitDuration().getTime(),
+                ChronoUnit.MILLIS));
+        System.out.println("Appena calcolata: " + toReturn);
+        return toReturn;*/
+    }
 
     public int checkReadyRequest(String storeID, String visitToken){
         VisitRequest request = getVisitRequest(visitToken);
@@ -72,8 +103,12 @@ public class DataModel {
     }
 
     public void allowVisitRequest(VisitRequest request){
-        if (request!= null && request.isPending())
+        if (request!= null && request.isPending()) {
             request.setState(VisitRequestStatus.READY);
+            if(!request.isBooking()){
+                ((Lineup)request).setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now()));
+            }
+        }
     }
 
     public int checkFulfilledRequest(String storeID, String visitToken){

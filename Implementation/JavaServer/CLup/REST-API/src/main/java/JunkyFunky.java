@@ -52,6 +52,19 @@ public class JunkyFunky {
     }
 
     @GET
+    @Path("test/checkGetQueue/{store}")
+    @Produces("text/plain")
+    public String checkGetQueue(@PathParam("store") String storeID) {
+        List<Lineup> lineups = dataModel.getQueue(storeID);
+        StringBuilder toRet = new StringBuilder();
+        for (Lineup lur: lineups) {
+            System.out.println(lur.getUuid());
+            toRet.append(lur.getUuid());
+        }
+        return toRet.toString();
+    }
+
+    @GET
     @Path("store/{store}/manager/{manager}")
     @Produces("text/plain")
     public String addStoreManager(@PathParam("manager") String manager, @PathParam("store") String store) {
