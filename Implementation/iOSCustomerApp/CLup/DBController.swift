@@ -43,10 +43,10 @@ class DB {
                 let state = brJson["state"].intValue
                 let numberOfPeople = brJson["numberOfPeople"].intValue
                 let storeID = brJson["storeID"].stringValue
-                let start = brJson["desideredTimeInterval"]["start"].stringValue
-                let duration = brJson["desideredTimeInterval"]["duration"].intValue
-                let desiredTimeInterval = CTimeInterval(startingDateTime: self.serverDateFormatter(date: start), duration: duration)
-                let sections = brJson["sections"].arrayObject! as! [String]
+                let start = brJson["desiredTimeInterval"]["start"].stringValue
+                let duration = self.durationFormatter(d: brJson["desiredTimeInterval"]["duration"].stringValue)
+                let desiredTimeInterval = CTimeInterval(startingDateTime: self.serverDateTimeFormatter(date: start), duration: duration)
+                let sections = brJson["productSectionsNames"].arrayObject! as! [String]
                 self.getStoreFromID(storeID: storeID) { (store, error) in
                     guard error == nil else {return completion(error!)}
                     var sectionArray: [Section] = []
@@ -55,7 +55,6 @@ class DB {
                             sect.name == sectName ? sect : nil
                         }.first!)
                     }
-                    print(sectionArray)
                     let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sectionArray, store: store!)
                     DispatchQueue.main.async { Repository.singleton.brs[uuid] = br }
                 }
@@ -63,48 +62,6 @@ class DB {
             completion(nil)
         }.resume()
     }
-    
-//    func getMyRequests(completion: @escaping ([String:String]?, [[String:String]]?, String?) -> Void) {
-//        //(lur, brDict, error)
-//        print("*** DB - \(#function) ***")
-//        let request = initJSONRequest(urlString: ServerRoutes.customerData(deviceToken), body: Data(), httpMethod: "GET")
-//        URLSession.shared.dataTask(with: request) { data, response, error in
-//            guard error == nil else {return completion(nil,nil,"Error in \(#function). The error is:\n\(error!.localizedDescription)")}
-//            guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in \(#function). Invalid response!")}
-//            guard responseCode == 200 else {return completion(nil,nil,"Bad response code in \(#function): \(responseCode)")}
-//            guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil,nil,"Error with returned data in \(#function)")}
-//
-//            let brArray = jsonResponse["bookingRequests"].arrayValue
-//            var lurParams: [String:String]? = nil
-//            var brsParams: [[String:String]] = []
-//            //TODO MANCA ANCHE IL FOR PER I BOOKING
-//            if jsonResponse["lineupRequest"].exists() {
-//                lurParams = [:]
-//                let lurJson = jsonResponse["lineupRequest"]
-//                let hfid = lurJson["visitToken"]["hfid"].stringValue
-//                lurParams!["hfid"] = hfid
-//                let uuid = lurJson["visitToken"]["uuid"].stringValue
-//                lurParams!["uuid"] = uuid
-//                let state = lurJson["state"].intValue
-//                lurParams!["state"] = "\(state)"
-//                let numberOfPeople = lurJson["numberOfPeople"].intValue
-//                lurParams!["numberOfPeople"] = "\(numberOfPeople)"
-//                let storeID = lurJson["storeID"].stringValue
-//                lurParams!["storeID"] = storeID
-//            }
-//            for brJson in brArray {
-//                var brParams: [String:String] = [:]
-//                let hfid = brJson["visitToken"]["hfid"].stringValue
-//                brParams["hfid"] = hfid
-//                let uuid = brJson["visitToken"]["uuid"].stringValue
-//                let state = brJson["state"].intValue
-//                let numberOfPeople = brJson["numberOfPeople"].intValue
-//                let storeID = brJson["storeID"].stringValue
-//            }
-//            // TODO  CHIAMA LA GET INFO DELLO STORE!!!!!
-//            completion(lurParams, brsParams, nil)
-//        }.resume()
-//    }
 
     func register(token: String, completion: @escaping (String?) -> Void) { // (error)
         do {
@@ -234,7 +191,7 @@ class DB {
                     let end = whJson["end"].stringValue
                     (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
                 }
-                let sectionsArray = storeJson["sections"].arrayValue
+                let sectionsArray = storeJson["productSections"].arrayValue
                 var sections: [Section] = []
                 for sectJson in sectionsArray {
                     let id = sectJson["id"].stringValue
@@ -274,7 +231,7 @@ class DB {
                     let end = whJson["end"].stringValue
                     (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
                 }
-                let sectionsArray = storeJson["sections"].arrayValue
+                let sectionsArray = storeJson["productSections"].arrayValue
                 var sections: [Section] = []
                 for sectJson in sectionsArray {
                     let id = sectJson["id"].stringValue
@@ -311,7 +268,7 @@ class DB {
                 let end = whJson["end"].stringValue
                 (whs.wh[day])?.append(DayInterval(day: day, start: Time(time: start), end: Time(time: end)))
             }
-            let sectionsArray = storeJson["sections"].arrayValue
+            let sectionsArray = storeJson["productSections"].arrayValue
             var sections: [Section] = []
             for sectJson in sectionsArray {
                 let id = sectJson["id"].stringValue
@@ -329,11 +286,10 @@ class DB {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = body
-        //request.setValue("close", forHTTPHeaderField: "Connection")
         return request
     }
     
-    private func serverDateFormatter(date: String) -> Date {
+    private func serverDateTimeFormatter(date: String) -> Date {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -370,6 +326,15 @@ class DB {
         let hourStr = hour<=9 ? "0\(hour)" : "\(hour)"
         let minStr = minutes<=9 ? "0\(minutes)" : "\(minutes)"
         return "\(hourStr):\(minStr):00"
+    }
+    
+    private func durationFormatter(d: String) -> Duration {
+        let firstIndex = d.firstIndex(of: ":")!
+        let hour = Int(d[d.startIndex..<firstIndex])!
+        let secondPart = d[d.index(after: d.firstIndex(of: ":")!)..<d.endIndex]
+        let secondIndex = secondPart.firstIndex(of: ":") ?? secondPart.endIndex
+        let minute = Int(secondPart[secondPart.startIndex..<secondIndex])!
+        return hour*60+minute
     }
     
 }

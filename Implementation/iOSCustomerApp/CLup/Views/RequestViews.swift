@@ -128,16 +128,16 @@ struct BRDetails: View {
             }
             
             VStack(spacing: 0) {
-                SizedDivider(height: 6)
+                SizedDivider(height: 8)
                 Text("Booking details")
                     .fontWeight(.bold)
                     .font(.headline)
                 SizedDivider(height: 6)
                 VStack(spacing: 5) {
                     HStack {
-                        Text("Time of entrance")
+                        Text("Date of entrance")
                         Spacer()
-                        Text(br.desiredTimeInterval.startingDateTime.getTime() ?? "Not available")
+                        Text(br.desiredTimeInterval.startingDateTime.getDate()+"\nat "+br.desiredTimeInterval.startingDateTime.getTime())
                     }.font(.subheadline)
                     Rectangle().frame(height: 1)
                     HStack {
@@ -159,7 +159,7 @@ struct BRDetails: View {
                         Text("\(br.numberOfPeople)")
                     }.font(.subheadline)
                 }.padding(.horizontal)
-                SizedDivider(height: 6)
+                SizedDivider(height: 8)
             }
             .lightBlueCard()
             

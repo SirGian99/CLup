@@ -36,8 +36,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 self.devToken = temp
             }
         } else {
+            print("appID: \(devToken)")
             DB.controller.getMyRequests() { error in
-                if error != nil {fatalError(error!)}
+                if error != nil {print(error!)}
             }
         }
     }

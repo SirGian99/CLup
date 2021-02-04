@@ -47,8 +47,6 @@ struct Time: CustomStringConvertible, Hashable {
 struct CTimeInterval {
     let startingDateTime: Date
     let duration: Duration
-    //var date: DateComponents {return Calendar.current.dateComponents([.day, .month, .year], from: startingDateTime)}
-    //var start: DateComponents {return Calendar.current.dateComponents([.day, .minute], from: startingDateTime)}
 }
 
 struct DayInterval: Hashable {
@@ -67,19 +65,12 @@ struct WorkingHours {
     var saturday: [DayInterval] {return wh[6]!}
     var sunday: [DayInterval] {return wh[7]!}
     
-    init(test: Bool = false) {
+    init() {
         wh = [:]
         wh[1] = []; wh[2] = []; wh[3] = []; wh[4] = []; wh[5] = []; wh[6] = []; wh[7] = []
-        if test {
-            wh[1] = [DayInterval(day: 1, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 1, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
-            wh[2] = [DayInterval(day: 2, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 2, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
-            wh[3] = [DayInterval(day: 3, start: Time(hour: "09", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 3, start: Time(hour: "17", minute: "00"), end: Time(hour: "19", minute: "00"))]
-            wh[4] = [DayInterval(day: 4, start: Time(hour: "10", minute: "00"), end: Time(hour: "11", minute: "00")), DayInterval(day: 4, start: Time(hour: "17", minute: "00"), end: Time(hour: "18", minute: "00"))]
-        }
     }
 }
 
-var whtest = WorkingHours(test: true)
 
 enum VRState: Int {
     case pending = 0
@@ -102,12 +93,6 @@ class Chain: ObservableObject {
     
     func addStore(_ store: Store) {
         DispatchQueue.main.async { self.stores[store.id] = store }
-    }
-    
-    init() {
-        self.name = "name\(Int.random(in: 1..<100))"
-        self.description = "description"
-        self.image = UIImage(imageLiteralResourceName: "MissingImg")
     }
 }
 
@@ -154,24 +139,6 @@ class Store {
         self.chain = chain
         chain?.addStore(self)
     }
-    
-    init(chain: Chain? = nil) {
-        self.id = "\(Int.random(in: 1..<100))"
-        self.name = "Store\(Int.random(in: 1..<100))"
-        self._description = "description"
-        self._image = nil
-        self.address = Address(streetName: "via \(Int.random(in: 1..<100))", streetNumber: "\(Int.random(in: 1..<100))", city: "Prova", postalCode: "01234", country: "Italy")
-        self.currentOccupancy = 10
-        self.workingHours = whtest
-        self.estimatedQueueDisposalTime = 600
-        self.chain = chain
-        self.sections = [
-            Section(id: "\(Int.random(in: 1..<10))", name: "Sezione\(Int.random(in: 1..<10))"),
-            Section(id: "\(Int.random(in: 1..<10))", name: "Sezione\(Int.random(in: 1..<10))"),
-            Section(id: "\(Int.random(in: 1..<10))", name: "Sezione\(Int.random(in: 1..<10))")
-        ]
-        chain?.addStore(self)
-    }
 }
 
 protocol VisitRequest: ObservableObject, CustomStringConvertible {
@@ -198,14 +165,6 @@ class LineUpRequest: VisitRequest {
         self.ete = ete
         self.store = store
     }
-    
-    init(store: Store) {
-        self.numberOfPeople = 3
-        self.visitToken = Token(hfid: "L\(Int.random(in: 1..<100))", uuid: CUUID())
-        self.state = .pending
-        self.ete = Date(timeIntervalSinceNow: 6000)
-        self.store = store
-    }
 }
 
 class BookingRequest: VisitRequest {
@@ -213,7 +172,6 @@ class BookingRequest: VisitRequest {
     let visitToken: Token
     let state: VRState
     let store: Store
-    
     let desiredTimeInterval: CTimeInterval
     let sections: [Section]
     
@@ -228,21 +186,12 @@ class BookingRequest: VisitRequest {
         self.store = store
     }
     
-    init(store: Store) {
-        self.numberOfPeople = 3
-        self.visitToken = Token(hfid: "B\(Int.random(in: 1..<100))", uuid: CUUID())
-        self.state = .pending
-        self.desiredTimeInterval = CTimeInterval(startingDateTime: Date(timeIntervalSinceNow: 60000), duration: 600)
-        self.sections = store.sections
-        self.store = store
-    }
-    
     func listOfSections() -> String {
         if sections.first == nil {
             return "None"
         }
         var x = sections.first!.name
-        for sect in sections {
+        for sect in sections.dropFirst() {
             x = x + ", " + sect.name
         }
         return x

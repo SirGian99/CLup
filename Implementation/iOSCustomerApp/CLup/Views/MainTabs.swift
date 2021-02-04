@@ -36,11 +36,11 @@ struct SecondTab: View {
                     }
                     SizedDivider(height: 5)
                 }
-                ForEach(repo.brsArray(), id: \.visitToken.uuid) { br in
+                ForEach(repo.brs.keys.sorted(), id: \.self) { key in
                     SizedDivider(height: 10)
                     Button(action: {showBRModal.toggle()}){
-                        RequestPreview(req: br)
-                            .sheet(isPresented: $showBRModal){BRDetails(br: br)}
+                        RequestPreview(req: repo.brs[key]!)
+                            .sheet(isPresented: $showBRModal){BRDetails(br: repo.brs[key]!)}
                     }
                 }
             }
