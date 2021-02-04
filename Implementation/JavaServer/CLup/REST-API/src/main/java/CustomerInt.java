@@ -26,7 +26,7 @@ public class CustomerInt {
             return Response.ok().build();
         } else {
             System.out.println("Error while registering appcustomer");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
 
@@ -35,16 +35,23 @@ public class CustomerInt {
     @Produces("application/json")
     public Response getCustomerRequests(@PathParam("id") String customerID) {
         Customer customer = cc.getCustomerByID(customerID);
+        if (customer == null) {
+            System.out.println("Error while getting customer requests");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+        System.out.println("Requests of "+customerID);
         JSONObject jsonResponse = new JSONObject();
         JSONArray toAppend = new JSONArray();
         for(Booking b : customer.getBookings()) {
             toAppend.put(b.toJson());
         }
+        System.out.println("Bookings:\n"+toAppend);
         jsonResponse.put("bookingRequests", toAppend);
         toAppend = new JSONArray();
         for(Lineup lu : customer.getLineups()) {
             toAppend.put(lu.toJson());
         }
+        System.out.println("LUR:\n"+toAppend);
         jsonResponse.put("lineupRequests", toAppend);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }

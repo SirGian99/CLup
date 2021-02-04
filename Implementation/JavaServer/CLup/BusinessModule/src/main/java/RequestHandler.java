@@ -4,11 +4,9 @@ import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 import javax.ejb.*;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Stateless
 public class RequestHandler {
@@ -50,7 +48,7 @@ public class RequestHandler {
         lur.setNumberOfPeople(numberOfPeople);
         lur.setDateTimeOfCreation(Timestamp.valueOf(now));
         lur.setState(VisitRequestStatus.PENDING);
-        lur.setHfid("L-" +(char)( Integer.parseInt(lur.getDateTimeOfCreation().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(lur.getUuid().substring(4, 8), 16) % 999));
+        lur.setHfid("L" +(char)( Integer.parseInt(lur.getDateTimeOfCreation().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(lur.getUuid().substring(4, 8), 16) % 999));
         //TODO devi settare anche l'ete (per ora messo pezzotto)
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(now.plusMinutes(30)));
         dataModel.insertRequest(lur);
@@ -92,7 +90,7 @@ public class RequestHandler {
         br.setDesiredStartingTime(desiredStart);
         br.setDesiredDuration(duration);
         //TODO sistema sto HFID
-        br.setHfid("B-" + ((char)( Integer.parseInt(br.getDesiredStartingTime().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(br.getUuid().substring(4, 8), 16) % 999)));
+        br.setHfid("B" + ((char)( Integer.parseInt(br.getDesiredStartingTime().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(br.getUuid().substring(4, 8), 16) % 999)));
         //TODO controlli sulle sections
         //for (String sid: sectionIDs) { }
         //TODO check sulle occupancy...
