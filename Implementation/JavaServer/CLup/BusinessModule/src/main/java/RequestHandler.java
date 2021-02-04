@@ -84,6 +84,16 @@ public class RequestHandler {
             System.out.println("Il customer ha un overlapping booking");
             return null;
         }
+
+        // check sulle occupancy...
+        List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
+        int maxStoreOcc = s.getMaximumOccupancy();
+        for (Booking booking : otherBookings){
+            maxStoreOcc -= booking.getNumberOfPeople();
+            if (maxStoreOcc <=0)
+                return null;
+        }
+
         Booking br = new Booking();
         br.setCustomer(c);
         br.setStore(s);
@@ -100,7 +110,6 @@ public class RequestHandler {
                 br.addProductSection(ps);
             }
         }
-        //TODO check sulle occupancy...
         dataModel.insertRequest(br);
         visitManager.newRequest(br);
         return br;
