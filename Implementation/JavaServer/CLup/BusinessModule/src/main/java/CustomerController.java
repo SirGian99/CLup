@@ -44,5 +44,9 @@ public class CustomerController {
         return activeLineups;
     }
 
+    public void setDataModel(DataModel dataModel) {
+        this.dataModel = dataModel;
+    }
+
     //Other much more complex methods are omitted in this prototype
 }
