@@ -46,8 +46,12 @@ public class Chain implements Serializable {
         this.image = image;
     }
 
-    public List<Store> storeList() {
+    public List<Store> getStoreList() {
         return stores;
+    }
+
+    public void setStoreList(List<Store> stores) {
+        this.stores = stores;
     }
 
     public JSONObject toJson() {
