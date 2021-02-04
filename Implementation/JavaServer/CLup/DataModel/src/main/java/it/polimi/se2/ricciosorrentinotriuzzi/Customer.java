@@ -51,4 +51,12 @@ public class Customer implements Serializable {
         }
         lineups.add(l);
     }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public void setLineups(List<Lineup> lineups) {
+        this.lineups = lineups;
+    }
 }
