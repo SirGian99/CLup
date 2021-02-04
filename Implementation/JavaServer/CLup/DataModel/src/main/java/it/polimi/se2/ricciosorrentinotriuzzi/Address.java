@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "address")
-@NamedQuery(name = "Address.getAllByCity", query = "SELECT a FROM Address a WHERE a.city LIKE ?1")
+@NamedQuery(name = "Address.getAllByCity", query = "SELECT a FROM Address a WHERE a.city = ?1")
 
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
