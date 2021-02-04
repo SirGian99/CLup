@@ -23,6 +23,19 @@ public class Address implements Serializable {
     @OneToOne(mappedBy = "address")
     private Store store;
 
+    public Address() {
+    }
+
+    public Address(long id, String streetName, String streetNumber, String city, String postalCode, String country, Store store) {
+        this.id = id;
+        this.streetName = streetName;
+        this.streetNumber = streetNumber;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.store = store;
+    }
+
     public long getId() {
         return id;
     }

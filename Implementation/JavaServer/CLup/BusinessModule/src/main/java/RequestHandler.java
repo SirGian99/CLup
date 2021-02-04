@@ -24,6 +24,8 @@ public class RequestHandler {
             System.out.println("Non esiste uno store con id: "+storeID);
             return null;
         }
+        if (numberOfPeople > s.getMaximumOccupancy())
+            return null;
         Customer c = dataModel.getCustomer(customerID);
         if (c == null) {
             System.out.println("Non esiste un customer con id: "+customerID);
@@ -43,10 +45,11 @@ public class RequestHandler {
             System.out.println("Lo store non è aperto");
             return null;
         }
+
         Lineup lur = new Lineup();
         System.out.println("Now:" + Timestamp.valueOf(LocalDateTime.now()) +"\nEstimated queue disposal time: " + dataModel.getQueueDisposalTime(storeID));
-        System.out.println("Avg.dur. dello store: " + dataModel.getStore(storeID).getAverageVisitDuration().getTime());
-        lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID).toLocalDateTime().plus(Duration.ofNanos(dataModel.getStore(storeID).getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
+        System.out.println("Avg.dur. dello store: " + s.getAverageVisitDuration().getTime());
+        lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID).toLocalDateTime().plus(Duration.ofNanos(s.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
         lur.setCustomer(c);
         lur.setStore(s);
         lur.setNumberOfPeople(numberOfPeople);
@@ -65,6 +68,8 @@ public class RequestHandler {
             System.out.println("Non esiste uno store con id: "+storeID);
             return null;
         }
+        if (numberOfPeople > s.getMaximumOccupancy())
+            return null;
         Customer c = dataModel.getCustomer(customerID);
         if (c == null) {
             System.out.println("Non esiste un customer con id: "+customerID);
@@ -87,8 +92,10 @@ public class RequestHandler {
 
         // check sulle occupancy
         List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
+        System.out.println(otherBookings);
         int maxStoreOcc = s.getMaximumOccupancy();
         for (Booking booking : otherBookings) {
+            System.out.println(booking.toJson());
             maxStoreOcc -= booking.getNumberOfPeople();
             if (maxStoreOcc <=0) {
                 System.out.println("Non c'è abbastanza spazio nello store per questo booking");
@@ -124,5 +131,13 @@ public class RequestHandler {
             visitManager.checkNewReadyRequest(request.getStore().getId());
         }
         System.out.println("Request "+uuid+" has been deleted!");
+    }
+
+    public void setDataModel(DataModel dataModel) {
+        this.dataModel = dataModel;
+    }
+
+    public void setVisitManager(VisitManager visitManager) {
+        this.visitManager = visitManager;
     }
 }

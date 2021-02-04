@@ -21,6 +21,15 @@ public class Attitude implements Serializable {
     private Store store;
     private Time averageVisitDuration;
 
+    public Attitude() {
+    }
+
+    public Attitude(long id, Customer appCustomer, Store store, Time averageVisitDuration) {
+        this.id = id;
+        this.appCustomer = appCustomer;
+        this.store = store;
+        this.averageVisitDuration = averageVisitDuration;
+    }
 
     public Customer getAppCustomer() {
         return appCustomer;
