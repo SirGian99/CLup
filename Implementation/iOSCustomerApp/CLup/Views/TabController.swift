@@ -4,20 +4,14 @@ struct TabViewController: View {
     let tab1 = FirstTab()
     let tab2 = SecondTab()
     @State var selectedIndex = 0
+    @State var showAlert = false
+    
     var body: some View {
         VStack(spacing: 0) {
             if selectedIndex == 0 {
-                tab1.onAppear() {
-                    DB.controller.getChainStore(city: "Milano"){ (chains, autstores, error) in
-                        guard error == nil else {return print(error!)}
-                        DispatchQueue.main.async {
-                            Repository.singleton.chains = chains!
-                            Repository.singleton.stores = autstores!
-                        }
-                    }
-                }
+                tab1
             } else if selectedIndex == 1 {
-                tab2
+                tab2.onAppear{Repository.singleton.emptyStoreChain()}
             }
             Spacer()
             VStack(spacing: 0) {
@@ -44,6 +38,6 @@ struct TabViewController: View {
                 }
                 SizedDivider(height: 22, width: UIScreen.main.bounds.width)
             }.frame(width: UIScreen.main.bounds.width, height: 75)
-        }.edgesIgnoringSafeArea(.bottom)
+        }.edgesIgnoringSafeArea(.bottom).alert(isPresented: $showAlert) {defAlert}
     }
 }

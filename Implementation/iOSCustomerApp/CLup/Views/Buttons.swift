@@ -54,11 +54,12 @@ struct BookingButton: View {
 
 struct CancelButton<Request:VisitRequest>: View {
     let req: Request
+    @State var showAlert = false
     var body: some View {
         Button(action: {
             if req is LineUpRequest {
                 DB.controller.deleteLUR(lur: req as! LineUpRequest) { error in
-                    guard error == nil else {print(error!); return}
+                    guard error == nil else {print(error!); self.showAlert = true; return}
                     print("LUR deleted")
                     DispatchQueue.main.async {
                         Repository.singleton.lur = nil
@@ -67,7 +68,7 @@ struct CancelButton<Request:VisitRequest>: View {
                 }
             } else if req is BookingRequest {
                 DB.controller.deleteBR(br: req as! BookingRequest) { error in
-                    guard error == nil else {print(error!); return}
+                    guard error == nil else {print(error!); self.showAlert = true; return}
                     print("BR deleted")
                     DispatchQueue.main.async {
                         Repository.singleton.brs.removeValue(forKey: req.visitToken.uuid.uuidString)
@@ -85,6 +86,6 @@ struct CancelButton<Request:VisitRequest>: View {
                 SizedDivider(height: 5)
             }
             .tint(.blueLabel)
-        }.customButtonStyle()
+        }.customButtonStyle().alert(isPresented: $showAlert) {defAlert}
     }
 }

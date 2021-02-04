@@ -5,9 +5,10 @@ let screenWidth = UIScreen.main.bounds.width
 struct ChainView: View {
     @State var showModal: Bool = false
     let chain: Chain
+    let city: String
 
     var body: some View {
-        NavigationLink(destination: StoresOfChain(chain: chain)) {
+        NavigationLink(destination: StoresOfChain(chain: chain, city: city)) {
             VStack(spacing: 0) {
                 Image(uiImage: chain.image).resizable().scaledToFit()
                 Text(chain.name)
@@ -22,19 +23,14 @@ struct ChainView: View {
 
 struct StoresOfChain: View {
     @ObservedObject var chain: Chain
-//    init(chain: Chain) {
-//        self.chain = chain
-//        DB.controller.getStores(chain: chain, city: "Milano") { error in
-//            guard error == nil else {return print(error!)}
-//        }
-//    }
+    let city: String
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             ForEach(Array(chain.stores.values), id: \.id) { store in
                 StoreView(store: store).cornerRadius(10).padding()
             }
         }.onAppear() {
-            DB.controller.getStores(chain: chain, city: "Milano") { error in
+            DB.controller.getStores(chain: chain, city: city) { error in
                 guard error == nil else {return print(error!)}
             }
         }

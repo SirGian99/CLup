@@ -220,7 +220,12 @@ class DB {
                 let name = storeJson["name"].stringValue
                 let description = storeJson["description"].string
                 let currOcc = storeJson["currentOccupancy"].intValue
-                let estimatedQueueDTime = storeJson["estimatedQueueDisposalTime"].intValue
+                let estimatedQueueDTimeStr = storeJson["estimatedQueueDisposalTime"].stringValue
+                print("Received date: ", estimatedQueueDTimeStr)
+                let estimatedQueueDTime = self.serverDateTimeFormatter(date: estimatedQueueDTimeStr)
+                print("Parsed date: ", estimatedQueueDTime.getDate(), estimatedQueueDTime.getTime())
+                let estimatedQueueDTimeMinutes = Int(Date().distance(to: estimatedQueueDTime))
+                print("Waiting duration: ", estimatedQueueDTimeMinutes)
                 let addressJson = storeJson["address"]
                 let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
                 let whArray = storeJson["workingHours"].arrayValue
@@ -238,7 +243,7 @@ class DB {
                     let name = sectJson["name"].stringValue
                     sections.append(Section(id: id, name: name))
                 }
-                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: chain)
+                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTimeMinutes, sections: sections, chain: chain)
                 storeDict[id] = store
             }
             completion(nil)
