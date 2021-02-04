@@ -2,21 +2,17 @@ import Foundation
 import SwiftUI
 import UIKit
 
-extension URL {
-    init?(string: String?) {
-        if string != nil {
-            self.init(string: string!)
-        } else {
-            return nil
-        }
-    }
-}
-
 extension Date {
-    func getTime(withSeconds: Bool = false) -> String? {
+    func getDate() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
+    }
+    func getTime(withSeconds: Bool = false) -> String {
         if withSeconds {
             let components = Calendar.current.dateComponents([.hour, .minute, .second], from: self)
-            guard let hour = components.hour, let minute = components.minute, let second = components.second else {return nil}
+            guard let hour = components.hour, let minute = components.minute, let second = components.second else {return ""}
             var hourStr = "\(hour)"
             var minuteStr = "\(minute)"
             var secondStr = "\(second)"
@@ -26,7 +22,7 @@ extension Date {
             return hourStr+":"+minuteStr+":"+secondStr
         } else {
             let components = Calendar.current.dateComponents([.hour, .minute], from: self)
-            guard let hour = components.hour, let minute = components.minute else {return nil}
+            guard let hour = components.hour, let minute = components.minute else {return ""}
             var hourStr = "\(hour)"
             var minuteStr = "\(minute)"
             if hour < 10 {hourStr = "0"+hourStr}

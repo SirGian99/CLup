@@ -85,7 +85,7 @@ public class RequestHandler {
             return null;
         }
 
-        // check sulle occupancy...
+        // check sulle occupancy
         List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
         int maxStoreOcc = s.getMaximumOccupancy();
         for (Booking booking : otherBookings) {

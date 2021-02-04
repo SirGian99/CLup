@@ -42,12 +42,6 @@ extension UIImage {
         filter.setValue(data, forKey: "inputMessage")
         let transform = CGAffineTransform(scaleX: 10, y: 10)
         let qrCode = filter.outputImage!.transformed(by: transform)
-//        let colorInvertFilter = CIFilter(name: "CIColorInvert")!
-//        colorInvertFilter.setValue(qrCode, forKey: "inputImage")
-//        let outputInvertedImage = colorInvertFilter.outputImage!
-//        let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha")!
-//        maskToAlphaFilter.setValue(outputInvertedImage, forKey: "inputImage")
-//        let outputCIImage = maskToAlphaFilter.outputImage!
         let cgImage = context.createCGImage(qrCode, from: qrCode.extent)
         self.init(cgImage: cgImage!)
     }
@@ -59,34 +53,17 @@ extension View {
             nc.navigationBar.standardAppearance.configureWithTransparentBackground()
         })
     }
-    
     func opaqueOverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
         return self.overlay(OpaqueOverlay(isPresented: isPresented, toOverlay: toOverlay))
     }
-    func loadingOverlayIf(_ show: Binding<Bool>, opacity: Double = 0.1) -> some View {
-        return self.overlay(OpaqueOverlay(isPresented: show, toOverlay: ProgressView().scaleEffect(1.5), alignment: .center, opacity: opacity))
-    }
-    func blackOverlayIf(_ show: Binding<Bool>, opacity: Double = 0.6) -> some View {
-        return self.overlay(OpaqueOverlay(isPresented: show, toOverlay: EmptyView(), alignment: .center, opacity: opacity))
-    }
-    func overlayIf<Content:View>(_ show: Binding<Bool>, toOverlay: Content, alignment: Alignment = .center) -> some View {
-        return show.wrappedValue ? self.overlay(AnyView(toOverlay), alignment: alignment) : self.overlay(AnyView(EmptyView()))
-    }
-    
     func tint(_ color: Palette) -> some View {
         return self.foregroundColor(getColor(color))
     }
-    func tintIf(_ apply: Bool, _ color: Palette, _ otherwise: Palette = .orange) -> some View {
+    func tintIf(_ apply: Bool, _ color: Palette, _ otherwise: Palette) -> some View {
         return apply ? self.tint(color) : self.tint(otherwise)
     }
     func background(_ color: Palette) -> some View {
         return self.background(getColor(color))
-    }
-    func backgroundIf(_ apply: Bool, _ color: Palette, _ otherwise: Palette = .orange) -> some View {
-        return apply ? self.background(color) : self.background(otherwise)
-    }
-    func orange() -> some View {
-        return self.foregroundColor(Color(.systemOrange))
     }
     func lightBlueCard() -> some View {
         return self.background(.lightBlueHeaderBG).cornerRadius(10).padding(.horizontal).padding(.vertical, 10)
@@ -96,32 +73,12 @@ extension View {
     }
 }
 
-extension Text {
-    func orange() -> Text {
-        return self.foregroundColor(Color(.systemOrange))
-    }
-    func colorIf(_ apply: Bool, _ color: UIColor, _ otherwise: UIColor = .systemOrange) -> Text {
-        return apply ? self.foregroundColor(Color(color)) : self.foregroundColor(Color(otherwise))
-    }
-    static func ofEditButton(_ editMode: Bool) -> Text {
-        return editMode ? Text("Done").orange().bold() : Text("Edit").orange()
-    }
-}
 
 
 enum Palette {
-    case need
     case blueHeaderBG
     case lightBlueHeaderBG
     case blueLabel
-    case expiredNeed
-    case grayLabel
-    case detailedTaskHeaderBG
-    case button
-    case yellow
-    case orange
-    case red
-    case green
     case gray
     case gray3
     case gray6
@@ -130,35 +87,16 @@ enum Palette {
     case primary
     case secondary
     case systemBG
-    case test
 }
 
 func getColor(_ color: Palette) -> Color {
     switch color {
-    case .need:
-        return Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))
-    case .expiredNeed:
-        return Color(#colorLiteral(red: 0.9425833355, green: 0.9425833355, blue: 0.9425833355, alpha: 1))
     case .blueHeaderBG:
         return Color(#colorLiteral(red: 0.8031415343, green: 0.8537344933, blue: 0.8799108267, alpha: 1))
     case .lightBlueHeaderBG:
         return Color(#colorLiteral(red: 0.9490196078, green: 0.9607843137, blue: 0.968627451, alpha: 1))
     case .blueLabel:
         return Color(#colorLiteral(red: 0.3137254902, green: 0.3647058824, blue: 0.4078431373, alpha: 1))
-//    case .expiredNeed:
-//        return Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1))
-    case .detailedTaskHeaderBG, .button: //dovrà avvicinarsi al caso .task
-        return Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9)
-    case .grayLabel:
-        return Color(UIColor.secondaryLabel.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)))
-    case .yellow:
-        return Color(.systemYellow)
-    case .green:
-        return Color(.systemGreen)
-    case .orange:
-        return Color(.systemOrange)
-    case .red:
-        return Color(.systemRed)
     case .gray:
         return Color(.systemGray)
     case .gray3:
@@ -169,8 +107,6 @@ func getColor(_ color: Palette) -> Color {
         return Color.white
     case .systemBG:
         return Color(.systemBackground)
-    case .test: //SOLO DI TEST
-        return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? Color(.green) : Color(.red)
     case .secondary:
         return Color.secondary
     case .primary:

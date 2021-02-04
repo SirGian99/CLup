@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 @Stateless
@@ -62,10 +61,14 @@ public class StoreStatusHandler {
         } else {
             Chain c = dataModel.getChainByName(chain);
             if(c != null)
-                for(Store s : c.storeList())
+                for(Store s : c.getStoreList())
                     stores.put(s.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(s.getId())));
         }
         json.put("stores", stores);
         return json;
+    }
+
+    public void setDataModel(DataModel dataModel) {
+        this.dataModel = dataModel;
     }
 }

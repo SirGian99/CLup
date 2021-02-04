@@ -143,7 +143,8 @@ public class JunkyFunky {
     @Path("{store}")
     @Produces("text/plain")
     public String getStoreName(@PathParam("store") String storeID) {
-        return dataModel.getStore(storeID).getName();
+        List<Productsection> prods = dataModel.getStore(storeID).getProductSections();
+        return prods.toString();
     }
 
 }

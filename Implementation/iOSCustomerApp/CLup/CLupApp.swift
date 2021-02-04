@@ -10,10 +10,18 @@ import SwiftUI
 @main
 struct CLupApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
+    @State var showAlert = false
     
     var body: some Scene {
         WindowGroup {
-            TabViewController().accentColor(getColor(.blueLabel))
+            TabViewController().accentColor(getColor(.blueLabel)).alert(isPresented: $showAlert) {defAlert}
+        }.onChange(of: scenePhase) { newScenePhase in
+            if scenePhase == .inactive && newScenePhase == .active {
+                DB.controller.getMyRequests() { error in
+                    if error != nil {print(error!); self.showAlert = true}
+                }
+            }
         }
     }
 }
@@ -36,9 +44,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 self.devToken = temp
             }
         } else {
-            DB.controller.getMyRequests() { error in
-                if error != nil {fatalError(error!)}
-            }
+            print("appID: \(devToken)")
         }
     }
     
