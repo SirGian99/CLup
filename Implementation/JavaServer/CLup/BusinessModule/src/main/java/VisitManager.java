@@ -18,8 +18,6 @@ public class VisitManager {
     }
 
     public int validateAccess(String visitToken, String storeID){
-        //VisitRequest request = dataModel.getVisitRequest(visitToken);
-        //return  request != null && request.getStore().getId().equals(storeID) && request.isReady();
         return dataModel.checkReadyRequest(storeID, visitToken);
     }
 
@@ -30,19 +28,10 @@ public class VisitManager {
             checkNewReadyRequest(storeID);
         }
         return toReturn;
-        /*VisitRequest request = dataModel.getVisitRequest(visitToken);
-        if(request != null && request.getStore().getId().equals(storeID) && request.isFulfilled()){
-            //devo aggiornare
-        }
-
-        return true;
-        */
     }
 
     public int validateExit(String visitToken, String storeID){
         VisitRequest request = dataModel.getVisitRequest(visitToken);
-        //System.out.println(request.getHfid());
-        //System.out.println(request.getStore());
         return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
     }
 
@@ -112,24 +101,13 @@ public class VisitManager {
         }
 
         if(request.isBooking()){
-            System.out.println("Parto!");
             Date date = ((Booking) request).getDesiredStartingTime();
             Timer timer = new Timer();
             int finalCurrentReadyOccupancy = currentReadyOccupancy;
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
-                    for (Productsection section : ((Booking)request).getProductSections()) {
-                        if(section.getCurrentOccupancy() +
-                                request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
-                                section.getMaximumOccupancy())
-                            return;
-                    }
-                    System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
-                    if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
-                        setReadyRequest(request);
-                    }
+                    scheduleBooking((Booking)request, finalCurrentReadyOccupancy, store);
                 }
             }, date);
         }
@@ -194,5 +172,21 @@ public class VisitManager {
          */
     }
 
+    public void setDataModel(DataModel dataModel) {
+        this.dataModel = dataModel;
+    }
 
+    protected void scheduleBooking(Booking request, int finalCurrentReadyOccupancy, Store store){
+        System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
+        for (Productsection section : (request).getProductSections()) {
+            if(section.getCurrentOccupancy() +
+                    request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
+                    section.getMaximumOccupancy())
+                return;
+        }
+        System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
+        if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
+            setReadyRequest(request);
+        }
+    }
 }
