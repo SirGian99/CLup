@@ -2,6 +2,7 @@ import it.polimi.se2.ricciosorrentinotriuzzi.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.components.DataModel;
 
 import javax.ejb.*;
+import java.awt.print.Book;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -88,6 +89,16 @@ public class RequestHandler {
             System.out.println("Il customer ha un overlapping booking");
             return null;
         }
+
+        // check sulle occupancy...
+        List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
+        int maxStoreOcc = s.getMaximumOccupancy();
+        for (Booking booking : otherBookings){
+            maxStoreOcc -= booking.getNumberOfPeople();
+            if (maxStoreOcc <=0)
+                return null;
+        }
+
         Booking br = new Booking();
         br.setCustomer(c);
         br.setStore(s);
@@ -100,8 +111,7 @@ public class RequestHandler {
         br.setHfid("B-" + ((char)( Integer.parseInt(br.getDesiredStartingTime().toString().substring(8, 9)) % 26 + 65) + String.valueOf(Integer.parseInt(br.getUuid().substring(4, 8), 16) % 999)));
         //TODO controlli sulle sections
         //for (String sid: sectionIDs) { }
-        //TODO check sulle occupancy...
-        //TODO chiama VisitManager.newRequest(token)
+
         dataModel.insertRequest(br);
         visitManager.newRequest(br);
         return br;
