@@ -2,21 +2,40 @@ import SwiftUI
 
 struct FirstTab: View {
     @ObservedObject var repo = Repository.singleton
+    @State var searchText = ""
+    @State var showAlert = false
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
+            VStack(alignment: .center, spacing: 0) {
                 SizedDivider(height: 15)
-                Text("Select a chain or an independent store")
-                SizedDivider(height: 10)
-                ScrollView(.vertical, showsIndicators: false) {
-                    ForEach(repo.chainsArray(), id: \.name) { chain in
-                        ChainView(chain: chain).cornerRadius(10).padding()
+                SearchBar(text: $searchText, onClick: {
+                    DB.controller.getChainStore(city: self.searchText){ (chains, autstores, error) in
+                        guard error == nil else {print(error!); self.showAlert = true; return}
+                        DispatchQueue.main.async {
+                            Repository.singleton.chains = chains!
+                            Repository.singleton.stores = autstores!
+                        }
                     }
-                    ForEach(repo.storesArray(), id: \.name) { store in
-                        StoreView(store: store).cornerRadius(10).padding()
+                })
+                if !Repository.singleton.chains.isEmpty || !Repository.singleton.stores.isEmpty {
+                    SizedDivider(height: 10)
+                    ScrollView(.vertical, showsIndicators: false) {
+                        if !Repository.singleton.chains.isEmpty {
+                            Text("Chains").font(.title2).bold()
+                            ForEach(repo.chainsArray(), id: \.name) { chain in
+                                ChainView(chain: chain, city: searchText).cornerRadius(10).padding()
+                            }
+                        }
+                        if !Repository.singleton.stores.isEmpty {
+                            Text("Local stores").font(.title2).bold()
+                            ForEach(repo.storesArray(), id: \.name) { store in
+                                StoreView(store: store).cornerRadius(10).padding()
+                            }
+                        }
                     }
                 }
-            }.navigationBarHidden(true).navigationBarTitleDisplayMode(.inline).transparentNavBar()
+                Spacer()
+            }.alert(isPresented: $showAlert){defAlert}.navigationBarHidden(true).navigationBarTitleDisplayMode(.inline).transparentNavBar()
         }
     }
 }

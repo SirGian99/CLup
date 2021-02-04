@@ -98,7 +98,7 @@ public class Address implements Serializable {
         json.put("streetNumber", getStreetNumber());
         json.put("postalCode", getPostalCode());
         json.put("city", getCity());
-        json.put("country", getId());
+        json.put("country", getCountry());
         return json;
     }
 }

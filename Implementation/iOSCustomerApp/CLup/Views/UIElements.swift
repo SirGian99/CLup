@@ -15,24 +15,6 @@ func defaultAlert(title: String, message: String) -> UIAlertController {
     return alert
 }
 
-struct ElementPickerGUI: View {
-    var pickerElements: [String]
-    @Binding var selectedValue: Int
-    
-    var body: some View {
-        Picker("Select your need", selection: self.$selectedValue) {
-            ForEach(0 ..< self.pickerElements.count) {
-                Text(self.pickerElements[$0])
-                    .font(.headline)
-                    .fontWeight(.medium)
-            }
-        }
-        .labelsHidden()
-        .frame(width: UIScreen.main.bounds.width, height: 250)
-        .background(Color.primary.colorInvert())
-    }
-}
-
 struct DatePickerGUI: View {
     @Binding var selectedDate: Date
     
@@ -67,46 +49,36 @@ struct SizedDivider: View {
     }
 }
 
-struct AlertView: View {
-    @Binding var isPresented: Bool
-    
-    var body: some View {
-        VStack {
-            EmptyView()
-        }.alert(isPresented: $isPresented) {
-            Alert(title: Text("Oh no!"), message: Text("Something went wrong"), dismissButton: .default(Text("Got it!")))
-        }
-    }
-}
+let defAlert = Alert(title: Text("Oh no!"), message: Text("Something went wrong"), dismissButton: .default(Text("Got it!")))
 
 struct SearchBar: UIViewRepresentable {
     @Binding var text : String
-    let onDelete: () -> Void
+    let onClick: () -> Void
 
     class Coordinator : NSObject, UISearchBarDelegate {
         @Binding var text: String
-        let onDelete: () -> Void
-        init(_ text: Binding<String>, onDelete: @escaping () -> Void) {
+        let onClick: () -> Void
+        init(_ text: Binding<String>, onClick: @escaping () -> Void) {
             _text = text
-            self.onDelete = onDelete
+            self.onClick = onClick
         }
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             text = searchText
         }
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            text = ""
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
             searchBar.endEditing(true)
-            onDelete()
+            onClick()
         }
     }
 
-    func makeCoordinator() -> Coordinator { return Coordinator($text, onDelete: onDelete) }
+    func makeCoordinator() -> Coordinator { return Coordinator($text, onClick: onClick) }
 
     func makeUIView(context: UIViewRepresentableContext<SearchBar>) -> UISearchBar {
         let searchBar = UISearchBar(frame: .zero)
         searchBar.delegate = context.coordinator
         searchBar.searchBarStyle = .minimal
-        searchBar.showsCancelButton = true
+        searchBar.showsCancelButton = false
+        searchBar.placeholder = "Type the city you are interested in"
         return searchBar
     }
 

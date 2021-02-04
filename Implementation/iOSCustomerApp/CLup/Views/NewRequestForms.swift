@@ -3,6 +3,7 @@ import SwiftUI
 struct NewLURView: View {
     let store: Store
     @State var numberOfPeople = 1
+    @State var showAlert = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -13,12 +14,10 @@ struct NewLURView: View {
                 SizedDivider(height: 1)
             }
             .lightBlueCard()
-            
             Spacer()
-            
             Button(action: {
                 DB.controller.lineup(store: store, numberOfPeople: numberOfPeople) { (lur, error) in
-                    guard error == nil else {print("Error while lining up"); return} //TODO ALERT
+                    guard error == nil else {print("Error while lining up"); self.showAlert = true; return} //TODO ALERT
                     DispatchQueue.main.async { Repository.singleton.lur = lur }
                 }
                 UIViewController.foremost.dismiss()
@@ -28,8 +27,7 @@ struct NewLURView: View {
                     .font(.body)
                     .tint(.blueLabel)
             }.customButtonStyle()
-            
-        }
+        }.alert(isPresented: $showAlert) {defAlert}
     }
 }
 
@@ -39,9 +37,10 @@ struct NewBRView: View {
     @State var selectedDateTime = Date(timeIntervalSinceReferenceDate: 0)
     @State var duration: Duration = 5
     @State var choosableSects: [String:Bool] = [:]
+    @State var showAlert = false
     
     var body: some View {
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             SizedDivider(height: 10)
             HStack {
                 VStack(alignment: .leading) {
@@ -110,9 +109,7 @@ struct NewBRView: View {
                 }
                 .lightBlueCard()
             }
-            
             Spacer()
-            
             Button(action: {
                 let chosenSectionsIDs = self.choosableSects.compactMap{cs in cs.value == true ? cs.key : nil}
                 var chosenSections: [Section] = []
@@ -120,7 +117,7 @@ struct NewBRView: View {
                     chosenSections.append(store.sections.first(where: {s in s.id == csid})!)
                 }
                 DB.controller.booking(store: store, sections: chosenSections, numberOfPeople: numberOfPeople, desiredTimeInterval: CTimeInterval(startingDateTime: selectedDateTime, duration: duration)) { (br, error) in
-                    guard error == nil else {print("Error while making a booking request"); return} //TODO ALERT
+                    guard error == nil else {print("Error while making a booking request"); self.showAlert = true; return} //TODO ALERT
                     DispatchQueue.main.async { Repository.singleton.brs[br!.visitToken.uuid.uuidString] = br }
                 }
                 UIViewController.foremost.dismiss()
@@ -130,7 +127,6 @@ struct NewBRView: View {
                     .font(.body)
                     .tint(.blueLabel)
             }.customButtonStyle()
-            
-        }
+        }.alert(isPresented: $showAlert) {defAlert}
     }
 }

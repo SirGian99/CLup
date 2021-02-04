@@ -23,5 +23,10 @@ class Repository: ObservableObject {
     func chainsArray() -> [Chain] {
         return Array(chains.values)
     }
+    
+    func emptyStoreChain() {
+        stores = [:]
+        chains = [:]
+    }
 
 }
