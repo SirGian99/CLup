@@ -258,11 +258,14 @@ public class Store implements Serializable {
         if(getAddress() != null)
             json.put("address", getAddress().toJson());
         json.put("name", getName());
+        json.put("id", getId());
         json.put("description", getDescription());
         if(getChain() != null)
             json.put("chainName", getChain().getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
+        //TODO estimated messa a caso
+        //json.put("estimatedQueueDisposalTime", "15");
         json.put("safetyThreshold", getSafetyThreshold());
         JSONArray productSections = new JSONArray();
         for (Productsection ps: getProductSections())
@@ -275,4 +278,11 @@ public class Store implements Serializable {
         return json;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return id.equals(store.id);
+    }
 }

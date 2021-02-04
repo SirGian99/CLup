@@ -60,13 +60,20 @@ struct CancelButton<Request:VisitRequest>: View {
                 DB.controller.deleteLUR(lur: req as! LineUpRequest) { error in
                     guard error == nil else {print(error!); return}
                     print("LUR deleted")
-                    DispatchQueue.main.async { Repository.singleton.lur = nil }
+                    DispatchQueue.main.async {
+                        Repository.singleton.lur = nil
+                        UIViewController.foremost.dismiss()
+                    }
                 }
             } else if req is BookingRequest {
                 DB.controller.deleteBR(br: req as! BookingRequest) { error in
                     guard error == nil else {print(error!); return}
                     print("BR deleted")
-                    DispatchQueue.main.async { Repository.singleton.brs[req.visitToken.uuid.uuidString] = nil }
+                    DispatchQueue.main.async {
+                        Repository.singleton.brs.removeValue(forKey: req.visitToken.uuid.uuidString)
+                        Repository.singleton.brs[req.visitToken.uuid.uuidString] = nil
+                        UIViewController.foremost.dismiss()
+                    }
                 }
             }
         }){

@@ -133,6 +133,7 @@ public class Lineup extends VisitRequest implements Serializable {
     public JSONObject toJson(){
         JSONObject json = new JSONObject();
         json.put("estimatedTimeOfEntrance", getEstimatedTimeOfEntrance());
+        json.put("storeID", getStore().getId());
         JSONObject jsonVisitToken = new JSONObject();
         jsonVisitToken.put("uuid", getUuid());
         jsonVisitToken.put("hfid", getHfid());
