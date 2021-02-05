@@ -88,25 +88,6 @@ class VisitManagerTest {
         store.getBookings().add(booking);
     }
 
-
-    @Test
-    void confirmAccess() {
-    }
-
-    @Test
-    void confirmExit() {
-    }
-
-    /*
-    Set Ready Request
-    if (request!= null && request.isPending()) {
-            request.setState(VisitRequestStatus.READY);
-            if(!request.isBooking()){
-                ((Lineup)request).setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now()));
-            }
-        }
-
-     */
     @Test
     void newBookingRequest() throws InterruptedException {
         doAnswer(invocation -> {
@@ -179,7 +160,7 @@ class VisitManagerTest {
     }
     @Test
     void checkNewReadyRequest() {
-
+////TODO
     }
 
     private class TestVisitManager extends VisitManager{
