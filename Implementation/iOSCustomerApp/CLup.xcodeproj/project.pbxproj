@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		141BD6B225BF6416006D987A /* NewRequestForms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 141BD6B125BF6416006D987A /* NewRequestForms.swift */; };
 		14C8CD8925B749EC00B4DD44 /* CLupApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8CD8825B749EC00B4DD44 /* CLupApp.swift */; };
-		14C8CD8B25B749EC00B4DD44 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8CD8A25B749EC00B4DD44 /* ContentView.swift */; };
 		14C8CD8D25B749EF00B4DD44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14C8CD8C25B749EF00B4DD44 /* Assets.xcassets */; };
 		14C8CD9025B749EF00B4DD44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14C8CD8F25B749EF00B4DD44 /* Preview Assets.xcassets */; };
 		14C8CD9A25B74CB800B4DD44 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C8CD9925B74CB800B4DD44 /* Model.swift */; };
@@ -19,11 +18,9 @@
 		14DA83F325BA1EFC00AFF820 /* DBController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DA83F225BA1EFC00AFF820 /* DBController.swift */; };
 		14DA83F625BA221800AFF820 /* ChainViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DA83F525BA221800AFF820 /* ChainViews.swift */; };
 		14EDE76125C60688005FE12D /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EDE76025C60688005FE12D /* Repository.swift */; };
-		14EE03C825B8D794003F7A86 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03C225B8D793003F7A86 /* Buttons.swift */; };
 		14EE03C925B8D794003F7A86 /* TabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03C325B8D793003F7A86 /* TabController.swift */; };
 		14EE03CA25B8D794003F7A86 /* UIElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03C425B8D793003F7A86 /* UIElements.swift */; };
 		14EE03CB25B8D794003F7A86 /* MainTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03C525B8D794003F7A86 /* MainTabs.swift */; };
-		14EE03CC25B8D794003F7A86 /* OverlayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03C625B8D794003F7A86 /* OverlayViews.swift */; };
 		14EE03D025B8DA9F003F7A86 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03CE25B8DA9F003F7A86 /* Extensions.swift */; };
 		14EE03D125B8DA9F003F7A86 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EE03CF25B8DA9F003F7A86 /* ViewExtensions.swift */; };
 		14F7D7DA25CC19EF003199FB /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14F7D7D925CC19EF003199FB /* Launch Screen.storyboard */; };
@@ -33,7 +30,6 @@
 		141BD6B125BF6416006D987A /* NewRequestForms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRequestForms.swift; sourceTree = "<group>"; };
 		14C8CD8525B749EC00B4DD44 /* CLup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CLup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C8CD8825B749EC00B4DD44 /* CLupApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLupApp.swift; sourceTree = "<group>"; };
-		14C8CD8A25B749EC00B4DD44 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		14C8CD8C25B749EF00B4DD44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		14C8CD8F25B749EF00B4DD44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		14C8CD9125B749EF00B4DD44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -44,11 +40,9 @@
 		14DA83F225BA1EFC00AFF820 /* DBController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBController.swift; sourceTree = "<group>"; };
 		14DA83F525BA221800AFF820 /* ChainViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChainViews.swift; sourceTree = "<group>"; };
 		14EDE76025C60688005FE12D /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
-		14EE03C225B8D793003F7A86 /* Buttons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
 		14EE03C325B8D793003F7A86 /* TabController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabController.swift; sourceTree = "<group>"; };
 		14EE03C425B8D793003F7A86 /* UIElements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIElements.swift; sourceTree = "<group>"; };
 		14EE03C525B8D794003F7A86 /* MainTabs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabs.swift; sourceTree = "<group>"; };
-		14EE03C625B8D794003F7A86 /* OverlayViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayViews.swift; sourceTree = "<group>"; };
 		14EE03CE25B8DA9F003F7A86 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		14EE03CF25B8DA9F003F7A86 /* ViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 		14F7D7D925CC19EF003199FB /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -91,7 +85,6 @@
 				14EE03C025B8D749003F7A86 /* Views */,
 				14C8CD9825B74C3200B4DD44 /* Model */,
 				14C8CD8825B749EC00B4DD44 /* CLupApp.swift */,
-				14C8CD8A25B749EC00B4DD44 /* ContentView.swift */,
 				14C8CD8C25B749EF00B4DD44 /* Assets.xcassets */,
 				14C8CD9125B749EF00B4DD44 /* Info.plist */,
 				14DA83EF25BA1E2000AFF820 /* SwiftyJSON.swift */,
@@ -125,8 +118,6 @@
 				14DA83F525BA221800AFF820 /* ChainViews.swift */,
 				14EE03C525B8D794003F7A86 /* MainTabs.swift */,
 				14EE03C325B8D793003F7A86 /* TabController.swift */,
-				14EE03C625B8D794003F7A86 /* OverlayViews.swift */,
-				14EE03C225B8D793003F7A86 /* Buttons.swift */,
 				14EE03C425B8D793003F7A86 /* UIElements.swift */,
 				14CB8C3325BCC8E7005F24A0 /* RequestViews.swift */,
 			);
@@ -205,10 +196,8 @@
 			files = (
 				14EE03D125B8DA9F003F7A86 /* ViewExtensions.swift in Sources */,
 				14EE03CB25B8D794003F7A86 /* MainTabs.swift in Sources */,
-				14EE03C825B8D794003F7A86 /* Buttons.swift in Sources */,
 				141BD6B225BF6416006D987A /* NewRequestForms.swift in Sources */,
 				14DA83F025BA1E2000AFF820 /* SwiftyJSON.swift in Sources */,
-				14C8CD8B25B749EC00B4DD44 /* ContentView.swift in Sources */,
 				14C8CD9A25B74CB800B4DD44 /* Model.swift in Sources */,
 				14CB8C3425BCC8E7005F24A0 /* RequestViews.swift in Sources */,
 				14EE03D025B8DA9F003F7A86 /* Extensions.swift in Sources */,
@@ -216,7 +205,6 @@
 				14EE03CA25B8D794003F7A86 /* UIElements.swift in Sources */,
 				14DA83F625BA221800AFF820 /* ChainViews.swift in Sources */,
 				14C8CD8925B749EC00B4DD44 /* CLupApp.swift in Sources */,
-				14EE03CC25B8D794003F7A86 /* OverlayViews.swift in Sources */,
 				14EE03C925B8D794003F7A86 /* TabController.swift in Sources */,
 				14DA83F325BA1EFC00AFF820 /* DBController.swift in Sources */,
 				14EDE76125C60688005FE12D /* Repository.swift in Sources */,
@@ -360,7 +348,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = it.polimi.SE2.RiccioSorrentinoTriuzzi.CLup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -382,7 +370,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = it.polimi.SE2.RiccioSorrentinoTriuzzi.CLup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
