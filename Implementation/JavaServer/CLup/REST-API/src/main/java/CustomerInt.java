@@ -38,7 +38,7 @@ public class CustomerInt {
         List<Booking> bookings = cc.getCustomerActiveBookings(customerID);
         List<Lineup> lineups = cc.getCustomerActiveLineups(customerID);
         if(bookings == null || lineups == null)
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         System.out.println("Requests of "+customerID);
         JSONObject jsonResponse = new JSONObject();
         JSONArray toAppend = new JSONArray();
