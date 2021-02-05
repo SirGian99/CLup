@@ -1,10 +1,11 @@
 //
-//  DatabaseController.swift
-//  BackOn
+//  DBController.swift
+//  CLup
 //
-//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 18/02/2020.
-//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
 //
+
 
 import Foundation
 import SwiftUI
@@ -309,21 +310,7 @@ class DB {
         formatter.timeZone = .current
         return formatter.string(from: date)
     }
-    
-//    private func serverDateFormatter(date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.locale = Locale(identifier: "en_US_POSIX")
-//        formatter.dateFormat = "yyyy-MM-dd"
-//        return formatter.string(from: date)
-//    }
-    
-//    private func serverTimeFormatter(date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.locale = Locale(identifier: "en_US_POSIX")
-//        formatter.dateFormat = "HH:mm:ss"
-//        return formatter.string(from: date)
-//    }
-    
+
     private func durationFormatter(d: Duration) -> String {
         let hour = Int(d/60)
         let minutes = d - hour*60

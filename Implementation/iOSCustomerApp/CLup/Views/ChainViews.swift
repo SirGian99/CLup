@@ -1,3 +1,12 @@
+//
+//  ChainViews.swift
+//  CLup
+//
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
+//
+
+
 import SwiftUI
 
 let screenWidth = UIScreen.main.bounds.width

@@ -1,3 +1,12 @@
+//
+//  ViewExtensions.swift
+//  CLup
+//
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
+//
+
+
 import Foundation
 import SwiftUI
 import UIKit
@@ -31,9 +40,6 @@ extension UIImage {
 }
 
 extension View {
-    func opaqueOverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
-        return self.overlay(OpaqueOverlay(isPresented: isPresented, toOverlay: toOverlay))
-    }
     func tint(_ color: Palette) -> some View {
         return self.foregroundColor(getColor(color))
     }
