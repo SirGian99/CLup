@@ -37,7 +37,7 @@ public class StoreStatusHandler {
                 if (chain != null) {
                     chains.put(chain.toJson());
                 } else {
-                    stores.put(store.toJson());
+                    stores.put(store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(store.getId())));
                 }
              }
         }
@@ -49,21 +49,22 @@ public class StoreStatusHandler {
     public JSONObject getChainStores(String chain, String city) {
         JSONObject json = new JSONObject();
         JSONArray stores = new JSONArray();
-        if(city != null) {
+        if (city != null) {
             List<Address> addresses = dataModel.getAddressesByCity(city);
             for (Address a: addresses) {
                 Store store = a.getStore();
-                if(store != null && store.getChain() != null && store.getChain().getName().equals(chain))
-                    stores.put(store.toJson());
+                if(store != null && store.getChain() != null && store.getChain().getName().equals(chain)) {
+                    System.out.println(store.getId()+" queue disp time: "+dataModel.getQueueDisposalTime(store.getId()));
+                    stores.put(store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(store.getId())));
+                }
             }
-        }
-         else {
+        } else {
             Chain c = dataModel.getChainByName(chain);
             if(c != null)
                 for(Store s : c.getStoreList())
-                    stores.put(s.toJson());
+                    stores.put(s.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(s.getId())));
         }
-         json.put("stores", stores);
+        json.put("stores", stores);
         return json;
     }
 

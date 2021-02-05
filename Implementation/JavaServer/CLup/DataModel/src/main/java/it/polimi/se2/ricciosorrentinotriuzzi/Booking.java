@@ -170,11 +170,13 @@ public class Booking extends VisitRequest implements Serializable {
         jsonVisitToken.put("hfid", getHfid());
         json.put("visitToken",jsonVisitToken);
         json.put("storeID", getStore().getId());
+        json.put("customerID", getCustomer().getId());
         json.put("numberOfPeople", getNumberOfPeople());
         JSONObject jsonTimeInterval = new JSONObject();
         jsonTimeInterval.put("start", getDesiredStartingTime());
         jsonTimeInterval.put("duration", getDesiredDuration());
         json.put("desiredTimeInterval", jsonTimeInterval);
+        json.put("state", getState().getValue());
         JSONArray jsonProductSections = new JSONArray();
         for(Productsection ps : getProductSections())
             jsonProductSections.put(ps.getName());

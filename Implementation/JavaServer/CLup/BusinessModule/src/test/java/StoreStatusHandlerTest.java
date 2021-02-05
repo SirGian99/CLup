@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,8 +19,8 @@ import static org.mockito.Mockito.*;
 class StoreStatusHandlerTest {
 
     private DataModel dataModel;
-    private Chain chain;
     private StoreStatusHandler ssh;
+    private Chain chain;
     private Store store;
     private Address address;
 
@@ -65,8 +67,10 @@ class StoreStatusHandlerTest {
 
     @Test
     void getStoreGeneralInfo() {
+        Timestamp estimatedDisposalTime = Timestamp.valueOf(LocalDateTime.now());
         when(dataModel.getStore("storeTest")).thenReturn(store);
-        assertEquals(store.toJson().toString(),ssh.getStoreGeneralInfo("storeTest").toString() );
+        when(dataModel.getQueueDisposalTime("storeTest")).thenReturn(estimatedDisposalTime);
+        assertEquals(store.toJson().put("estimatedQueueDisposalTime",estimatedDisposalTime).toString(),ssh.getStoreGeneralInfo("storeTest").toString() );
     }
 
     @Test
@@ -92,8 +96,5 @@ class StoreStatusHandlerTest {
         assertEquals(stores.get(0).toString(), store.toJson().toString());;
         stores = ssh.getChainStores("PoliMi", "Turin").getJSONArray("stores");
         assertEquals(stores.toString(), new JSONArray().toString());
-
-        chain.getStoreList().remove(store);
-        store.setChain(null);
     }
 }
