@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/BusinessModule/BusinessModule.iml" filepath="$PROJECT_DIR$/BusinessModule/BusinessModule.iml" />
       <module fileurl="file://$PROJECT_DIR$/CLup.iml" filepath="$PROJECT_DIR$/CLup.iml" />
       <module fileurl="file://$PROJECT_DIR$/DataModel/DataModel.iml" filepath="$PROJECT_DIR$/DataModel/DataModel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IntegrationTestingModule/IntegrationTestingModule.iml" filepath="$PROJECT_DIR$/IntegrationTestingModule/IntegrationTestingModule.iml" />
       <module fileurl="file://$PROJECT_DIR$/REST-API/REST-API.iml" filepath="$PROJECT_DIR$/REST-API/REST-API.iml" />
     </modules>
   </component>

@@ -1,9 +1,8 @@
-package unittests;
+package it.polimi.se2.ricciosorrentinotriuzzi.business.components.unittests;
 
-import it.polimi.se2.ricciosorrentinotriuzzi.business.components.CustomerController;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
-import mockclassess.TestCustomerController;
+import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +27,7 @@ class CustomerControllerTest {
     private Booking booking1;
     private Lineup lineup2;
     private Booking booking2;
+
     @BeforeEach
     void setUp() {
         dataModel = mock(DataModel.class);

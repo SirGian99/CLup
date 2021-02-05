@@ -1,7 +1,7 @@
-package unittests;
+package it.polimi.se2.ricciosorrentinotriuzzi.business.components.unittests;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
-import mockclassess.*;
+import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

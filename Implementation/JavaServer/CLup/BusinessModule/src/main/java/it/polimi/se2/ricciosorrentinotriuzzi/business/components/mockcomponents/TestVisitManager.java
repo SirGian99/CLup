@@ -1,4 +1,4 @@
-package mockclassess;
+package it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents;
 
 import it.polimi.se2.ricciosorrentinotriuzzi.business.components.VisitManager;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
