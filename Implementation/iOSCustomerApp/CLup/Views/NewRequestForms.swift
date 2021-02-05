@@ -1,9 +1,19 @@
+//
+//  NewRequestForms.swift
+//  CLup
+//
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
+//
+
+
 import SwiftUI
 
 struct NewLURView: View {
     let store: Store
     @State var numberOfPeople = 1
     @State var showAlert = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(spacing: 0) {
@@ -17,16 +27,17 @@ struct NewLURView: View {
             Spacer()
             Button(action: {
                 DB.controller.lineup(store: store, numberOfPeople: numberOfPeople) { (lur, error) in
-                    guard error == nil else {print("Error while lining up"); self.showAlert = true; return} //TODO ALERT
-                    DispatchQueue.main.async { Repository.singleton.lur = lur }
+                    guard error == nil else {print("Error while lining up"); self.showAlert = true; return}
+                    self.presentationMode.dismiss()
+                    DispatchQueue.main.async { Repository.singleton.lurs[lur!.visitToken.uuid.uuidString] = lur! }
                 }
-                UIViewController.foremost.dismiss()
             }){
                 Text("Confirm")
                     .fontWeight(.semibold)
                     .font(.body)
                     .tint(.blueLabel)
             }.customButtonStyle()
+            SizedDivider(height: 20)
         }.alert(isPresented: $showAlert) {defAlert}
     }
 }
@@ -38,6 +49,7 @@ struct NewBRView: View {
     @State var duration: Duration = 5
     @State var choosableSects: [String:Bool] = [:]
     @State var showAlert = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(spacing: 0) {
@@ -117,10 +129,10 @@ struct NewBRView: View {
                     chosenSections.append(store.sections.first(where: {s in s.id == csid})!)
                 }
                 DB.controller.booking(store: store, sections: chosenSections, numberOfPeople: numberOfPeople, desiredTimeInterval: CTimeInterval(startingDateTime: selectedDateTime, duration: duration)) { (br, error) in
-                    guard error == nil else {print("Error while making a booking request"); self.showAlert = true; return} //TODO ALERT
+                    guard error == nil else {print("Error while making a booking request"); self.showAlert = true; return}
+                    self.presentationMode.dismiss()
                     DispatchQueue.main.async { Repository.singleton.brs[br!.visitToken.uuid.uuidString] = br }
                 }
-                UIViewController.foremost.dismiss()
             }){
                 Text("Confirm")
                     .fontWeight(.semibold)

@@ -37,7 +37,7 @@ public class RequestHandler {
         if (custLineUps != null && !custLineUps.isEmpty()) {
             for (Lineup l: custLineUps) {
                 if (l.isPending()) {
-                    System.out.println("Il customer ha già in coda per un negozio");
+                    System.out.println("Il customer è già in coda per un negozio");
                     return null;
                 }
             }
@@ -49,8 +49,8 @@ public class RequestHandler {
         }
 
         Lineup lur = new Lineup();
-        System.out.println("Now:" + Timestamp.valueOf(LocalDateTime.now()) +"\nEstimated queue disposal time: " + dataModel.getQueueDisposalTime(storeID));
-        System.out.println("Avg.dur. dello store: " + s.getAverageVisitDuration().getTime());
+        System.out.println("Estimated queue disposal time: " + dataModel.getQueueDisposalTime(storeID));
+        System.out.println("Avg.dur. dello store: " + s.getAverageVisitDuration());
         lur.setEstimatedTimeOfEntrance(Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID).toLocalDateTime().plus(Duration.ofNanos(s.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
         lur.setCustomer(c);
         lur.setStore(s);

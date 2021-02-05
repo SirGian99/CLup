@@ -2,8 +2,10 @@
 //  RequestViews.swift
 //  CLup
 //
-//  Created by Vincenzo Riccio on 23/01/2021.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
 //
+
 
 import SwiftUI
 
@@ -24,10 +26,17 @@ struct RequestPreview<Request:VisitRequest>: View {
 
 struct LURDetails: View {
     let lur: LineUpRequest
+    @State var showAlert = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        let timeToWait = lur.ete != nil ? Int(Date(timeIntervalSinceNow: 0).distance(to: lur.ete!)/60) : 0
-        let timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Enter now!"
+        let timeToWait = lur.ete != nil ? Int(Date().distance(to: lur.ete!)/60) : 0
+        let timeToWaitStr: String!
+        if timeToWait < 0 {
+            timeToWaitStr = "We are sorry, you need to wait a bit more"
+        } else {
+            timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Enter now!"
+        }
         return VStack(alignment: .center, spacing: 10) {
             SizedDivider(height: 5)
             VStack (spacing: 0) {
@@ -63,18 +72,14 @@ struct LURDetails: View {
             }
             .lightBlueCard()
             VStack(alignment: .center, spacing: 0) {
-                //SizedDivider(height: 5)
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(getColor(.lightBlueHeaderBG))
-                    VStack(spacing: 0) {
-                        SizedDivider(height: 5)
-                        Text(timeToWaitStr)
-                            .fontWeight(.medium)
-                            .font(.largeTitle)
-                        SizedDivider(height: 5)
-                    }
-                }
+                VStack(spacing: 0) {
+                    SizedDivider(height: 5)
+                    Text(timeToWaitStr)
+                        .fontWeight(.medium)
+                        .font(.largeTitle)
+                    SizedDivider(height: 5)
+                    HStack{Spacer()}
+                }.padding().background(.lightBlueHeaderBG)
                 SizedDivider(height: 8)
                 Text("Time to wait")
                     .font(.subheadline)
@@ -97,23 +102,39 @@ struct LURDetails: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    //.blur(radius: 7, opaque: lur.state != .ready)
+                    .blur(radius: 9, opaque: lur.state != .ready)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
             .lightBlueCard()
-            VStack(spacing: 0) {
-                CancelButton(req: lur)
-                HStack{Spacer()}
-            }
+            Button(action: {
+                DB.controller.deleteLUR(lur: lur) { error in
+                    guard error == nil else {print(error!); self.showAlert = true; return}
+                    print("LUR deleted")
+                    self.presentationMode.dismiss()
+                    DispatchQueue.main.async { Repository.singleton.lurs[lur.visitToken.uuid.uuidString] = nil }
+                }
+            }){
+                VStack (spacing: 0) {
+                    SizedDivider(height: 15)
+                    Text("Cancel request")
+                        .fontWeight(.semibold)
+                        .font(.body)
+                    SizedDivider(height: 15)
+                    HStack{Spacer()}
+                }
+                .tint(.blueLabel)
+            }.customButtonStyle()
             .blueCard()
             Spacer()
-        }.tint(.blueLabel)
+        }.tint(.blueLabel).alert(isPresented: $showAlert) {defAlert}
     }
 }
 
 struct BRDetails: View {
     let br: BookingRequest
+    @State var showAlert = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(alignment: .center, spacing: 10) {
@@ -176,16 +197,30 @@ struct BRDetails: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    //.blur(radius: 7, opaque: lur.state != .ready)
+                    .blur(radius: 9, opaque: br.state != .ready)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
             .lightBlueCard()
             
-            VStack(spacing: 0) {
-                CancelButton(req: br)
-                HStack{Spacer()}
-            }
+            Button(action: {
+                DB.controller.deleteBR(br: br) { error in
+                    guard error == nil else {print(error!); self.showAlert = true; return}
+                    print("BR deleted")
+                    self.presentationMode.dismiss()
+                    DispatchQueue.main.async { Repository.singleton.brs[br.visitToken.uuid.uuidString] = nil }
+                }
+            }){
+                VStack (spacing: 0) {
+                    SizedDivider(height: 15)
+                    Text("Cancel request")
+                        .fontWeight(.semibold)
+                        .font(.body)
+                    SizedDivider(height: 15)
+                    HStack{Spacer()}
+                }
+                .tint(.blueLabel)
+            }.customButtonStyle()
             .blueCard()
             Spacer()
         }.tint(.blueLabel)
