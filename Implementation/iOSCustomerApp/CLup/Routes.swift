@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ServerRoutes {
-    private static let baseURL = "http://localhost:8080/CLup"
+    private static let baseURL = "http://192.168.1.10:8080/CLup"
     //CustomerInt
     static let registerApp = baseURL+"/customer/registerApp"
     static func customerData(_ id: String) -> String { return baseURL+"/customer/\(id)" }

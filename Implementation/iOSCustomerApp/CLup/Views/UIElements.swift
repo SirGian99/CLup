@@ -1,19 +1,5 @@
 import SwiftUI
 
-let defaultButtonDimensions = (width: CGFloat(155.52), height: CGFloat(48))
-
-let customDateFormat: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .short
-    return formatter
-}()
-
-func defaultAlert(title: String, message: String) -> UIAlertController {
-    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-    alert.addAction(UIAlertAction(title: "Got it!", style: .default))
-    return alert
-}
 
 struct DatePickerGUI: View {
     @Binding var selectedDate: Date
@@ -25,13 +11,10 @@ struct DatePickerGUI: View {
                 self.selectedDate = newDate
             }
         )
-        return //VStack (spacing: 0){
+        return
             DatePicker("", selection: dateBinding, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 .datePickerStyle(WheelDatePickerStyle())
                 .labelsHidden()
-                //.frame(width: UIScreen.main.bounds.width)
-            //Spacer()
-        //}//.frame(width: UIScreen.main.bounds.width, height: 270)
     }
 }
 
@@ -84,5 +67,44 @@ struct SearchBar: UIViewRepresentable {
 
     func updateUIView(_ uiView: UISearchBar, context: UIViewRepresentableContext<SearchBar>) {
         uiView.text = text
+    }
+}
+
+struct LineUpButton: View {
+    let store: Store
+    @State var showModal = false
+    var body: some View {
+        Button(action: {self.showModal.toggle()}){
+            VStack {
+                SizedDivider(height: 5)
+                Text("Line-up now")
+                    .fontWeight(.semibold)
+                    .font(.body)
+                Text("Estimated waiting: \(store.estimatedQueueDisposalTime) min")
+                    .font(.subheadline)
+                SizedDivider(height: 5)
+            }
+            .tint(.blueLabel)
+            .sheet(isPresented: $showModal) {NewLURView(store: store)}
+        }.customButtonStyle()
+    }
+}
+
+struct BookingButton: View {
+    let store: Store
+    @State var showModal = false
+    var body: some View {
+        Button(action: {self.showModal.toggle()}){
+            VStack {
+                SizedDivider(height: 5)
+                Text("Book a visit")
+                    .fontWeight(.semibold)
+                    .font(.body)
+                SizedDivider(height: 5)
+            }
+            .tint(.blueLabel)
+            .sheet(isPresented: $showModal) {NewBRView(store: store)}
+        }
+        .customButtonStyle()
     }
 }

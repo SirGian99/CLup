@@ -22,19 +22,20 @@ class DB {
             guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in \(#function). Invalid response!")}
             guard responseCode == 200 else {return completion("Bad response code in \(#function): \(responseCode)")}
             guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion("Error with returned data in \(#function)")}
-            
-            let lurJson = jsonResponse["lineupRequests"].arrayValue.first
+            let lurArray = jsonResponse["lineupRequests"].arrayValue
             let brArray = jsonResponse["bookingRequests"].arrayValue
-            if let lurJson = lurJson {
+            for lurJson in lurArray {
                 let hfid = lurJson["visitToken"]["hfid"].stringValue
                 let uuid = lurJson["visitToken"]["uuid"].stringValue
                 let state = lurJson["state"].intValue
                 let numberOfPeople = lurJson["numberOfPeople"].intValue
                 let storeID = lurJson["storeID"].stringValue
+                let ete = lurJson["estimatedTimeOfEntrance"].stringValue
                 self.getStoreFromID(storeID: storeID) { (store, error) in
                     guard error == nil else {return completion(error!)}
-                    let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : Date(timeIntervalSinceNow: 600), store: store!)
-                    DispatchQueue.main.async { Repository.singleton.lur = lur }
+                    let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store!)
+                    print("Downloaded ",lur)
+                    DispatchQueue.main.async { Repository.singleton.lurs[uuid] = lur }
                 }
             }
             for brJson in brArray {
@@ -56,6 +57,7 @@ class DB {
                         }.first!)
                     }
                     let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sectionArray, store: store!)
+                    print("Downloaded ",br)
                     DispatchQueue.main.async { Repository.singleton.brs[uuid] = br }
                 }
             }
@@ -88,10 +90,11 @@ class DB {
                 guard responseCode == 200 else {return completion(nil, "Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in \(#function)")}
                 guard jsonResponse["validated"].boolValue else {return completion(nil, "Request rejected")}
+                let ete = jsonResponse["estimatedTimeOfEntrance"].stringValue
                 let hfid = jsonResponse["visitToken"]["hfid"].stringValue
                 let uuid = jsonResponse["visitToken"]["uuid"].stringValue
                 let state = jsonResponse["state"].intValue
-                let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : Date(timeIntervalSinceNow: 600), store: store)
+                let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store)
                 completion(lur, nil)
             }.resume()
         } catch let error {completion(nil, "Error in \(#function). The error is:\n" + error.localizedDescription)}
@@ -111,11 +114,6 @@ class DB {
     func booking(store: Store, sections: [Section], numberOfPeople: Int, desiredTimeInterval: CTimeInterval, completion: @escaping (BookingRequest?, String?) -> Void) { // (br, error)
         do {
             print("*** DB - \(#function) ***")
-//            let timeIntervalDict: [String:String] = [
-//                "date":serverDateFormatter(date: desiredTimeInterval.startingDateTime),
-//                "start":serverTimeFormatter(date: desiredTimeInterval.startingDateTime),
-//                "duration":"\(desiredTimeInterval.duration)"
-//            ]
             let timeIntervalDict: [String:String] = [
                 "start":serverDateTimeFormatter(date: desiredTimeInterval.startingDateTime),
                 "duration":durationFormatter(d: desiredTimeInterval.duration)
@@ -180,7 +178,9 @@ class DB {
                 let name = storeJson["name"].stringValue
                 let description = storeJson["description"].string
                 let currOcc = storeJson["currentOccupancy"].intValue
-                let estimatedQueueDTime = storeJson["estimatedQueueDisposalTime"].intValue
+                let estimatedQueueDTimeStr = storeJson["estimatedQueueDisposalTime"].stringValue
+                let estimatedQueueDTime = self.serverDateTimeFormatter(date: estimatedQueueDTimeStr)
+                let estimatedQueueDTimeMinutes = Int(Date().distance(to: estimatedQueueDTime)/60)
                 let addressJson = storeJson["address"]
                 let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
                 let whArray = storeJson["workingHours"].arrayValue
@@ -198,7 +198,7 @@ class DB {
                     let name = sectJson["name"].stringValue
                     sections.append(Section(id: id, name: name))
                 }
-                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTime, sections: sections, chain: nil)
+                let store = Store(id: id, name: name, description: description, image: nil, address: address, currentOccupancy: currOcc, workingHours: whs, estimatedQueueDisposalTime: estimatedQueueDTimeMinutes, sections: sections, chain: nil)
                 storeDict[id] = store
             }
             completion(chainDict, storeDict, nil)
@@ -221,11 +221,8 @@ class DB {
                 let description = storeJson["description"].string
                 let currOcc = storeJson["currentOccupancy"].intValue
                 let estimatedQueueDTimeStr = storeJson["estimatedQueueDisposalTime"].stringValue
-                print("Received date: ", estimatedQueueDTimeStr)
                 let estimatedQueueDTime = self.serverDateTimeFormatter(date: estimatedQueueDTimeStr)
-                print("Parsed date: ", estimatedQueueDTime.getDate(), estimatedQueueDTime.getTime())
-                let estimatedQueueDTimeMinutes = Int(Date().distance(to: estimatedQueueDTime))
-                print("Waiting duration: ", estimatedQueueDTimeMinutes)
+                let estimatedQueueDTimeMinutes = Int(Date().distance(to: estimatedQueueDTime)/60)
                 let addressJson = storeJson["address"]
                 let address = Address(streetName: addressJson["streetName"].stringValue, streetNumber: addressJson["streetNumber"].stringValue, city: addressJson["city"].stringValue, postalCode: addressJson["postalCode"].stringValue, country: addressJson["country"].stringValue)
                 let whArray = storeJson["workingHours"].arrayValue
@@ -296,18 +293,20 @@ class DB {
     
     private func serverDateTimeFormatter(date: String) -> Date {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.locale = .current//Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.S"
+        formatter.timeZone = .current
         if let parsedDate = formatter.date(from: date) {
             return parsedDate
         }
-        return Date()
+        fatalError("Wrong format for \(#function)")
     }
     
     private func serverDateTimeFormatter(date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.locale = .current//Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.timeZone = .current
         return formatter.string(from: date)
     }
     

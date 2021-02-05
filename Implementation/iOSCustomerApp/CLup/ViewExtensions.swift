@@ -6,27 +6,10 @@ import CoreImage.CIFilterBuiltins
 struct CustomButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-//            .frame(minWidth: 0, maxWidth: .infinity)
-//            .overlay(configuration.isPressed ? AnyView(Color.gray.opacity(0.1)) : AnyView(EmptyView()))
             .blur(radius: configuration.isPressed ? 2 : 0)
     }
 }
 
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
-}
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
 
 extension Button {
     func customButtonStyle() -> some View {
@@ -48,11 +31,6 @@ extension UIImage {
 }
 
 extension View {
-    func transparentNavBar() -> some View {
-        return self.background(NavigationConfigurator { nc in
-            nc.navigationBar.standardAppearance.configureWithTransparentBackground()
-        })
-    }
     func opaqueOverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
         return self.overlay(OpaqueOverlay(isPresented: isPresented, toOverlay: toOverlay))
     }

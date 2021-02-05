@@ -11,7 +11,7 @@ class Repository: ObservableObject {
     static let singleton = Repository()
     @Published var stores: [String:Store] = [:]
     @Published var chains: [String:Chain] = [:]
-    @Published var lur: LineUpRequest? = nil
+    @Published var lurs: [String:LineUpRequest] = [:]
     @Published var brs: [String:BookingRequest] = [:]
 
     private init(){}

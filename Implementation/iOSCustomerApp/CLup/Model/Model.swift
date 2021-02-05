@@ -14,7 +14,7 @@ typealias CUUID = UUID
 typealias Duration = Int //minuti
 
 struct Token: CustomStringConvertible {
-    public var description: String {return hfid}
+    public var description: String {return "\(uuid.uuidString) - "+hfid}
     let hfid: HFID
     let uuid: CUUID
 }
@@ -39,8 +39,11 @@ struct Time: CustomStringConvertible, Hashable {
     }
     
     init(time: String) {
-        self.hour = String(time[time.startIndex..<time.firstIndex(of: ":")!])
-        self.minute = String(time[time.index(after: time.firstIndex(of: ":")!)..<time.endIndex])
+        let firstIndex = time.firstIndex(of: ":")!
+        hour = String(time[time.startIndex..<firstIndex])
+        let secondPart = time[time.index(after: time.firstIndex(of: ":")!)..<time.endIndex]
+        let secondIndex = secondPart.firstIndex(of: ":") ?? secondPart.endIndex
+        minute = String(secondPart[secondPart.startIndex..<secondIndex])
     }
 }
 
@@ -156,7 +159,7 @@ class LineUpRequest: VisitRequest {
     let store: Store
     let ete: Date?
     
-    public var description: String {return "LUR with token \(visitToken)"}
+    public var description: String {return "\(state) LUR with token \(visitToken) for store \(store.id). Ete = \(String(describing: ete))"}
     
     init(numberOfPeople: Int, visitToken: Token, state: VRState, ete: Date?, store: Store) {
         self.numberOfPeople = numberOfPeople
@@ -175,7 +178,7 @@ class BookingRequest: VisitRequest {
     let desiredTimeInterval: CTimeInterval
     let sections: [Section]
     
-    public var description: String {return "BR with token \(visitToken)"}
+    public var description: String {return "\(state) BR with token \(visitToken) for store \(store.id)"}
     
     init(numberOfPeople: Int, visitToken: Token, state: VRState, desiredTimeInterval: CTimeInterval, sections: [Section], store: Store) {
         self.numberOfPeople = numberOfPeople
