@@ -1,0 +1,2 @@
+04-Feb-2021 23:13:18.368 WARNING [Thread-16] com.sun.faces.config.ConfigureListener.contextDestroyed Unexpected state during contextDestroyed: no ConfigManager instance in current ServletContext but one is expected to exist.
+04-Feb-2021 23:13:18.602 WARNING [Thread-16] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc The web application [CLup] registered the JDBC driver [org.mariadb.jdbc.Driver] but failed to unregister it when the web application was stopped. To prevent a memory leak, the JDBC Driver has been forcibly unregistered.

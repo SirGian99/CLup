@@ -2,8 +2,10 @@
 //  Repository.swift
 //  CLup
 //
-//  Created by Vincenzo Riccio on 30/01/2021.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
 //
+
 
 import Foundation
 
@@ -11,7 +13,7 @@ class Repository: ObservableObject {
     static let singleton = Repository()
     @Published var stores: [String:Store] = [:]
     @Published var chains: [String:Chain] = [:]
-    @Published var lur: LineUpRequest? = nil
+    @Published var lurs: [String:LineUpRequest] = [:]
     @Published var brs: [String:BookingRequest] = [:]
 
     private init(){}

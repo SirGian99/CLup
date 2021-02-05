@@ -1,3 +1,11 @@
+//
+//  Extensions.swift
+//  CLup
+//
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
+//  Copyright © 2021 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import UIKit
@@ -5,78 +13,22 @@ import UIKit
 extension Date {
     func getDate() -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.locale = .current//Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: self)
     }
-    func getTime(withSeconds: Bool = false) -> String {
-        if withSeconds {
-            let components = Calendar.current.dateComponents([.hour, .minute, .second], from: self)
-            guard let hour = components.hour, let minute = components.minute, let second = components.second else {return ""}
-            var hourStr = "\(hour)"
-            var minuteStr = "\(minute)"
-            var secondStr = "\(second)"
-            if hour < 10 {hourStr = "0"+hourStr}
-            if minute < 10 {minuteStr = "0"+minuteStr}
-            if second < 10 {secondStr = "0"+secondStr}
-            return hourStr+":"+minuteStr+":"+secondStr
-        } else {
-            let components = Calendar.current.dateComponents([.hour, .minute], from: self)
-            guard let hour = components.hour, let minute = components.minute else {return ""}
-            var hourStr = "\(hour)"
-            var minuteStr = "\(minute)"
-            if hour < 10 {hourStr = "0"+hourStr}
-            if minute < 10 {minuteStr = "0"+minuteStr}
-            return hourStr+":"+minuteStr
-        }
+    func getTime() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = .current//Locale(identifier: "en_US_POSIX")
+        formatter.dateStyle = .none
+        formatter.dateFormat = "HH:mm"
+        formatter.timeZone = .current //TimeZone(secondsFromGMT: 0)
+        return formatter.string(from: self)
     }
-}
-
-struct NavigationConfigurator: UIViewControllerRepresentable {
-    var configure: (UINavigationController) -> Void = { _ in }
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<NavigationConfigurator>) -> UIViewController {
-        UIViewController()
-    }
-    func updateUIViewController(_ uiViewController: UIViewController, context: UIViewControllerRepresentableContext<NavigationConfigurator>) {
-        if let nc = uiViewController.navigationController {
-            self.configure(nc)
-        }
-    }
-}
-
-
-extension UIViewController {
-    func toggleEditMode(observedVar: Binding<Bool>) {
-        isEditing ? setEditing(false, animated: true) : setEditing(true, animated: true)
-        observedVar.wrappedValue.toggle()
-        isModalInPresentation = isEditing
-    }
-    
-    func setEditMode(observedVar: Binding<Bool>, value: Bool) {
-        setEditing(value, animated: true)
-        observedVar.wrappedValue = value
-        isModalInPresentation = value
-    }
-    
-    func present(_ toPresent: UIViewController) {
-        DispatchQueue.main.async { self.present(toPresent, animated: true, completion: nil) }
-    }
-    
-    func dismiss() {
-        DispatchQueue.main.async { self.dismiss(animated: true, completion: nil) }
-    }
-    
-    static var main: UIViewController {
-        return UIApplication.shared.windows.first!.rootViewController!
-    }
-    
-    static var foremost: UIViewController {
-        var toReturn = UIViewController.main
-        while toReturn.presentedViewController != nil {
-            toReturn = toReturn.presentedViewController!
-        }
-        return toReturn
+    func getTimeAsDuration() -> Int {
+        let components = Calendar.current.dateComponents([.hour, .minute, .second], from: self)
+        guard let hour = components.hour, let minute = components.minute else {return -1}
+        return hour*60+minute
     }
 }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<openejb-jar xmlns="http://www.openejb.org/openejb-jar/1.1">
+    <properties></properties>
+    <ejb-deployment container-id="Default Stateless Container" deployment-id="RequestHandler" ejb-name="RequestHandler"/>
+    <ejb-deployment container-id="Default Stateless Container" deployment-id="DataModel" ejb-name="DataModel"/>
+    <ejb-deployment container-id="Default Stateless Container" deployment-id="VisitManager" ejb-name="VisitManager"/>
+    <ejb-deployment container-id="Default Stateless Container" deployment-id="CustomerController" ejb-name="CustomerController"/>
+    <ejb-deployment container-id="Default Managed Container" deployment-id="CLup.Comp50110588" ejb-name="CLup.Comp"/>
+</openejb-jar>
