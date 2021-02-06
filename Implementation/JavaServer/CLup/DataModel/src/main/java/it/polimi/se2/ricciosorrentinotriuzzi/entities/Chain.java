@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,28 @@ public class Chain implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "chain", cascade = { CascadeType.PERSIST, CascadeType.REMOVE,
             CascadeType.REFRESH })
     private List<Store> stores;
+
+    public Chain() {
+    }
+
+    public Chain(String name, String description, byte[] image, List<Store> stores) {
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        if (stores==null)
+            this.stores = new LinkedList<>();
+        else
+            this.stores = stores;
+    }
+
+    public Chain(String name, String description, List<Store> stores) {
+        this.name = name;
+        this.description = description;
+        if (stores==null)
+            this.stores = new LinkedList<>();
+        else
+            this.stores = stores;
+    }
 
     public String getName() {
         return name;

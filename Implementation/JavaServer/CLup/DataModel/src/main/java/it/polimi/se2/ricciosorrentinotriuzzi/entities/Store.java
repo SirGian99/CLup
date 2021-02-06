@@ -61,7 +61,31 @@ public class Store implements Serializable {
     @Column(name="uri")
     private List<String> tassAddresses;
 
-    public Store() {id = UUID.randomUUID().toString();}
+    public Store() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, String passepartoutuuid, String passepartouthfid, Address address, List<Booking> bookings, List<Lineup> lineups, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.description = description;
+        this.currentOccupancy = currentOccupancy;
+        this.maximumOccupancy = maximumOccupancy;
+        this.averageVisitDuration = averageVisitDuration;
+        this.safetyThreshold = safetyThreshold;
+        this.chain = chain;
+        this.passepartoutuuid = passepartoutuuid;
+        this.address = address;
+        this.bookings = listInit(bookings);
+        this.managers = listInit(managers);
+        this.productSections = listInit(productSections);
+        this.workingHours = listInit(workingHours);
+        this.tassAddresses = listInit(tassAddresses);
+    }
+
+     private <E> List<E> listInit(List<E> list){
+        return list == null ? new LinkedList<E>():list;
+    }
 
     public String getId() {
         return id;

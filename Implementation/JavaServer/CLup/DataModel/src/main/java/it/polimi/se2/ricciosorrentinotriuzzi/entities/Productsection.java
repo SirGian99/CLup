@@ -21,6 +21,16 @@ public class Productsection implements Serializable {
     private Double currentOccupancy;
     private Integer maximumOccupancy;
 
+    public Productsection() {
+    }
+
+    public Productsection( Store store, String name, Double currentOccupancy, Integer maximumOccupancy) {
+        this.store = store;
+        this.name = name;
+        this.currentOccupancy = currentOccupancy;
+        this.maximumOccupancy = maximumOccupancy;
+    }
+
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 

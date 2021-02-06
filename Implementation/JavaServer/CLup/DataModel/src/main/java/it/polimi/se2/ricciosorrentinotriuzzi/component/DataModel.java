@@ -13,16 +13,8 @@ public class DataModel {
     @PersistenceContext(unitName = "PCLup")
     protected EntityManager em;
 
-    public void setEm(EntityManager em) {
-        this.em = em;
-    }
-
     public DataModel() {}
 
-    public DataModel(boolean bool){
-        this.em=Persistence.createEntityManagerFactory("PCLup").createEntityManager();
-    }
-    
     public List<Lineup> getQueue(String storeID){
         return em.createQuery(
                 "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.state = :pending")

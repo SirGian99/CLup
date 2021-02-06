@@ -1,7 +1,7 @@
 package it.polimi.se2.ricciosorrentinotriuzzi.integrationtests;
 import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
-import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.mockcomponent.*;
+import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,34 +10,31 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.persistence.Persistence;
+import java.sql.Time;
+import java.time.LocalTime;
 
 class VisitManagerIntegrationTest {
 
-    private TestDataModel dataModel1;
-    //private DataModel dataModel;
-    private TestStoreStatusHandler customerController;
+    private TestDataModel dataModel;
+    private TestVisitManager visitManager;
+    private Chain chain;
+    private Store store;
     @BeforeEach
     void setUp() throws NamingException {
-
-        /*EJBContainer ejbContainer = EJBContainer.createEJBContainer();
-        Context ctx = ejbContainer.getContext();
-        DataModel service = (DataModel) ctx.lookup("java:global/classes/DataModel");
-        service.setEm(Persistence.createEntityManagerFactory("PCLup").createEntityManager());
-        */
-        dataModel1 = new TestDataModel();
-        //dataModel1 = new DataModel(true);
-        customerController = new TestStoreStatusHandler(dataModel1);
-        //dataModel.getEm().getTransaction().begin();
+        dataModel = new TestDataModel();
+        visitManager = new TestVisitManager(dataModel);
+        chain = new Chain("chainTest", "Chain of test", null);
+        //store = new Store("test", "descriptionTest",0, 10, Time.valueOf(LocalTime.of(0,30)),  10, chain, "pptuuid", String passepartouthfid, Address address, List<Booking> bookings, List<Lineup> lineups, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses);
+        dataModel.getEm().getTransaction().begin();
     }
 
     @AfterEach
     void tearDown() {
-        //dataModel.getEm().getTransaction().rollback();
+        dataModel.getEm().getTransaction().rollback();
     }
 
     @Test
     void validateAccess() {
-        System.out.println(customerController.getStoreGeneralInfo("056dc34a-6536-11eb-a3e0-dca632747890"));
     }
 
     @Test

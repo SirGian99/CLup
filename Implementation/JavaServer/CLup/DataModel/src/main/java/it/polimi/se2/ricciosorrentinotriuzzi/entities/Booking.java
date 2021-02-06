@@ -3,6 +3,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,8 +39,24 @@ public class Booking extends VisitRequest implements Serializable {
     private List<Productsection> productSections;
 
     public Booking() {
-        uuid = UUID.randomUUID().toString();
-        productSections = new LinkedList<>();
+        this.uuid = UUID.randomUUID().toString();
+        this.productSections = new LinkedList<>();
+    }
+
+    public Booking(Store store, Customer customer, Integer numberOfPeople, Timestamp desiredStartingTime, Time desiredDuration, LinkedList<Productsection> productsections) {
+        this.uuid = UUID.randomUUID().toString();
+        this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
+        this.hfid = "B-" + (char)( Integer.parseInt(desiredStartingTime.toString().substring(8, 10)) % 26 + 65) + String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
+        if (productsections == null)
+            this.productSections = new LinkedList<>();
+        else
+            this.productSections = productsections;
+        this.store = store;
+        this.customer = customer;
+        this.numberOfPeople = numberOfPeople;
+        this.state = VisitRequestStatus.PENDING;
+        this.desiredStartingTime = desiredStartingTime;
+        this.desiredDuration = desiredDuration;
     }
 
     @Override

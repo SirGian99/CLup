@@ -19,6 +19,16 @@ public class Dayinterval implements Serializable {
     private Time start;
     private Time end;
 
+    public Dayinterval() {
+    }
+
+    public Dayinterval(long id, int dayOfTheWeek, Time start, Time end) {
+        this.id = id;
+        this.dayOfTheWeek = dayOfTheWeek;
+        this.start = start;
+        this.end = end;
+    }
+
     public long getId() {
         return id;
     }

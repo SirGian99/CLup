@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -30,7 +31,20 @@ public class Lineup extends VisitRequest implements Serializable {
     private Timestamp visitCompletionTime;
 
 
-    public Lineup() {uuid = UUID.randomUUID().toString();}
+    public Lineup() {
+        this.uuid = UUID.randomUUID().toString();
+    }
+
+    public Lineup(Store store, Customer customer, Timestamp estimatedTimeOfEntrance, Integer numberOfPeople) {
+        this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
+        this.uuid = UUID.randomUUID().toString();
+        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) + String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
+        this.store = store;
+        this.customer = customer;
+        this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
+        this.numberOfPeople = numberOfPeople;
+        this.state = VisitRequestStatus.PENDING;
+    }
 
     @Override
     public VisitRequestStatus getState() {

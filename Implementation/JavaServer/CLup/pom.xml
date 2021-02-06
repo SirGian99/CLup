@@ -21,6 +21,7 @@
         <module>DataModel</module>
         <module>REST-API</module>
         <module>BusinessModule</module>
+        <module>IntegrationTestingModule</module>
     </modules>
 
 

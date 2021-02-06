@@ -21,6 +21,17 @@ public class Customer implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lineup> lineups;
 
+    public Customer() {
+    }
+
+    public Customer(String id, Byte isAppCustomer) {
+        this.id = id;
+        this.isAppCustomer = isAppCustomer;
+        this.attitudes = new LinkedList<>();
+        this.bookings = new LinkedList<>();
+        this.lineups = new LinkedList<>();
+    }
+
     public String getId() {
         return id;
     }
