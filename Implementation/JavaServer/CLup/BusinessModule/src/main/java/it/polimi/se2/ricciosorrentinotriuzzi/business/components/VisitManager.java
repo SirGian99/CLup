@@ -126,6 +126,10 @@ public class VisitManager {
         dataModel.allowVisitRequest(request);
     }
 
+    // This method is invoked whenever a customer exits the store or a pending or ready request is canceled.
+    // The VisitManager checks if there is a request which is allowed to enter the store, given priority to bookings
+    // over lineups. Bookings are considered in order of "desired starting time", from the earliest to the latest, if
+    // its value is past the current time, while lineups in order of "time of creation", from the earliest to the latest
     @Asynchronous
     public void checkNewReadyRequest(String storeID){
         Store store = dataModel.getStore(storeID);

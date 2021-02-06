@@ -47,7 +47,7 @@ class VisitManagerIntegrationTest {
                 null,null,null,null,null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
-        booking = new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(5)),
+        booking = new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)),
                 Time.valueOf(LocalTime.of(0,30)), null);
         //The estimated time of entrance is set to the one the request handler would set when the lineup request is
         // placed, which is equal to now + the average visit duration of the store, since it's queue is empty
@@ -190,46 +190,99 @@ class VisitManagerIntegrationTest {
     }
 
     @Test
-    void newRequest() {
+    void newRequest() throws InterruptedException {
         testNewRequest(lineup);
+        testNewRequest(booking);
     }
 
-    void testNewRequest(VisitRequest request){
+    void testNewRequest(VisitRequest request) throws InterruptedException {
         if (request.isBooking()) {
             store.addBooking((Booking) request);
+            // Let's simulate that the store will have a customer inside it when the desired time specified in the
+            // booking comes, and that thar the booking  request has been made by a number of people equal to the store
+            // maximum occupancy. Of course, the request should not be set in ready state by the visit manager when the
+            // desired time comes
+            store.setCurrentOccupancy(store.getCurrentOccupancy()+1);
+            request.setNumberOfPeople(store.getMaximumOccupancy());
+            synchronized (visitManager){
+                visitManager.newRequest(request);
+                visitManager.wait();
+                assert (request.isPending());
+            }
 
+            // If the request has been made by a number of people less then or equal to the left occupancy currently
+            // available in the store, then the request should be in ready state when the desired time comes
+            request.setNumberOfPeople(store.getMaximumOccupancy()-store.getCurrentOccupancy());
+            ((Booking) request).setDesiredStartingTime(Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)));
+            synchronized (visitManager){
+                visitManager.newRequest(request);
+                visitManager.wait();
+                assert (request.isReady());
+            }
+            storeInit(store);
         }
         else {
             store.addLineup((Lineup) request);
             LocalDateTime now = LocalDateTime.now();
-            //Let's simulate that the store already has a customer inside it, and the new placed line up request has
-            //been made by a number of people equal to the store maximum occupancy. Of course, the request should not
-            //be set in ready state by the visit manager
+            // Let's simulate that the store already has a customer inside it, and the new placed line up request has
+            // been made by a number of people equal to the store maximum occupancy. Of course, the request should not
+            // be set in ready state by the visit manager
             store.setCurrentOccupancy(store.getCurrentOccupancy()+1);
             request.setNumberOfPeople(store.getMaximumOccupancy());
 
             visitManager.newRequest(request);
             assert (request.isPending() && ((Lineup) request).getEstimatedTimeOfEntrance().after(Timestamp.valueOf(now)));
 
-            //If the request has been made by a number of people less then or equal to the left occupancy currently
+            // If the request has been made by a number of people less then or equal to the left occupancy currently
             // available in the store, then the request should be in ready state and its estimated time of entrance
-            //should be set to now
+            // should be set to now
             request.setNumberOfPeople(store.getMaximumOccupancy()-store.getCurrentOccupancy());
             visitManager.newRequest(request);
             now = LocalDateTime.now();
             assert (request.isReady() && ((Lineup) request).getEstimatedTimeOfEntrance().before(Timestamp.valueOf(now)));
-            }
+            storeInit(store);
+        }
     }
 
     @Test
     void checkNewReadyRequest() {
+        store.addBooking(booking);
+        store.addLineup(lineup);
+        //booking.setNumberOfPeople(store.getMaximumOccupancy());
+
+        //Since the booking request is placed for 3 seconds from now, it should be not put in ready state. The lineup,
+        //instead, should be set in ready state since the store is available.
+        visitManager.checkNewReadyRequest(store.getId());
+        assert (lineup.isReady() && booking.isPending());
+
+        storeInit(store);
+        lineup.setState(VisitRequestStatus.PENDING);
+        booking.setNumberOfPeople(store.getMaximumOccupancy());
+        booking.setDesiredStartingTime(Timestamp.valueOf(LocalDateTime.now().minusMinutes(1)));
+        store.addLineup(lineup);
+        store.addBooking(booking);
+        // Since the booking has been placed from a time before now, it should be ready since the store is empty.
+        // The lineup will not be ready since the booking, which maximizes the store occupancy, has priority over it.
+        visitManager.checkNewReadyRequest(store.getId());
+        assert (booking.isReady() && lineup.isPending());
+
+        storeInit(store);
+        booking.setState(VisitRequestStatus.PENDING);
+        booking.setNumberOfPeople(store.getMaximumOccupancy()-lineup.getNumberOfPeople());
+        booking.setDesiredStartingTime(Timestamp.valueOf(LocalDateTime.now().minusMinutes(1)));
+        store.addLineup(lineup);
+        store.addBooking(booking);
+        // Since both request can simultaneously enter the store without overcoming the maximum occupancy, they should
+        // both be in ready state
+
+        visitManager.checkNewReadyRequest(store.getId());
+        assert (booking.isReady() && lineup.isReady());
     }
 
-    @Test
-    void scheduleBooking() {
-    }
-
-    @Test
-    void removedRequest() {
+    //This method empties the store
+    void storeInit(Store store){
+        store.setCurrentOccupancy(0);
+        store.setLineups(new LinkedList<>());
+        store.setBookings(new LinkedList<>());
     }
 }
