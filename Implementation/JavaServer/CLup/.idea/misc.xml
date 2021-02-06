@@ -12,6 +12,7 @@
         <option value="$PROJECT_DIR$/DataModel/pom.xml" />
         <option value="$PROJECT_DIR$/REST-API/pom.xml" />
         <option value="$PROJECT_DIR$/BusinessModule/pom.xml" />
+        <option value="$PROJECT_DIR$/IntegrationTestingModule/pom.xml" />
       </list>
     </option>
   </component>

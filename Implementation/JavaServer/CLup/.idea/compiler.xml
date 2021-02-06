@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="REST-API" />
         <module name="BusinessModule" />
+        <module name="REST-API" />
         <module name="DataModel" />
+        <module name="IntegrationTestingModule" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -16,6 +17,7 @@
       <module name="CLup" target="1.8" />
       <module name="DataModel" target="1.8" />
       <module name="EJB" target="1.8" />
+      <module name="IntegrationTestingModule" target="1.8" />
       <module name="REST-API" target="1.8" />
     </bytecodeTargetLevel>
   </component>

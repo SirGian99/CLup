@@ -6,20 +6,22 @@
     <persistence-unit name="PCLup">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>clup_db</jta-data-source>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Address</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Attitude</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Booking</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Chain</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Customer</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Dayinterval</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Lineup</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Manager</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Productsection</class>
-        <class>it.polimi.se2.ricciosorrentinotriuzzi.Store</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Address</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Attitude</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Booking</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Chain</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Customer</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Dayinterval</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Lineup</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Manager</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Productsection</class>
+        <class>it.polimi.se2.ricciosorrentinotriuzzi.entities.Store</class>
         <properties>
-            <!--property name="eclipselink.jdbc.url" value="jdbc:mariadb://109.116.11.75:33333/clup_db"/>
-            <property name="eclipselink.jdbc.driver" value="org.mariadb.jdbc.Driver"/-->
+            <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://109.116.11.75:33333/clup_db"/>
+            <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
             <property name="eclipselink.target-database" value="MySQL"/>
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="EmaGiaVin123"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="CLup">
+    <output-path>$PROJECT_DIR$/out/artifacts/CLup</output-path>
+    <root id="archive" name="CLup.war">
+      <element id="artifact" artifact-name="CLupExploded" />
+    </root>
+  </artifact>
+</component>
