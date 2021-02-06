@@ -26,7 +26,7 @@ public class RequestHandler {
             System.out.println("Non esiste uno store con id: "+storeID);
             return null;
         }
-        if (numberOfPeople > s.getMaximumOccupancy())
+        if (numberOfPeople > s.getMaximumOccupancy() || numberOfPeople<=0)
             return null;
         Customer c = dataModel.getCustomer(customerID);
         if (c == null) {
@@ -36,7 +36,7 @@ public class RequestHandler {
         List<Lineup> custLineUps = c.getLineups();
         if (custLineUps != null && !custLineUps.isEmpty()) {
             for (Lineup l: custLineUps) {
-                if (l.isPending()) {
+                if (l.isPending() || l.isReady()) {
                     System.out.println("Il customer è già in coda per un negozio");
                     return null;
                 }
@@ -70,7 +70,7 @@ public class RequestHandler {
             System.out.println("Non esiste uno store con id: "+storeID);
             return null;
         }
-        if (numberOfPeople > s.getMaximumOccupancy())
+        if (numberOfPeople > s.getMaximumOccupancy() || numberOfPeople<=0)
             return null;
         Customer c = dataModel.getCustomer(customerID);
         if (c == null) {
