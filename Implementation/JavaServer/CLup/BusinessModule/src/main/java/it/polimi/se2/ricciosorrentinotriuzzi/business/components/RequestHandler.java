@@ -73,7 +73,7 @@ public class RequestHandler {
         if (numberOfPeople > s.getMaximumOccupancy() || numberOfPeople<=0)
             return null;
         Customer c = dataModel.getCustomer(customerID);
-        if (c == null) {
+        if (c == null || !c.isAppCustomer()) {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
@@ -85,8 +85,9 @@ public class RequestHandler {
             System.out.println("Il booking inizia prima del queue disposal time");
             return null;
         }
-        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getHour()));
+        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
         List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
+        System.out.println("start: "+ desiredStart+ " end: " + end);
         if (!overlappingBookings.isEmpty()) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
@@ -127,7 +128,7 @@ public class RequestHandler {
 
     public void cancelRequest(String uuid) {
         VisitRequest request = dataModel.getVisitRequest(uuid);
-        if (request.isPending() || request.isReady()) {
+        if (request != null && (request.isPending() || request.isReady())) {
             dataModel.removeRequest(request);
             //check if other customers can enter
             visitManager.checkNewReadyRequest(request.getStore().getId());

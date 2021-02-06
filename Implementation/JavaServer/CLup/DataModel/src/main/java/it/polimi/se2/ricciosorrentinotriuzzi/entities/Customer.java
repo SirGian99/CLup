@@ -40,11 +40,11 @@ public class Customer implements Serializable {
     }
 
 
-    public Byte getIsAppCustomer() {
-        return isAppCustomer;
+    public boolean isAppCustomer() {
+        return isAppCustomer.equals((byte)(1));
     }
-    public void setIsAppCustomer(Byte isAppCustomer) {
-        this.isAppCustomer = isAppCustomer;
+    public void setIsAppCustomer(boolean isAppCustomer) {
+        this.isAppCustomer = isAppCustomer ? (byte)1 : (byte) 0;
     }
 
     public List<Booking> getBookings() { return bookings; }

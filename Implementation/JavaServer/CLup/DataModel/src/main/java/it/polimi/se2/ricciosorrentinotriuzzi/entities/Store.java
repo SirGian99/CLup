@@ -75,6 +75,7 @@ public class Store implements Serializable {
         this.chain = chain;
         this.address = address;
         this.bookings = listInit(bookings);
+        this.lineups = listInit(lineups);
         this.managers = listInit(managers);
         this.productSections = listInit(productSections);
         this.maximumOccupancy = 0;

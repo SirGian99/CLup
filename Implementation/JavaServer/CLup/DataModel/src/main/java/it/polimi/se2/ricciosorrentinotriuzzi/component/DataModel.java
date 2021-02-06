@@ -208,7 +208,7 @@ public class DataModel {
         if (c == null) {
             c = new Customer();
             c.setId(id);
-            c.setIsAppCustomer((byte) 1);
+            c.setIsAppCustomer(true);
             em.persist(c);
         }
         return c;

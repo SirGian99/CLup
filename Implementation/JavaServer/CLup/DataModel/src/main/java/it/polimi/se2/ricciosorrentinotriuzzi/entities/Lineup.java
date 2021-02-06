@@ -131,15 +131,6 @@ public class Lineup extends VisitRequest implements Serializable {
     @Override
     public boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
 
-    @Override
-    public String toString() {
-        return "Lineup{" +
-                "uuid='" + uuid + '\'' +
-                ", hfid='" + hfid + '\'' +
-                ", state=" + state +
-                ", dateTimeOfCreation=" + dateTimeOfCreation +
-                '}';
-    }
 
     public JSONObject toJson(){
         JSONObject json = new JSONObject();

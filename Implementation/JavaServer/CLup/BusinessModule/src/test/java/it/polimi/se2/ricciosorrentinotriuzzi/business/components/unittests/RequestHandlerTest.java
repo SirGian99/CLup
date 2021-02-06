@@ -57,7 +57,7 @@ class RequestHandlerTest {
         store.setBookings(new LinkedList<>());
 
         customer.setId("customerTest");
-        customer.setIsAppCustomer((byte) 1);
+        customer.setIsAppCustomer(true);
 
         address.setCity("Milan");
         address.setCountry("Italy");
@@ -112,7 +112,7 @@ class RequestHandlerTest {
         assertTrue(store.getBookings().contains(br));
 
 
-        //The customer tries to book a visit for a time interval which overlaps with a visit he previously made (the previous one). So,
+        //The customer tries to book a visit for a time interval which overlaps with a request he previously made (the previous one). So,
         //the getCustomerBookings will provide the request handler with a list containing the previous booking
         when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
@@ -143,6 +143,4 @@ class RequestHandlerTest {
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:05:00"), new ArrayList<>());
         assertNull(br);
     }
-
-
 }
