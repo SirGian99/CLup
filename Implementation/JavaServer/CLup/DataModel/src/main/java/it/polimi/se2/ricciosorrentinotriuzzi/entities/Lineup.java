@@ -38,7 +38,8 @@ public class Lineup extends VisitRequest implements Serializable {
     public Lineup(Store store, Customer customer, Timestamp estimatedTimeOfEntrance, Integer numberOfPeople) {
         this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
         this.uuid = UUID.randomUUID().toString();
-        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) + String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
+        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) +
+                String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
         this.store = store;
         this.customer = customer;
         this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
