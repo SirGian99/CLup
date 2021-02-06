@@ -38,7 +38,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../mariadb-java-client-2.7.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../IntegrationTestingModule/src/test/resources/mariadb-java-client-2.7.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
