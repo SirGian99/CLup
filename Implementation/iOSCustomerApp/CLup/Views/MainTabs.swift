@@ -22,7 +22,7 @@ struct FirstTab: View {
             VStack(alignment: .center, spacing: 0) {
                 SizedDivider(height: 15)
                 SearchBar(text: $searchText, onClick: {
-                    DB.controller.getChainStore(city: self.searchText){ (chains, autstores, error) in
+                    SI.controller.getChainStore(city: self.searchText){ (chains, autstores, error) in
                         guard error == nil else {print(error!); self.showAlert = true; return}
                         DispatchQueue.main.async {
                             Repository.singleton.chains = chains!

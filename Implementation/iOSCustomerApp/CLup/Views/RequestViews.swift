@@ -108,7 +108,7 @@ struct LURDetails: View {
             }
             .lightBlueCard()
             Button(action: {
-                DB.controller.deleteLUR(lur: lur) { error in
+                SI.controller.deleteLUR(lur: lur) { error in
                     guard error == nil else {print(error!); self.showAlert = true; return}
                     print("LUR deleted")
                     self.presentationMode.dismiss()
@@ -204,7 +204,7 @@ struct BRDetails: View {
             .lightBlueCard()
             
             Button(action: {
-                DB.controller.deleteBR(br: br) { error in
+                SI.controller.deleteBR(br: br) { error in
                     guard error == nil else {print(error!); self.showAlert = true; return}
                     print("BR deleted")
                     self.presentationMode.dismiss()

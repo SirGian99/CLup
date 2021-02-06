@@ -1,5 +1,5 @@
 //
-//  DBController.swift
+//  SIController.swift
 //  CLup
 //
 //  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele.
@@ -10,9 +10,9 @@
 import Foundation
 import SwiftUI
 
-class DB {
+class SI { //Server Interactions Controller
     @AppStorage("deviceToken") var deviceToken: String = ""
-    static var controller = DB()
+    static var controller = SI()
     private init(){}
     
     func getMyRequests(completion: @escaping (String?) -> Void) { //(error)
