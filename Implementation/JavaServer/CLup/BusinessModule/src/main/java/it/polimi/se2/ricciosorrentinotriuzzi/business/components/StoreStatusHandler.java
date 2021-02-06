@@ -16,16 +16,11 @@ public class StoreStatusHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.component/DataModel")
     protected DataModel dataModel;
 
-    public String getStoreNameByID(String storeID) {
-        return dataModel.getStore(storeID).getName();
-    }
-
     public JSONObject getStoreGeneralInfo(String storeID) {
         Store store = dataModel.getStore(storeID);
-
         return store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(storeID)).put("queueLength", dataModel.getQueue(storeID).size());
     }
-
+//TODO SPEZZA IN DUE, FORSE NO A CAUSA DELLA GET QUEUE DISPOSAL TIME
     public JSONObject getChainsAndAutonomousStores(String city) {
         JSONObject json = new JSONObject();
         JSONArray chains = new JSONArray();
@@ -49,7 +44,7 @@ public class StoreStatusHandler {
         json.put("autonomousStores", stores);
         return json;
     }
-
+///TODO DEVE RESTITUIRE UNA LISTA DI STORE, FORSE NO COME SOPRA
     public JSONObject getChainStores(String chain, String city) {
         JSONObject json = new JSONObject();
         JSONArray stores = new JSONArray();

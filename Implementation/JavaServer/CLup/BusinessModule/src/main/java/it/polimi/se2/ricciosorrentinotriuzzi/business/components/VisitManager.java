@@ -116,14 +116,9 @@ public class VisitManager {
         else {
             System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy());
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
-                setReadyRequest(request);
+                dataModel.allowVisitRequest(request);
             }
         }
-    }
-
-
-    private void setReadyRequest(VisitRequest request){
-        dataModel.allowVisitRequest(request);
     }
 
     // This method is invoked whenever a customer exits the store or a pending or ready request is canceled.
@@ -188,7 +183,7 @@ public class VisitManager {
         }
         System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
         if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
-            setReadyRequest(request);
+            dataModel.allowVisitRequest(request);
         }
     }
 

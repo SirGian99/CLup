@@ -27,17 +27,18 @@ public class DataModel {
     public List<Store> getAllStores(){
         return em.createQuery("select s from Store s").getResultList();
     }
-
+/*
+//TODO ERA USATO DAL BEAN PER AGGIORNARE PERIODICAMENTE LA AVG VISIT DUR
     public List<VisitRequest> getVisitRequest(String storeID, Timestamp date){
         List<VisitRequest> toReturn = new LinkedList<>();
         toReturn.addAll(em.createQuery(
                 "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
-                .setParameter("endingTime", date).getResultList());
+                .setParameter("endingTime", date).setParameter("storeID", storeID).getResultList());
         toReturn.addAll(em.createQuery(
                 "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
-                .setParameter("endingTime", date).getResultList());
+                .setParameter("endingTime", date).setParameter("storeID", storeID).getResultList());
         return toReturn;
-    }
+    }*/
 
     public Timestamp getQueueDisposalTime(String storeID){
         List<Lineup> queue = getQueue(storeID);
