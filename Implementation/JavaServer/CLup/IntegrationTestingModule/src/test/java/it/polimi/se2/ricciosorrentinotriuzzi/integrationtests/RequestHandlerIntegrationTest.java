@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.sound.sampled.Line;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -17,10 +16,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 class RequestHandlerIntegrationTest {
@@ -38,15 +34,11 @@ class RequestHandlerIntegrationTest {
         visitManager = mock(VisitManager.class);
         requestHandler = new TestRequestHandler(dataModel, visitManager);
 
-        Chain chain = new Chain("chainTest", "Chain of test", null);
-        Address address = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
-                "21133", "Italy", null);
-        Manager manager = new Manager("username", "password", "name");
         Dayinterval workingHour = new Dayinterval(LocalDateTime.now().getDayOfWeek().getValue(),
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59)));
         store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain,null,null,
+                Time.valueOf(LocalTime.of(0,30)),10.0, null,null,null,
                 null,null,null,null,null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
@@ -56,20 +48,13 @@ class RequestHandlerIntegrationTest {
         // placed, which is equal to now + the average visit duration of the store, since it's queue is empty
         lineup = new Lineup(store, customer, Timestamp.valueOf(LocalDateTime.now().plus(
                 Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),1);
-
-
         dataModel.getEm().getTransaction().begin();
         // Test entities are persisted on the database
-        dataModel.getEm().persist(chain);
-        dataModel.getEm().persist(address);
         dataModel.getEm().persist(workingHour);
-        dataModel.getEm().persist(manager);
         dataModel.getEm().persist(store);
         dataModel.getEm().persist(customer);
         //dataModel.getEm().persist(lineup);
         //dataModel.getEm().persist(booking);
-        store.setAddress(address);
-        store.addManager(manager);
         store.addWorkingHour(workingHour);
     }
 
@@ -91,20 +76,20 @@ class RequestHandlerIntegrationTest {
 
         // All the following request should be accepted since they verify the constraint on the number of people
         for (int i = store.getMaximumOccupancy(); i>0; i--) {
-            Lineup lur = requestHandler.lineup(i, customer.getId(), store.getId());
-            assertNotNull(lur);
-            assertTrue(store.getLineups().contains(lur));
-            requestHandler.cancelRequest(lur.getUuid());
+            lineup = requestHandler.lineup(i, customer.getId(), store.getId());
+            assertNotNull(lineup);
+            assertTrue(store.getLineups().contains(lineup));
+            requestHandler.cancelRequest(lineup.getUuid());
         }
         storeInit(store);
 
         // The second request should be rejected since the customer is already in line
-        Lineup lur = requestHandler.lineup(1, customer.getId(), store.getId());
-        assertNotNull(lur);
-        assertTrue(store.getLineups().contains(lur));
+        lineup = requestHandler.lineup(1, customer.getId(), store.getId());
+        assertNotNull(lineup);
+        assertTrue(store.getLineups().contains(lineup));
         assertNull(requestHandler.lineup(1, customer.getId(), store.getId()));
         // The following two lines simulate that the customer has exited the store
-        lur.setState(VisitRequestStatus.COMPLETED);
+        lineup.setState(VisitRequestStatus.COMPLETED);
         store.setCurrentOccupancy(0);
 
         // The new lineup is allowed since the customer exited the store
@@ -138,32 +123,30 @@ class RequestHandlerIntegrationTest {
 
         // All the following request should be accepted since they verify the constraint on the number of people
         for (int i = store.getMaximumOccupancy(); i>0; i--) {
-            System.out.println(dataModel.getQueue(store.getId()));
-            System.out.println(dataModel.getQueueDisposalTime(store.getId()));
-            Booking br =  requestHandler.book(i, customer.getId(), store.getId(),
+            booking =  requestHandler.book(i, customer.getId(), store.getId(),
                     desiredStartingTime,estimatedDuration, new ArrayList<>());
-            assertTrue(store.getBookings().contains(br));
-            requestHandler.cancelRequest(br.getUuid());
+            assertTrue(store.getBookings().contains(booking));
+            requestHandler.cancelRequest(booking.getUuid());
         }
 
-        Booking br = requestHandler.book(1, customer.getId(), store.getId(),
+        booking = requestHandler.book(1, customer.getId(), store.getId(),
                 desiredStartingTime,estimatedDuration, new ArrayList<>());
         Booking overlappingBr = requestHandler.book(1, customer.getId(), store.getId(),
                 Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)),estimatedDuration, new ArrayList<>());
-        assertNotNull(br);
+        assertNotNull(booking);
 
         // When the customer tries to book a visit for a time interval which overlaps with a booking he previously made
         // the new booking request is rejected
-        assertTrue(store.getBookings().contains(br));
+        assertTrue(store.getBookings().contains(booking));
         assertNull(overlappingBr);
 
         // The following  code generate a line up request which makes the queue disposal time equal to now plus the
         // average visit duration of the store. So a new booking request for
-        Lineup lur = requestHandler.lineup(1, customer.getId(), store.getId());
-        assertNotNull(lur);
+        lineup = requestHandler.lineup(1, customer.getId(), store.getId());
+        assertNotNull(lineup);
         assertNull(requestHandler.book(1, customer.getId(), store.getId(),
                 Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)), estimatedDuration, new ArrayList<>()));
-        requestHandler.cancelRequest(lur.getUuid());
+        requestHandler.cancelRequest(lineup.getUuid());
 
         // A new customer, which is not an app customer, is created. So, it must not be allowed to make booking requests
         Customer newCustomer = new Customer(UUID.randomUUID().toString(), false);
