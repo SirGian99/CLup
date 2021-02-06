@@ -66,9 +66,7 @@ class RequestHandlerTest {
         address.setStreetName("Piazza Leonardo da Vinci");
         address.setStreetNumber("0");
 
-        List<Dayinterval> workingHours = new LinkedList<>();
-        workingHours.add(workingHour);
-        store.setWorkingHours(workingHours);
+        store.addWorkingHour(workingHour);
     }
 
     @Test

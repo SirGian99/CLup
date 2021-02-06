@@ -65,20 +65,23 @@ public class Store implements Serializable {
         this.id = UUID.randomUUID().toString();
     }
 
-    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, String passepartoutuuid, String passepartouthfid, Address address, List<Booking> bookings, List<Lineup> lineups, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
+    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, Address address, List<Booking> bookings, List<Lineup> lineups, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.currentOccupancy = currentOccupancy;
-        this.maximumOccupancy = maximumOccupancy;
         this.averageVisitDuration = averageVisitDuration;
         this.safetyThreshold = safetyThreshold;
         this.chain = chain;
-        this.passepartoutuuid = passepartoutuuid;
         this.address = address;
         this.bookings = listInit(bookings);
         this.managers = listInit(managers);
         this.productSections = listInit(productSections);
+        this.maximumOccupancy = 0;
+        for (Productsection productSection : this.productSections) {
+            this.maximumOccupancy += productSection.getMaximumOccupancy();
+        }
+        this.maximumOccupancy = this.maximumOccupancy==0 ? maximumOccupancy : this.maximumOccupancy;
         this.workingHours = listInit(workingHours);
         this.tassAddresses = listInit(tassAddresses);
     }
@@ -227,8 +230,13 @@ public class Store implements Serializable {
     public List<Dayinterval> getWorkingHours() {
         return workingHours;
     }
+
     public void setWorkingHours(List<Dayinterval> workingHours) {
         this.workingHours = workingHours;
+    }
+
+    public void addWorkingHour(Dayinterval workingHours) {
+        this.workingHours.add(workingHours);
     }
 
 
@@ -245,7 +253,9 @@ public class Store implements Serializable {
     }
     public void setAddress(Address address) {
         this.address = address;
+        address.setStore(this);
     }
+
 
     public boolean isOpenAt(LocalDateTime datetime) {
         int dayOfWeek = datetime.getDayOfWeek().getValue();

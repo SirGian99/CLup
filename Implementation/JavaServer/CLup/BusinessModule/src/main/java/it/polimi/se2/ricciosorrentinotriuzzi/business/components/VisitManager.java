@@ -114,10 +114,9 @@ public class VisitManager {
             }, date);
         }
         else {
-            System.out.println("SONO QUI");
             System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy());
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
-                setReadyRequest(request); ///TODO controlla che si possano passare
+                setReadyRequest(request);
             }
         }
     }

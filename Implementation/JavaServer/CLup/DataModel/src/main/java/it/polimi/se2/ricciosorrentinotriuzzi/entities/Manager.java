@@ -21,7 +21,17 @@ public class Manager implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "managers")
     private List<Store> stores;
 
-    public Manager() {id = UUID.randomUUID().toString();}
+    public Manager() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public Manager(String username, String password, String name) {
+        this.id = UUID.randomUUID().toString();
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.stores = new LinkedList<>();
+    }
 
     public String getId() {
         return id;

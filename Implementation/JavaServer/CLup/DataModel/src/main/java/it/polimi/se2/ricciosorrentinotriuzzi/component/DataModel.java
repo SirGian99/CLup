@@ -137,8 +137,8 @@ public class DataModel {
                     double oldOcc = section.getCurrentOccupancy();
                     section.setCurrentOccupancy(oldOcc - numberOfPeople * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }

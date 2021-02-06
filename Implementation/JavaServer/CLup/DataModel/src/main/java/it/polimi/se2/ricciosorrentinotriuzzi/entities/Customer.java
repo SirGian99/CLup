@@ -24,9 +24,9 @@ public class Customer implements Serializable {
     public Customer() {
     }
 
-    public Customer(String id, Byte isAppCustomer) {
+    public Customer(String id, boolean isAppCustomer) {
         this.id = id;
-        this.isAppCustomer = isAppCustomer;
+        this.isAppCustomer = isAppCustomer ? (byte) 1 : (byte)0;
         this.attitudes = new LinkedList<>();
         this.bookings = new LinkedList<>();
         this.lineups = new LinkedList<>();
