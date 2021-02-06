@@ -20,7 +20,7 @@ struct CLupApp: App {
             TabViewController().accentColor(getColor(.blueLabel)).alert(isPresented: $showAlert) {defAlert}
         }.onChange(of: scenePhase) { newScenePhase in
             if scenePhase == .inactive && newScenePhase == .active {
-                DB.controller.getMyRequests() { error in
+                SI.controller.getMyRequests() { error in
                     if error != nil {print(error!); self.showAlert = true}
                 }
             }
@@ -40,7 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         if devToken == "" {
             let temp = UUID().uuidString
             print("Registro con \(temp)")
-            DB.controller.register(token: temp) { error in
+            SI.controller.register(token: temp) { error in
                 if error != nil {fatalError(error!)}
                 print("REGISTRAZIONE OK\nappID: \(temp)")
                 self.devToken = temp

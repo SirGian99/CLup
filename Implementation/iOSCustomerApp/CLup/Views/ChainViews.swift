@@ -39,7 +39,7 @@ struct StoresOfChain: View {
                 StoreView(store: store).cornerRadius(10).padding()
             }
         }.onAppear() {
-            DB.controller.getStores(chain: chain, city: city) { error in
+            SI.controller.getStores(chain: chain, city: city) { error in
                 guard error == nil else {return print(error!)}
             }
         }
