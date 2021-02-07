@@ -29,7 +29,11 @@ struct NewLURView: View {
                 SI.controller.lineup(store: store, numberOfPeople: numberOfPeople) { (lur, error) in
                     guard error == nil else {print("Error while lining up"); self.showAlert = true; return}
                     self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.lurs[lur!.visitToken.uuid.uuidString] = lur! }
+                    DispatchQueue.main.async { Repository.singleton.lurs[lur!.visitToken.uuid] = lur! }
+                    //Remedy to the absence of push notifications
+                    SI.controller.getMyRequests() { error in
+                        guard error == nil else {print("Error while getting my request"); self.showAlert = true; return}
+                    }
                 }
             }){
                 Text("Confirm")
@@ -131,7 +135,7 @@ struct NewBRView: View {
                 SI.controller.booking(store: store, sections: chosenSections, numberOfPeople: numberOfPeople, desiredTimeInterval: CTimeInterval(startingDateTime: selectedDateTime, duration: duration)) { (br, error) in
                     guard error == nil else {print("Error while making a booking request"); self.showAlert = true; return}
                     self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.brs[br!.visitToken.uuid.uuidString] = br }
+                    DispatchQueue.main.async { Repository.singleton.brs[br!.visitToken.uuid] = br }
                 }
             }){
                 Text("Confirm")

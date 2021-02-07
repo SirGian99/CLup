@@ -46,6 +46,9 @@ extension View {
     func tintIf(_ apply: Bool, _ color: Palette, _ otherwise: Palette) -> some View {
         return apply ? self.tint(color) : self.tint(otherwise)
     }
+    func blurIf(_ apply: Bool, _ radius: CGFloat = 10) -> some View {
+        return apply ? self.blur(radius: radius) : self.blur(radius: 0)
+    }
     func background(_ color: Palette) -> some View {
         return self.background(getColor(color))
     }
