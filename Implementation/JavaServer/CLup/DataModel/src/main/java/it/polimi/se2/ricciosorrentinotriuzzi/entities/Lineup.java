@@ -38,7 +38,8 @@ public class Lineup extends VisitRequest implements Serializable {
     public Lineup(Store store, Customer customer, Timestamp estimatedTimeOfEntrance, Integer numberOfPeople) {
         this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
         this.uuid = UUID.randomUUID().toString();
-        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) + String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
+        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) +
+                String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
         this.store = store;
         this.customer = customer;
         this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
@@ -131,15 +132,6 @@ public class Lineup extends VisitRequest implements Serializable {
     @Override
     public boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
 
-    @Override
-    public String toString() {
-        return "Lineup{" +
-                "uuid='" + uuid + '\'' +
-                ", hfid='" + hfid + '\'' +
-                ", state=" + state +
-                ", dateTimeOfCreation=" + dateTimeOfCreation +
-                '}';
-    }
 
     public JSONObject toJson(){
         JSONObject json = new JSONObject();

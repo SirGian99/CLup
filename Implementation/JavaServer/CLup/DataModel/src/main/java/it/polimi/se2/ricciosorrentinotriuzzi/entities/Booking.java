@@ -43,10 +43,12 @@ public class Booking extends VisitRequest implements Serializable {
         this.productSections = new LinkedList<>();
     }
 
-    public Booking(Store store, Customer customer, Integer numberOfPeople, Timestamp desiredStartingTime, Time desiredDuration, LinkedList<Productsection> productsections) {
+    public Booking(Store store, Customer customer, Integer numberOfPeople, Timestamp desiredStartingTime,
+                   Time desiredDuration, List<Productsection> productsections) {
         this.uuid = UUID.randomUUID().toString();
         this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
-        this.hfid = "B-" + (char)( Integer.parseInt(desiredStartingTime.toString().substring(8, 10)) % 26 + 65) + String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
+        this.hfid = "B-" + (char)( Integer.parseInt(desiredStartingTime.toString().substring(8, 10)) % 26 + 65) +
+                String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
         if (productsections == null)
             this.productSections = new LinkedList<>();
         else

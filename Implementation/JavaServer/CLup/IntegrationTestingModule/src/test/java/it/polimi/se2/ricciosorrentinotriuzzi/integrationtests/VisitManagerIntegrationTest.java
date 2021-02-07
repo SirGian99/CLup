@@ -2,18 +2,12 @@ package it.polimi.se2.ricciosorrentinotriuzzi.integrationtests;
 import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.mockcomponent.*;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.persistence.Persistence;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,39 +17,37 @@ class VisitManagerIntegrationTest {
 
     private TestDataModel dataModel;
     private TestVisitManager visitManager;
-    private Chain chain;
     private Store store;
-    private Address address;
-    private Manager manager;
-    private Dayinterval workingHour;
-    private Customer customer;
     private Booking booking;
     private Lineup lineup;
     @BeforeEach
-    void setUp() throws NamingException {
+    void setUp(){
         dataModel = new TestDataModel();
         visitManager = new TestVisitManager(dataModel);
-        chain = new Chain("chainTest", "Chain of test", null);
-        address = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
+        Chain chain = new Chain("chainTest", "Chain of test");
+        Address address = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
                 "21133", "Italy", null);
-        manager =new Manager("username", "password", "name");
-        workingHour = new Dayinterval(Calendar.getInstance().get(Calendar.DAY_OF_WEEK),
+        Manager manager = new Manager("username", "password", "name");
+        Dayinterval workingHour = new Dayinterval(LocalDateTime.now().getDayOfWeek().getValue(),
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59)));
         store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain,null,null,
+                Time.valueOf(LocalTime.of(0,30)),10.0, chain,
                 null,null,null,null,null);
 
-        customer = new Customer(UUID.randomUUID().toString(), true);
+        Customer customer = new Customer(UUID.randomUUID().toString(), true);
         booking = new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)),
                 Time.valueOf(LocalTime.of(0,30)), null);
-        //The estimated time of entrance is set to the one the request handler would set when the lineup request is
+        // The estimated time of entrance is set to the one the request handler would set when the lineup request is
         // placed, which is equal to now + the average visit duration of the store, since it's queue is empty
         lineup = new Lineup(store, customer, Timestamp.valueOf(LocalDateTime.now().plus(
                 Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),1);
 
 
         dataModel.getEm().getTransaction().begin();
+        // The database is emptied
+        dataModel.dbInit();
+        // Test entities are persisted on the database
         dataModel.getEm().persist(chain);
         dataModel.getEm().persist(address);
         dataModel.getEm().persist(workingHour);
@@ -71,6 +63,7 @@ class VisitManagerIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        // The rollback is executed in order to not persist changes on the database
         dataModel.getEm().getTransaction().rollback();
     }
 
@@ -103,14 +96,14 @@ class VisitManagerIntegrationTest {
             store.addBooking((Booking)request);
         else
             store.addLineup((Lineup)request);
-        //Since the request is not fulfilled, the result should be equal to 0 people allowed to access
+        // Since the request is not fulfilled, the result should be equal to 0 people allowed to access
         assert (visitManager.validateAccess(request.getUuid(), store.getId()) == 0);
         request.setState(VisitRequestStatus.FULFILLED);
         assert (visitManager.validateAccess(request.getUuid(), store.getId()) == 0);
         request.setState(VisitRequestStatus.COMPLETED);
         assert (visitManager.validateAccess(request.getUuid(), store.getId()) == 0);
-        //Since the request is ready, the result should be equal to a number of people allowed equal to the one specified
-        //in the request
+        // Since the request is ready, the result should be equal to a number of people allowed equal to the one
+        // specified in the request
         request.setState(VisitRequestStatus.READY);
         assert (visitManager.validateAccess(request.getUuid(), store.getId()) == request.getNumberOfPeople());
 
@@ -121,14 +114,14 @@ class VisitManagerIntegrationTest {
             store.addBooking((Booking)request);
         else
             store.addLineup((Lineup)request);
-        //Since the request is not fulfilled, the result should be equal to 0 people allowed to exit
+        // Since the request is not fulfilled, the result should be equal to 0 people allowed to exit
         assert (visitManager.validateExit(request.getUuid(), store.getId()) == 0);
         request.setState(VisitRequestStatus.READY);
         assert (visitManager.validateExit(request.getUuid(), store.getId()) == 0);
         request.setState(VisitRequestStatus.COMPLETED);
         assert (visitManager.validateExit(request.getUuid(), store.getId()) == 0);
-        //Since the request is fulfilled, the result should be equal to a number of people allowed equal to the one specified
-        //in the request
+        // Since the request is fulfilled, the result should be equal to a number of people allowed equal to the one
+        // specified in the request
         request.setState(VisitRequestStatus.FULFILLED);
         assert (visitManager.validateExit(request.getUuid(), store.getId()) == request.getNumberOfPeople());
 
@@ -139,22 +132,22 @@ class VisitManagerIntegrationTest {
             store.addBooking((Booking)request);
         else
             store.addLineup((Lineup)request);
-        //Since the request is not ready, the result of confirmAccess should be false
+        // Since the request is not ready, the result of confirmAccess should be false
         assert (!visitManager.confirmAccess(request.getUuid(), store.getId(), request.getNumberOfPeople()));
         request.setState(VisitRequestStatus.FULFILLED);
         assert (!visitManager.confirmAccess(request.getUuid(), store.getId(), request.getNumberOfPeople()));
         request.setState(VisitRequestStatus.COMPLETED);
         assert (!visitManager.confirmAccess(request.getUuid(), store.getId(), request.getNumberOfPeople()));
-        //Since the request is ready, the result should be equal to true and the request status should be fulfilled,
-        //the current occupancy of the store updated and the visit starting time different from null
+        // Since the request is ready, the result should be equal to true and the request status should be fulfilled,
+        // the current occupancy of the store updated and the visit starting time different from null
         request.setState(VisitRequestStatus.READY);
         int oldCurrentOccupancy = store.getCurrentOccupancy();
         assert (request.getVisitStartingTime() == null && visitManager.confirmAccess(request.getUuid(), store.getId(),
                 request.getNumberOfPeople()) && request.isFulfilled() &&
                 store.getCurrentOccupancy() == oldCurrentOccupancy + request.getNumberOfPeople() &&
                 request.getVisitStartingTime() != null);
-        //If the number of people who actually access the store is less than the number of people specified in the
-        //request, the number of people in the request is also updated
+        // If the number of people who actually access the store is less than the number of people specified in the
+        // request, the number of people in the request is also updated
         request.setState(VisitRequestStatus.READY);
         int numberOfPeople = request.getNumberOfPeople()-1;
         oldCurrentOccupancy = store.getCurrentOccupancy();
@@ -170,15 +163,15 @@ class VisitManagerIntegrationTest {
             store.addBooking((Booking)request);
         else
             store.addLineup((Lineup)request);
-        //Since the request is not fulfilled, the result of confirmExit should be false
+        // Since the request is not fulfilled, the result of confirmExit should be false
         assert (!visitManager.confirmExit(request.getUuid(), store.getId(), request.getNumberOfPeople()));
         request.setState(VisitRequestStatus.READY);
         assert (!visitManager.confirmExit(request.getUuid(), store.getId(), request.getNumberOfPeople()));
         request.setState(VisitRequestStatus.COMPLETED);
         assert (!visitManager.confirmExit(request.getUuid(), store.getId(), request.getNumberOfPeople()));
-        //Since the request is fulfilled, the result should be equal to true and the request status should be completed,
-        //the current occupancy of the store updated and the completion time must be null before and not null after the
-        //execution of the confirmExit method
+        // Since the request is fulfilled, the result should be equal to true and the request state should be completed,
+        // the current occupancy of the store updated and the completion time must be null before and not null after the
+        // execution of the confirmExit method
         request.setState(VisitRequestStatus.FULFILLED);
         store.setCurrentOccupancy(store.getCurrentOccupancy() + request.getNumberOfPeople());
         int oldCurrentOccupancy = store.getCurrentOccupancy();
@@ -279,7 +272,7 @@ class VisitManagerIntegrationTest {
         assert (booking.isReady() && lineup.isReady());
     }
 
-    //This method empties the store
+    // This method empties the store
     void storeInit(Store store){
         store.setCurrentOccupancy(0);
         store.setLineups(new LinkedList<>());

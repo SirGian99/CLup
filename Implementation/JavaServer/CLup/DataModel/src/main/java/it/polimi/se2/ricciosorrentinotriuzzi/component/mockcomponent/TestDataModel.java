@@ -14,4 +14,15 @@ public class TestDataModel extends DataModel {
     public EntityManager getEm() {
         return em;
     }
+    public void dbInit(){
+        em.createQuery("DELETE FROM Lineup").executeUpdate();
+        em.createQuery("DELETE FROM Booking ").executeUpdate();
+        em.createQuery("DELETE FROM Productsection").executeUpdate();
+        em.createQuery("DELETE FROM Customer").executeUpdate();
+        em.createQuery("DELETE FROM Store").executeUpdate();
+        em.createQuery("DELETE FROM Address").executeUpdate();
+        em.createQuery("DELETE FROM Dayinterval ").executeUpdate();
+        em.createQuery("DELETE FROM Chain").executeUpdate();
+        em.createQuery("DELETE FROM Manager ").executeUpdate();
+    }
 }

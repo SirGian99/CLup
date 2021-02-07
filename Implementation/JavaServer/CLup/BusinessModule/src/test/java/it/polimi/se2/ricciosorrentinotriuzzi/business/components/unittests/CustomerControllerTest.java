@@ -61,7 +61,7 @@ class CustomerControllerTest {
         store.setBookings(new LinkedList<>());
 
         customer.setId("customerTest");
-        customer.setIsAppCustomer((byte) 1);
+        customer.setIsAppCustomer(true);
 
         address.setCity("Milan");
         address.setCountry("Italy");

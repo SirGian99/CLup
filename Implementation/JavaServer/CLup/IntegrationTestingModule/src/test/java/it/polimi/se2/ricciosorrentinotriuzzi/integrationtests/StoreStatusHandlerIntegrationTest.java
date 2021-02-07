@@ -1,9 +1,11 @@
-package it.polimi.se2.ricciosorrentinotriuzzi.business.components.unittests;
+package it.polimi.se2.ricciosorrentinotriuzzi.integrationtests;
 
-import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
+import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.TestStoreStatusHandler;
+import it.polimi.se2.ricciosorrentinotriuzzi.component.mockcomponent.TestDataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
-import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Time;
 import java.time.DayOfWeek;
@@ -12,22 +14,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
+class StoreStatusHandlerIntegrationTest {
 
-class StoreStatusHandlerTest {
-
-    private DataModel dataModel;
+    private TestDataModel dataModel;
     private TestStoreStatusHandler ssh;
     private Chain chain;
     private Store store1;
     private Store store2;
     private Store store3;
-    private List<Address> milanAddresses = new LinkedList<>();
-    private List<Address> turinAddresses = new LinkedList<>();
+    private List<Address> cityOneAddresses = new LinkedList<>();
+    private List<Address> cityTwoAddresses = new LinkedList<>();
 
     @BeforeEach
     public void setUp() {
-        dataModel = mock(DataModel.class);
+        dataModel = new TestDataModel();
         ssh = new TestStoreStatusHandler(dataModel);
         chain = new Chain("PoliMi","Politecnico");
         Dayinterval workingHour = new Dayinterval (
@@ -102,49 +102,58 @@ class StoreStatusHandlerTest {
         address1.setStore(store1);
         address2.setStore(store2);
         address3.setStore(store3);
-        milanAddresses.add(address1);
-        milanAddresses.add(address2);
-        turinAddresses.add(address3);
+        cityOneAddresses.add(address1);
+        cityOneAddresses.add(address2);
+        cityTwoAddresses.add(address3);
+
+        dataModel.getEm().getTransaction().begin();
+        // The database is emptied
+        dataModel.dbInit();
+        // Test entities are persisted on the database
+        dataModel.getEm().persist(workingHour);
+        dataModel.getEm().persist(address1);
+        dataModel.getEm().persist(address2);
+        dataModel.getEm().persist(address3);
+        dataModel.getEm().persist(chain);
+        dataModel.getEm().persist(store1);
+        dataModel.getEm().persist(store2);
+        dataModel.getEm().persist(store3);
+    }
+
+    @AfterEach
+    void tearDown() {
+        // The rollback is executed in order to not persist changes on the database
+        dataModel.getEm().getTransaction().rollback();
     }
 
     @Test
     void getStoreGeneralInfo() {
-        when(dataModel.getStore(store1.getId())).thenReturn(store1);
         assert (ssh.getStoreGeneralInfo(store1.getId()).equals(store1));
     }
 
     @Test
     void getChains() {
-        when(dataModel.getAddressesByCity(milanAddresses.get(0).getCity())).thenReturn(milanAddresses);
-        Set<Chain> chains = ssh.getChains(milanAddresses.get(0).getCity());
+        Set<Chain> chains = ssh.getChains(cityOneAddresses.get(0).getCity());
         assert (chains.size() == 1 && chains.contains(chain));
-        when(dataModel.getAddressesByCity(turinAddresses.get(0).getCity())).thenReturn(turinAddresses);
-        chains = ssh.getChains(turinAddresses.get(0).getCity());
+        chains = ssh.getChains(cityTwoAddresses.get(0).getCity());
         assert (chains.size() == 1 && chains.contains(chain));
     }
 
     @Test
     void getAutonomousStores(){
-        when(dataModel.getAddressesByCity(milanAddresses.get(0).getCity())).thenReturn(milanAddresses);
-        List<Store> stores = ssh.getAutonomousStores(milanAddresses.get(0).getCity());
+        List<Store> stores = ssh.getAutonomousStores(cityOneAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store2));
-        when(dataModel.getAddressesByCity(turinAddresses.get(0).getCity())).thenReturn(turinAddresses);
-        stores = ssh.getAutonomousStores(turinAddresses.get(0).getCity());
+        stores = ssh.getAutonomousStores(cityTwoAddresses.get(0).getCity());
         assert (stores.size() == 0);
     }
 
     @Test
     void getChainStores() {
-        when(dataModel.getAddressesByCity(milanAddresses.get(0).getCity())).thenReturn(milanAddresses);
-        when(dataModel.getAddressesByCity(turinAddresses.get(0).getCity())).thenReturn(turinAddresses);
-        when(dataModel.getChainByName(chain.getName())).thenReturn(chain);
         List<Store> stores = ssh.getChainStores(chain.getName(), null);
         assert (stores.size() == 2 && stores.contains(store1) && stores.contains(store3));
-        stores = ssh.getChainStores(chain.getName(), milanAddresses.get(0).getCity());
+        stores = ssh.getChainStores(chain.getName(), cityOneAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store1));
-        stores = ssh.getChainStores(chain.getName(), turinAddresses.get(0).getCity());
+        stores = ssh.getChainStores(chain.getName(), cityTwoAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store3));
     }
-
-
 }

@@ -30,61 +30,49 @@ class VisitManagerTest {
     void setUp() {
         dataModel = mock(DataModel.class);
         visitManager = new TestVisitManager(dataModel);
-        booking = new Booking();
-        lineup = new Lineup();
-        store = new Store();
-        customer = new Customer();
-
-        Dayinterval workingHour = new Dayinterval();
-        Address address = new Address();
-
-        workingHour.setDayOfTheWeek(DayOfWeek.from(LocalDateTime.now()).getValue());
-        workingHour.setStart(Time.valueOf("00:00:00"));
-        workingHour.setEnd(Time.valueOf("23:00:00"));
-        workingHour.setId(0);
-
-        store.setName("testName");
-        store.setAverageVisitDuration(Time.valueOf("0:30:30"));
-        store.setCurrentOccupancy(0);
-        store.setMaximumOccupancy(10);
-        store.setSafetyThreshold(0.0);
-        store.setDescription("Test store");
-        store.setId("storeTest");
-        store.setAddress(address);
-        store.setProductSections(new LinkedList<>());
-        store.setLineups(new LinkedList<>());
-        store.setBookings(new LinkedList<>());
-
-        customer.setId("customerTest");
-        customer.setIsAppCustomer((byte) 1);
-
-        address.setCity("Milan");
-        address.setCountry("Italy");
-        address.setPostalCode("21100");
+        customer = new Customer("customerTestID",true);
+        Dayinterval workingHour = new Dayinterval (
+                DayOfWeek.from(LocalDateTime.now()).getValue(),
+                Time.valueOf("00:00:00"),
+                Time.valueOf("23:00:00")
+        );
+        Address address = new Address(
+                "Piazza Leonardo da Vinci",
+                "1",
+                "Milano",
+                "21100",
+                "Italia",
+                null);
+        store = new Store(
+                "testName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                null,address,
+                null,
+                null,
+                null,
+                null);
+        store.addWorkingHour(workingHour);
         address.setStore(store);
-        address.setStreetName("Piazza Leonardo da Vinci");
-        address.setStreetNumber("0");
 
-        List<Dayinterval> workingHours = new LinkedList<>();
-        workingHours.add(workingHour);
-        store.setWorkingHours(workingHours);
+        lineup = new Lineup(
+                store,
+                customer,
+                Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),
+                1);
+        store.addLineup(lineup);
 
-        lineup.setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
-        lineup.setCustomer(customer);
-        lineup.setStore(store);
-        lineup.setNumberOfPeople(1);
-        lineup.setDateTimeOfCreation(Timestamp.valueOf(LocalDateTime.now()));
-        lineup.setState(VisitRequestStatus.PENDING);
-        store.getLineups().add(lineup);
-
-        booking.setCustomer(customer);
-        booking.setStore(store);
-        booking.setNumberOfPeople(1);
-        booking.setDateTimeOfCreation(Timestamp.valueOf(LocalDateTime.now()));
-        booking.setState(VisitRequestStatus.PENDING);
-        booking.setDesiredStartingTime(Timestamp.valueOf(LocalDateTime.now().plusSeconds(1)));
-        booking.setDesiredDuration(Time.valueOf("00:05:00"));
-        store.getBookings().add(booking);
+        booking = new Booking(
+                store,
+                customer,
+                1,
+                Timestamp.valueOf(LocalDateTime.now().plusSeconds(1)),
+                Time.valueOf("00:05:00"),
+                null);
+        store.addBooking(booking);
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -61,11 +62,16 @@ public class Store implements Serializable {
     @Column(name="uri")
     private List<String> tassAddresses;
 
+    @Transient
+    private Timestamp queueDisposalTime;
+    @Transient
+    private int queueLength;
+
     public Store() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, Address address, List<Booking> bookings, List<Lineup> lineups, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
+    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, Address address, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
@@ -74,7 +80,8 @@ public class Store implements Serializable {
         this.safetyThreshold = safetyThreshold;
         this.chain = chain;
         this.address = address;
-        this.bookings = listInit(bookings);
+        this.bookings = listInit(null);
+        this.lineups = listInit(null);
         this.managers = listInit(managers);
         this.productSections = listInit(productSections);
         this.maximumOccupancy = 0;
@@ -86,7 +93,7 @@ public class Store implements Serializable {
         this.tassAddresses = listInit(tassAddresses);
     }
 
-     private <E> List<E> listInit(List<E> list){
+    private <E> List<E> listInit(List<E> list){
         return list == null ? new LinkedList<E>():list;
     }
 
@@ -262,8 +269,8 @@ public class Store implements Serializable {
         for (Dayinterval di: workingHours) {
             if (
                     dayOfWeek == di.getDayOfTheWeek() &&
-                    datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
-                    datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
+                            datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                            datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }
@@ -275,9 +282,9 @@ public class Store implements Serializable {
         int dayOfWeek = datetime.getDayOfWeek().getValue();
         for (Dayinterval di: workingHours) {
             if (
-                dayOfWeek == di.getDayOfTheWeek() &&
-                datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
-                datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
+                    dayOfWeek == di.getDayOfTheWeek() &&
+                            datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                            datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }
@@ -296,8 +303,9 @@ public class Store implements Serializable {
             json.put("chainName", getChain().getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
-        //TODO estimated messa a caso
-        //json.put("estimatedQueueDisposalTime", "15");
+        //TODO CONTROLLA CHE SIANO SENSATI
+        json.put("estimatedQueueDisposalTime", queueDisposalTime);
+        json.put("queueLenght", queueLength);
         json.put("averageVisitDuration", getAverageVisitDuration());
         json.put("safetyThreshold", getSafetyThreshold());
         JSONArray productSections = new JSONArray();
@@ -317,5 +325,21 @@ public class Store implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
         return id.equals(store.id);
+    }
+
+    public Timestamp getQueueDisposalTime() {
+        return queueDisposalTime;
+    }
+
+    public void setQueueDisposalTime(Timestamp queueDisposalTime) {
+        this.queueDisposalTime = queueDisposalTime;
+    }
+
+    public int getQueueLength() {
+        return queueLength;
+    }
+
+    public void setQueueLength(int queueLength) {
+        this.queueLength = queueLength;
     }
 }

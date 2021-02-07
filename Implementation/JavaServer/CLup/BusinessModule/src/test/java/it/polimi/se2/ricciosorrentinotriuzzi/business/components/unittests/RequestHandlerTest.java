@@ -17,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
 class RequestHandlerTest {
 
     private DataModel dataModel;
@@ -27,46 +28,38 @@ class RequestHandlerTest {
     private Booking br;
     private Lineup lur;
 
-
     @BeforeEach
     void setUp() {
         dataModel = mock(DataModel.class);
         visitManager = mock(VisitManager.class);
         requestHandler = new TestRequestHandler(dataModel, visitManager);
-
-        store = new Store();
-        customer = new Customer();
-        Dayinterval workingHour = new Dayinterval();
-        Address address = new Address();
-
-        workingHour.setDayOfTheWeek(DayOfWeek.from(LocalDateTime.now()).getValue());
-        workingHour.setStart(Time.valueOf("00:00:00"));
-        workingHour.setEnd(Time.valueOf("23:00:00"));
-        workingHour.setId(0);
-
-        store.setName("testName");
-        store.setAverageVisitDuration(Time.valueOf("1:30:30"));
-        store.setCurrentOccupancy(0);
-        store.setMaximumOccupancy(10);
-        store.setSafetyThreshold(0.0);
-        store.setDescription("Test store");
-        store.setId("storeTest");
-        store.setAddress(address);
-        store.setProductSections(new LinkedList<>());
-        store.setLineups(new LinkedList<>());
-        store.setBookings(new LinkedList<>());
-
-        customer.setId("customerTest");
-        customer.setIsAppCustomer((byte) 1);
-
-        address.setCity("Milan");
-        address.setCountry("Italy");
-        address.setPostalCode("21100");
-        address.setStore(store);
-        address.setStreetName("Piazza Leonardo da Vinci");
-        address.setStreetNumber("0");
-
+        customer = new Customer("customerTestID",true);
+        Dayinterval workingHour = new Dayinterval (
+            DayOfWeek.from(LocalDateTime.now()).getValue(),
+            Time.valueOf("00:00:00"),
+            Time.valueOf("23:00:00")
+        );
+        Address address = new Address(
+                "Piazza Leonardo da Vinci",
+                "1",
+                "Milano",
+                "21100",
+                "Italia",
+                null);
+        store = new Store(
+                "testName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                null,address,
+                null,
+                null,
+                null,
+                null);
         store.addWorkingHour(workingHour);
+        address.setStore(store);
     }
 
     @Test
@@ -75,6 +68,17 @@ class RequestHandlerTest {
         when(dataModel.getStore(store.getId())).thenReturn(store);
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
+        doAnswer(invocation -> {
+            VisitRequest request = (VisitRequest)invocation.getArguments()[0];
+            if (request.isBooking()){
+                request.getStore().addBooking((Booking) request);
+                request.getCustomer().addBooking((Booking) request);
+            } else {
+                request.getStore().addLineup((Lineup) request);
+                request.getCustomer().addLineup((Lineup) request);
+            }
+            return true;
+        }).when(dataModel).insertRequest(any(VisitRequest.class));
         lur = requestHandler.lineup(3, customer.getId(), store.getId());
         assertTrue(store.getLineups().contains(lur));
 
@@ -107,12 +111,23 @@ class RequestHandlerTest {
         when(dataModel.getStore(store.getId())).thenReturn(store);
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
+        doAnswer(invocation -> {
+            VisitRequest request = (VisitRequest)invocation.getArguments()[0];
+            if (request.isBooking()){
+                request.getStore().addBooking((Booking) request);
+                request.getCustomer().addBooking((Booking) request);
+            } else {
+                request.getStore().addLineup((Lineup) request);
+                request.getCustomer().addLineup((Lineup) request);
+            }
+            return true;
+        }).when(dataModel).insertRequest(any(VisitRequest.class));
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:10:00"), new ArrayList<>());
         br1 = br;
         assertTrue(store.getBookings().contains(br));
 
 
-        //The customer tries to book a visit for a time interval which overlaps with a visit he previously made (the previous one). So,
+        //The customer tries to book a visit for a time interval which overlaps with a request he previously made (the previous one). So,
         //the getCustomerBookings will provide the request handler with a list containing the previous booking
         when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
@@ -143,6 +158,4 @@ class RequestHandlerTest {
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:05:00"), new ArrayList<>());
         assertNull(br);
     }
-
-
 }
