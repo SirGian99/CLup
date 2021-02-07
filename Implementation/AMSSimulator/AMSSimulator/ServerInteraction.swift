@@ -11,10 +11,10 @@ class Server {
     static let controller = Server()
     private init(){}
     
-    func requestAccess(token: String, completion: @escaping (String?) -> Void) { //(error)
+    func requestAccess(token: String, store: String, completion: @escaping (String?) -> Void) { //(error)
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["token": token, "storeID" : Shared.instance.storeID]
+            let parameters: [String: String] = ["token": token, "storeID" : store]
             let request = initJSONRequest(urlString: ServerRoutes.accreq, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n \(error!.localizedDescription)")}
@@ -28,10 +28,10 @@ class Server {
         } catch let error {completion("Error in \(#function). The error is:\n \(error.localizedDescription)")}
     }
     
-    func confirmAccess(completion: @escaping (String?) -> Void) { //(error)
+    func confirmAccess(store: String, completion: @escaping (String?) -> Void) { //(error)
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["token": Shared.instance.token!, "storeID" : Shared.instance.storeID, "numberOfPeople" : "\(Shared.instance.numberOfPeople!)"]
+            let parameters: [String: String] = ["token": Shared.instance.token!, "storeID" : store, "numberOfPeople" : "\(Shared.instance.numberOfPeople!)"]
             let request = initJSONRequest(urlString: ServerRoutes.accconf, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n \(error!.localizedDescription)")}
@@ -43,10 +43,10 @@ class Server {
         } catch let error {completion("Error in \(#function). The error is:\n \(error.localizedDescription)")}
     }
     
-    func requestExit(token: String, completion: @escaping (String?) -> Void) { //(error)
+    func requestExit(token: String, store: String, completion: @escaping (String?) -> Void) { //(error)
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["token": token, "storeID" : Shared.instance.storeID]
+            let parameters: [String: String] = ["token": token, "storeID" : store]
             let request = initJSONRequest(urlString: ServerRoutes.exitreq, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n \(error!.localizedDescription)")}
@@ -60,10 +60,10 @@ class Server {
         } catch let error {completion("Error in \(#function). The error is:\n \(error.localizedDescription)")}
     }
     
-    func confirmExit(completion: @escaping (String?) -> Void) { //(error)
+    func confirmExit(store: String, completion: @escaping (String?) -> Void) { //(error)
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["token": Shared.instance.token!, "storeID" : Shared.instance.storeID, "numberOfPeople" : "\(Shared.instance.numberOfPeople!)"]
+            let parameters: [String: String] = ["token": Shared.instance.token!, "storeID" : store, "numberOfPeople" : "\(Shared.instance.numberOfPeople!)"]
             let request = initJSONRequest(urlString: ServerRoutes.exitconf, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n \(error!.localizedDescription)")}

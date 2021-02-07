@@ -9,7 +9,7 @@ import SwiftUI
 
 let screenH = UIScreen.main.bounds.height
 let screenW = UIScreen.main.bounds.width
-let qrframe = screenW < screenH/1.5 ? screenW : screenH/1.5
+let qrframe = screenW < screenH/2 ? screenW : screenH/2
 
 enum ButtonPressed {
     case access
@@ -17,9 +17,31 @@ enum ButtonPressed {
     case none
 }
 
+struct ElementPickerGUI: View {
+    var pickerElements: [String]
+    @Binding var selectedValue: Int
+    
+    var body: some View {
+        VStack {
+            Picker("Select your store", selection: self.$selectedValue) {
+                ForEach(0 ..< self.pickerElements.count) {
+                    Text(self.pickerElements[$0])
+                        .font(.headline)
+                        .fontWeight(.medium)
+                }
+            }
+            .labelsHidden()
+            HStack{Spacer()}
+        }
+        .frame(height: 200)
+        .background(Color.gray)
+    }
+}
+
 struct ContentView: View {
     let si = Shared.instance
     @State var token: String? = nil
+    @State var pickedStore: Int = 0
     @State var showOkPopup: Bool = false
     @State var showAlert: Bool = false
     @State var previousButtonPressed: ButtonPressed = .none
@@ -32,7 +54,8 @@ struct ContentView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            Text("AMS Simulator\nStoreID: \(si.storeID)").font(.title2)
+            Text("AMS Simulator").font(.title2)
+            ElementPickerGUI(pickerElements: si.storeNames, selectedValue: $pickedStore).disabled(previousButtonPressed != .none)
             if token == nil {
                 CodeScannerView(codeTypes: [.qr], scanMode: .continuous, scanInterval: 4.0) {res in
                     self.token = res.rawBarcode
@@ -45,7 +68,7 @@ struct ContentView: View {
             }
             HStack {
                 Button(action: {
-                    Server.controller.requestAccess(token: token!) { error in
+                    Server.controller.requestAccess(token: token!, store: si.storeIDs[pickedStore]) { error in
                         if error != nil {print(error!); self.reset(); self.showAlert = true}
                         else {print("Good!"); self.previousButtonPressed = .access; self.showOkPopup = true}
                     }
@@ -54,7 +77,7 @@ struct ContentView: View {
                 }.disabled(token == nil || previousButtonPressed != .none)
                 Spacer()
                 Button(action: {
-                    Server.controller.confirmAccess() { error in
+                    Server.controller.confirmAccess(store: si.storeIDs[pickedStore]) { error in
                         if error != nil {print(error!); self.showAlert = true}
                         else {print("Good!"); self.showOkPopup = true}
                         self.reset()
@@ -65,7 +88,7 @@ struct ContentView: View {
             }.padding().alert(isPresented: $showAlert){defAlert}
             HStack {
                 Button(action: {
-                    Server.controller.requestExit(token: token!) { error in
+                    Server.controller.requestExit(token: token!, store: si.storeIDs[pickedStore]) { error in
                         if error != nil {print(error!); self.reset(); self.showAlert = true}
                         else {print("Good!"); self.previousButtonPressed = .exit; self.showOkPopup = true}
                     }
@@ -74,7 +97,7 @@ struct ContentView: View {
                 }.disabled(token == nil || previousButtonPressed != .none)
                 Spacer()
                 Button(action: {
-                    Server.controller.confirmExit() { error in
+                    Server.controller.confirmExit(store: si.storeIDs[pickedStore]) { error in
                         if error != nil {print(error!); self.showAlert = true}
                         else {print("Good!"); self.showOkPopup = true}
                         self.reset()
