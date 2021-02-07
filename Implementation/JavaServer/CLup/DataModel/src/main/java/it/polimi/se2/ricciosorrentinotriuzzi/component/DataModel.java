@@ -29,13 +29,13 @@ public class DataModel {
     }
 
     public List<VisitRequest> getVisitRequests(String storeID, Timestamp date) {
-        List<VisitRequest> toReturn = new LinkedList<>();
+        List<VisitRequest> toReturn = new ArrayList<>();
         toReturn.addAll(em.createQuery(
-                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
+                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID")
                 .setParameter("storeID", storeID).getResultList());
         toReturn.addAll(em.createQuery(
-                "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
-                .setParameter("endingTime", date).setParameter("storeID", storeID).getResultList());
+                "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID")
+                .setParameter("storeID", storeID).getResultList());
         return toReturn;
     }
 
