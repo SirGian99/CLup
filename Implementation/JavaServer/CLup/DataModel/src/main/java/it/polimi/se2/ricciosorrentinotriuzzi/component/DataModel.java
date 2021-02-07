@@ -122,6 +122,10 @@ public class DataModel {
         return toReturn;
     }
 
+    public boolean checkBookings(String customerID, Timestamp start, Timestamp end){
+        return !getCustomerBookings(customerID, start, end).isEmpty();
+    }
+
     public void allowVisitRequest(VisitRequest request){
         if (request!= null && request.isPending()) {
             request.setState(VisitRequestStatus.READY);

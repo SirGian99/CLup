@@ -79,9 +79,8 @@ public class RequestHandler {
             return null;
         }
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
-        List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
         System.out.println("start: "+ desiredStart+ " end: " + end);
-        if (!overlappingBookings.isEmpty()) {
+        if (dataModel.checkBookings(customerID,desiredStart,end)) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
         }
