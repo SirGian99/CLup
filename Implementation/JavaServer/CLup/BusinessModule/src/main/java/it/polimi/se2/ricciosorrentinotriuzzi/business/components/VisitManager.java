@@ -67,7 +67,6 @@ public class VisitManager {
                 }
             }, date);
         } else {
-            System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy() +"?");
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
                 dataModel.allowVisitRequest(request);
             }
