@@ -4,9 +4,12 @@ import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Address;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Chain;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Store;
+import it.polimi.se2.ricciosorrentinotriuzzi.entities.VisitRequest;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Stateless
@@ -74,5 +77,9 @@ public class StoreStatusHandler {
                 }
         }
         return stores;
+    }
+
+    public List<VisitRequest> getActiveRequests(String storeID) {
+        return dataModel.getActiveRequests(storeID);
     }
 }

@@ -38,7 +38,7 @@ public class VisitManager {
     }
 
     public boolean confirmExit(String visitToken, String storeID, int numberOfPeople) {
-        boolean toReturn = dataModel.endVisit(visitToken, storeID, numberOfPeople);
+        boolean toReturn = dataModel.completeVisit(visitToken, storeID, numberOfPeople);
         checkNewReadyRequest(storeID);
         return toReturn;
     }
