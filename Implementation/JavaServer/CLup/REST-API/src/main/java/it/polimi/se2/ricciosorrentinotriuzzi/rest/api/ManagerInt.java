@@ -39,7 +39,7 @@ public class ManagerInt {
     }
 
     @GET
-    @Path("{storeID}/bookings")
+    @Path("store/{storeID}/bookings")
     @Produces("application/json")
     public Response getNextBookings(@PathParam("storeID") String store)  {
         List<Booking> bookings = mc.getPendingBookings(store);
@@ -57,7 +57,7 @@ public class ManagerInt {
     }
 
     @GET
-    @Path("{storeID}/completedisits")
+    @Path("store/{storeID}/completedVisits")
     @Produces("application/json")
     public Response getCompletedVisits(@PathParam("storeID") String store)  {
         List<VisitRequest> requests = mc.getCompletedVisits(store);
@@ -71,7 +71,7 @@ public class ManagerInt {
     }
 
     @GET
-    @Path("{storeID}/currentVisits")
+    @Path("store/{storeID}/currentVisits")
     @Produces("application/json")
     public Response getCurrentVisits(@PathParam("storeID") String store) {
         List<VisitRequest> requests = mc.getCurrentVisits(store);

@@ -5,8 +5,7 @@ import javax.ejb.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Stateless
 public class DataModel {
