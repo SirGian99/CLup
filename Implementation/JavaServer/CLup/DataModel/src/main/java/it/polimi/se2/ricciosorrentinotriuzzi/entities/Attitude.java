@@ -11,13 +11,13 @@ public class Attitude implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     @JoinColumn(name = "appCustomer")
     private Customer appCustomer;
     @ManyToOne
-    @JoinColumn (name = "store")
+    @JoinColumn(name = "store")
     private Store store;
     private Time averageVisitDuration;
 
@@ -34,6 +34,7 @@ public class Attitude implements Serializable {
     public Customer getAppCustomer() {
         return appCustomer;
     }
+
     public void setAppCustomer(Customer appCustomer) {
         this.appCustomer = appCustomer;
     }
@@ -42,6 +43,7 @@ public class Attitude implements Serializable {
     public Store getStore() {
         return store;
     }
+
     public void setStore(Store store) {
         this.store = store;
     }
@@ -50,6 +52,7 @@ public class Attitude implements Serializable {
     public Time getAverageVisitDuration() {
         return averageVisitDuration;
     }
+
     public void setAverageVisitDuration(Time averageVisitDuration) {
         this.averageVisitDuration = averageVisitDuration;
     }

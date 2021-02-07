@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "lineup")
-//@NamedQuery(name = "Lineup.getStoreQueue", query = "SELECT l FROM Lineup l where (l.store.id LIKE :store) and (l.state = :pending or l.state= :ready" )
 public class Lineup extends VisitRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +37,7 @@ public class Lineup extends VisitRequest implements Serializable {
     public Lineup(Store store, Customer customer, Timestamp estimatedTimeOfEntrance, Integer numberOfPeople) {
         this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
         this.uuid = UUID.randomUUID().toString();
-        this.hfid = "L-" +(char)( Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) +
+        this.hfid = "L-" + (char) (Integer.parseInt(this.dateTimeOfCreation.toString().substring(8, 10)) % 26 + 65) +
                 String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
         this.store = store;
         this.customer = customer;
@@ -51,6 +50,7 @@ public class Lineup extends VisitRequest implements Serializable {
     public VisitRequestStatus getState() {
         return state;
     }
+
     @Override
     public void setState(VisitRequestStatus state) {
         this.state = state;
@@ -60,6 +60,7 @@ public class Lineup extends VisitRequest implements Serializable {
     public Timestamp getVisitStartingTime() {
         return visitStartingTime;
     }
+
     @Override
     public void setVisitStartingTime(Timestamp visitStartingTime) {
         this.visitStartingTime = visitStartingTime;
@@ -69,13 +70,17 @@ public class Lineup extends VisitRequest implements Serializable {
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;
     }
+
     @Override
-    public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
+    public void setVisitCompletionTime(Timestamp visitCompletionTime) {
+        this.visitCompletionTime = visitCompletionTime;
+    }
 
     @Override
     public String getUuid() {
         return uuid;
     }
+
     @Override
     public void setUuid(String uuid) {
         this.uuid = uuid;
@@ -85,13 +90,17 @@ public class Lineup extends VisitRequest implements Serializable {
     public String getHfid() {
         return hfid;
     }
+
     @Override
     public void setHfid(String hfid) {
         this.hfid = hfid;
     }
 
     @Override
-    public Store getStore() { return store; }
+    public Store getStore() {
+        return store;
+    }
+
     @Override
     public void setStore(Store store) {
         this.store = store;
@@ -99,7 +108,10 @@ public class Lineup extends VisitRequest implements Serializable {
     }
 
     @Override
-    public Customer getCustomer() { return customer; }
+    public Customer getCustomer() {
+        return customer;
+    }
+
     @Override
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -107,40 +119,67 @@ public class Lineup extends VisitRequest implements Serializable {
     }
 
     @Override
-    public Integer getNumberOfPeople() { return numberOfPeople; }
-    @Override
-    public void setNumberOfPeople(Integer numberOfPeople) { this.numberOfPeople = numberOfPeople; }
+    public Integer getNumberOfPeople() {
+        return numberOfPeople;
+    }
 
-    public Timestamp getEstimatedTimeOfEntrance() { return estimatedTimeOfEntrance; }
+    @Override
+    public void setNumberOfPeople(Integer numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
+    }
+
+    public Timestamp getEstimatedTimeOfEntrance() {
+        return estimatedTimeOfEntrance;
+    }
+
     public void setEstimatedTimeOfEntrance(Timestamp estimatedTimeOfEntrance) {
         this.estimatedTimeOfEntrance = estimatedTimeOfEntrance;
     }
 
     @Override
-    public Timestamp getDateTimeOfCreation() { return dateTimeOfCreation; }
-    @Override
-    public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) { this.dateTimeOfCreation = dateTimeOfCreation; }
+    public Timestamp getDateTimeOfCreation() {
+        return dateTimeOfCreation;
+    }
 
     @Override
-    public boolean isPending() { return (state == VisitRequestStatus.PENDING); }
+    public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
+        this.dateTimeOfCreation = dateTimeOfCreation;
+    }
+
     @Override
-    public boolean isReady() { return (state == VisitRequestStatus.READY); }
+    public boolean isPending() {
+        return (state == VisitRequestStatus.PENDING);
+    }
+
     @Override
-    public boolean isFulfilled() { return (state == VisitRequestStatus.FULFILLED); }
+    public boolean isReady() {
+        return (state == VisitRequestStatus.READY);
+    }
+
     @Override
-    public boolean isCompleted() { return (state == VisitRequestStatus.COMPLETED); }
+    public boolean isFulfilled() {
+        return (state == VisitRequestStatus.FULFILLED);
+    }
+
     @Override
-    public boolean isActive() { return (state != VisitRequestStatus.COMPLETED); }
+    public boolean isCompleted() {
+        return (state == VisitRequestStatus.COMPLETED);
+    }
+
+    @Override
+    public boolean isActive() {
+        return (state != VisitRequestStatus.COMPLETED);
+    }
 
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("estimatedTimeOfEntrance", getEstimatedTimeOfEntrance());
         json.put("storeID", getStore().getId());
         JSONObject jsonVisitToken = new JSONObject();
         jsonVisitToken.put("uuid", getUuid());
         jsonVisitToken.put("hfid", getHfid());
-        json.put("visitToken",jsonVisitToken);
+        json.put("visitToken", jsonVisitToken);
         json.put("numberOfPeople", getNumberOfPeople());
         json.put("state", getState().getValue());
         return json;

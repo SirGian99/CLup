@@ -1,10 +1,11 @@
 package it.polimi.se2.ricciosorrentinotriuzzi.business.components.unittests;
 
 import it.polimi.se2.ricciosorrentinotriuzzi.business.components.VisitManager;
+import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.TestRequestHandler;
 import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
-import it.polimi.se2.ricciosorrentinotriuzzi.business.components.mockcomponents.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -33,11 +34,11 @@ class RequestHandlerTest {
         dataModel = mock(DataModel.class);
         visitManager = mock(VisitManager.class);
         requestHandler = new TestRequestHandler(dataModel, visitManager);
-        customer = new Customer("customerTestID",true);
-        Dayinterval workingHour = new Dayinterval (
-            DayOfWeek.from(LocalDateTime.now()).getValue(),
-            Time.valueOf("00:00:00"),
-            Time.valueOf("23:00:00")
+        customer = new Customer("customerTestID", true);
+        Dayinterval workingHour = new Dayinterval(
+                DayOfWeek.from(LocalDateTime.now()).getValue(),
+                Time.valueOf("00:00:00"),
+                Time.valueOf("23:00:00")
         );
         Address address = new Address(
                 "Piazza Leonardo da Vinci",
@@ -53,7 +54,7 @@ class RequestHandlerTest {
                 10,
                 Time.valueOf("00:30:00"),
                 0.0,
-                null,address,
+                null, address,
                 null,
                 null,
                 null,
@@ -69,8 +70,8 @@ class RequestHandlerTest {
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
         doAnswer(invocation -> {
-            VisitRequest request = (VisitRequest)invocation.getArguments()[0];
-            if (request.isBooking()){
+            VisitRequest request = (VisitRequest) invocation.getArguments()[0];
+            if (request.isBooking()) {
                 request.getStore().addBooking((Booking) request);
                 request.getCustomer().addBooking((Booking) request);
             } else {
@@ -90,7 +91,7 @@ class RequestHandlerTest {
         customer.setLineups(new LinkedList<>());
         //The customer is not in line anymore
 
-        lur = requestHandler.lineup(store.getMaximumOccupancy()+1, customer.getId(), store.getId());
+        lur = requestHandler.lineup(store.getMaximumOccupancy() + 1, customer.getId(), store.getId());
         //The customer cannot line up since it would exceed its maximum occupancy
         assertFalse(store.getLineups().contains(lur));
 
@@ -111,8 +112,8 @@ class RequestHandlerTest {
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
         doAnswer(invocation -> {
-            VisitRequest request = (VisitRequest)invocation.getArguments()[0];
-            if (request.isBooking()){
+            VisitRequest request = (VisitRequest) invocation.getArguments()[0];
+            if (request.isBooking()) {
                 request.getStore().addBooking((Booking) request);
                 request.getCustomer().addBooking((Booking) request);
             } else {
@@ -121,29 +122,33 @@ class RequestHandlerTest {
             }
             return true;
         }).when(dataModel).insertRequest(any(VisitRequest.class));
-        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, duration, new ArrayList<>());
+        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, duration,
+                new ArrayList<>());
         br1 = br;
         assertTrue(store.getBookings().contains(br));
 
 
-        //The customer tries to book a visit for a time interval which overlaps with a request he previously made (the previous one). So,
-        //the checkBookings will provide the request handler a "true" value
-        //when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
+        // The customer tries to book a visit for a time interval which overlaps with a request he previously
+        // made (the previous one). So, the checkBookings will provide the request handler a "true" value
+        // when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
         duration = Time.valueOf("00:05:00");
-        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
+        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour())
+                .plusMinutes(duration.toLocalTime().getMinute()));
         when(dataModel.checkBookings(customer.getId(), desiredStart, end)).thenReturn(true);
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
                 duration, new ArrayList<>());
         assertNull(br);
 
-        //The customer tries to book a visit before the estimated queue disposal time
+        // The customer tries to book a visit before the estimated queue disposal time
         estimatedDisposalTime = Timestamp.valueOf(LocalDateTime.now());
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
         desiredStart = Timestamp.valueOf(LocalDateTime.now().minusMinutes(3));
-        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:05:00"), new ArrayList<>());
+        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
+                Time.valueOf("00:05:00"), new ArrayList<>());
         assertNull(br);
 
-        //The time interval selected by the customer is already maximized by other booking requests, so a new booking cannot be placed
+        // The time interval selected by the customer is already maximized by other booking requests,
+        // so a new booking cannot be placed
         br1.setNumberOfPeople(store.getMaximumOccupancy());
         br1.setCustomer(new Customer());
         List<Booking> alreadyPlacedBookings = new LinkedList<>();
@@ -151,13 +156,15 @@ class RequestHandlerTest {
         desiredStart = Timestamp.valueOf(LocalDateTime.now().plusMinutes(1));
         when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(new LinkedList<>());
         when(dataModel.getBookings(anyString(), any(), any())).thenReturn(alreadyPlacedBookings);
-        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:05:00"), new ArrayList<>());
+        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
+                Time.valueOf("00:05:00"), new ArrayList<>());
         assertNull(br);
 
         //The customer cannot Book a visit since the store is closed when he desires to visit it
         store.setWorkingHours(new LinkedList<>());
         //The store is now always closed
-        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:05:00"), new ArrayList<>());
+        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
+                Time.valueOf("00:05:00"), new ArrayList<>());
         assertNull(br);
     }
 }

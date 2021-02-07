@@ -36,6 +36,7 @@ public class Manager implements Serializable {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -44,6 +45,7 @@ public class Manager implements Serializable {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -52,6 +54,7 @@ public class Manager implements Serializable {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -63,12 +66,13 @@ public class Manager implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void addStore(Store store){
-        if (this.stores == null){
+    public void addStore(Store store) {
+        if (this.stores == null) {
             this.stores = new LinkedList<>();
         }
         stores.add(store);

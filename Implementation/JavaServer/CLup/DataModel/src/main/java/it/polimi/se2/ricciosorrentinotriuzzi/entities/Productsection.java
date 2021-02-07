@@ -24,19 +24,25 @@ public class Productsection implements Serializable {
     public Productsection() {
     }
 
-    public Productsection( Store store, String name, Double currentOccupancy, Integer maximumOccupancy) {
+    public Productsection(Store store, String name, Double currentOccupancy, Integer maximumOccupancy) {
         this.store = store;
         this.name = name;
         this.currentOccupancy = currentOccupancy;
         this.maximumOccupancy = maximumOccupancy;
     }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public Store getStore() {
         return store;
     }
+
     public void setStore(Store store) {
         this.store = store;
     }
@@ -45,6 +51,7 @@ public class Productsection implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -53,6 +60,7 @@ public class Productsection implements Serializable {
     public Double getCurrentOccupancy() {
         return currentOccupancy;
     }
+
     public void setCurrentOccupancy(Double currentOccupancy) {
         this.currentOccupancy = currentOccupancy;
     }
@@ -61,6 +69,7 @@ public class Productsection implements Serializable {
     public Integer getMaximumOccupancy() {
         return maximumOccupancy;
     }
+
     public void setMaximumOccupancy(Integer maximumOccupancy) {
         this.maximumOccupancy = maximumOccupancy;
     }

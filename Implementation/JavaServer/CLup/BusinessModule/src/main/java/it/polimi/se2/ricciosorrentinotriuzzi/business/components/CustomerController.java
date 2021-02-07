@@ -15,7 +15,8 @@ public class CustomerController {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.component/DataModel")
     protected DataModel dataModel;
 
-    public CustomerController() {}
+    public CustomerController() {
+    }
 
     public Customer registerApp(String appid) {
         return dataModel.newAppCustomer(appid);
@@ -25,7 +26,7 @@ public class CustomerController {
         return dataModel.getCustomer(customerID);
     }
 
-    public List<Booking> getCustomerActiveBookings(String customerID){
+    public List<Booking> getCustomerActiveBookings(String customerID) {
         Customer customer = dataModel.getCustomer(customerID);
         if (customer == null) return null;
         List<Booking> activeBookings = new LinkedList<>();
@@ -35,7 +36,7 @@ public class CustomerController {
         return activeBookings;
     }
 
-    public List<Lineup> getCustomerActiveLineups(String customerID){
+    public List<Lineup> getCustomerActiveLineups(String customerID) {
         Customer customer = dataModel.getCustomer(customerID);
         if (customer == null) return null;
         List<Lineup> activeLineups = new LinkedList<>();
@@ -44,5 +45,4 @@ public class CustomerController {
                 activeLineups.add(lineup);
         return activeLineups;
     }
-    //Other much more complex methods are omitted in this prototype
 }

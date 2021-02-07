@@ -29,8 +29,8 @@ class StoreStatusHandlerTest {
     public void setUp() {
         dataModel = mock(DataModel.class);
         ssh = new TestStoreStatusHandler(dataModel);
-        chain = new Chain("PoliMi","Politecnico");
-        Dayinterval workingHour = new Dayinterval (
+        chain = new Chain("PoliMi", "Politecnico");
+        Dayinterval workingHour = new Dayinterval(
                 DayOfWeek.from(LocalDateTime.now()).getValue(),
                 Time.valueOf("00:00:00"),
                 Time.valueOf("23:00:00")
@@ -124,7 +124,7 @@ class StoreStatusHandlerTest {
     }
 
     @Test
-    void getAutonomousStores(){
+    void getAutonomousStores() {
         when(dataModel.getAddressesByCity(milanAddresses.get(0).getCity())).thenReturn(milanAddresses);
         List<Store> stores = ssh.getAutonomousStores(milanAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store2));

@@ -7,7 +7,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "customer")
-//////provare a vedere questione proxy con named query
 public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +25,7 @@ public class Customer implements Serializable {
 
     public Customer(String id, boolean isAppCustomer) {
         this.id = id;
-        this.isAppCustomer = isAppCustomer ? (byte) 1 : (byte)0;
+        this.isAppCustomer = isAppCustomer ? (byte) 1 : (byte) 0;
         this.attitudes = new LinkedList<>();
         this.bookings = new LinkedList<>();
         this.lineups = new LinkedList<>();
@@ -35,19 +34,24 @@ public class Customer implements Serializable {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
 
 
     public boolean isAppCustomer() {
-        return isAppCustomer.equals((byte)(1));
-    }
-    public void setIsAppCustomer(boolean isAppCustomer) {
-        this.isAppCustomer = isAppCustomer ? (byte)1 : (byte) 0;
+        return isAppCustomer.equals((byte) (1));
     }
 
-    public List<Booking> getBookings() { return bookings; }
+    public void setIsAppCustomer(boolean isAppCustomer) {
+        this.isAppCustomer = isAppCustomer ? (byte) 1 : (byte) 0;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
     public void addBooking(Booking b) {
         if (this.bookings == null) {
             this.bookings = new LinkedList<>();
@@ -55,7 +59,10 @@ public class Customer implements Serializable {
         bookings.add(b);
     }
 
-    public List<Lineup> getLineups() { return lineups; }
+    public List<Lineup> getLineups() {
+        return lineups;
+    }
+
     public void addLineup(Lineup l) {
         if (this.lineups == null) {
             this.lineups = new LinkedList<>();

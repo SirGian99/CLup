@@ -28,7 +28,7 @@ public class StoreInfoInt {
     @GET
     @Path("chainstore")
     @Produces("application/json")
-    public Response getChainsAndAutonomousStores(@QueryParam("city") String city){
+    public Response getChainsAndAutonomousStores(@QueryParam("city") String city) {
         Set<Chain> chains = ssh.getChains(city);
         List<Store> autstores = ssh.getAutonomousStores(city);
         JSONObject jsonResponse = new JSONObject();
@@ -56,7 +56,7 @@ public class StoreInfoInt {
         for (Store s : stores) {
             storesJArray.put(s.toJson());
         }
-        jsonResponse.put("stores",storesJArray);
+        jsonResponse.put("stores", storesJArray);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
 
@@ -64,13 +64,13 @@ public class StoreInfoInt {
     @GET
     @Path("store/{storeID}/activeRequests")
     @Produces("application/json")
-    public Response getVisitsInProgress(@PathParam("storeID") String store) {
+    public Response getActiveRequests(@PathParam("storeID") String store) {
         List<VisitRequest> requests = ssh.getActiveRequests(store);
         if (requests != null) {
             JSONObject jsonResponse = getJsonFromRequests(requests);
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
-            System.out.println("Error while getting visits in progress");
+            System.out.println("Error while getting active requests");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }

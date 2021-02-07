@@ -27,7 +27,7 @@ class CustomerControllerIntegrationTest {
     private List<Lineup> lineups = new LinkedList<>();
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         dataModel = new TestDataModel();
         customerController = new TestCustomerController(dataModel);
 
@@ -38,14 +38,15 @@ class CustomerControllerIntegrationTest {
 
         customer = new Customer(UUID.randomUUID().toString(), true);
 
-        bookings.add(new Booking(store, customer, 1, Timestamp.valueOf(LocalDateTime.now()),Time.valueOf(LocalTime.of(0,30)), null));
+        bookings.add(new Booking(store, customer, 1, Timestamp.valueOf(LocalDateTime.now()),
+                Time.valueOf(LocalTime.of(0, 30)), null));
         bookings.get(0).setState(VisitRequestStatus.FULFILLED);
 
         //After this for loop the store will contain 7 different bookings and 3 lineup requests with different states.
-        for (int i = 1; i<8; i++){
-            bookings.add(new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusDays(i)),
-                    Time.valueOf(LocalTime.of(0,30)), null));
-            if (i<4) {
+        for (int i = 1; i < 8; i++) {
+            bookings.add(new Booking(store, customer, 1, Timestamp.valueOf(LocalDateTime.now().plusDays(i)),
+                    Time.valueOf(LocalTime.of(0, 30)), null));
+            if (i < 4) {
                 lineups.add(new Lineup(store, customer, Timestamp.valueOf(LocalDateTime.now().plus(
                         Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))), 1));
                 lineups.get(i - 1).setState(VisitRequestStatus.getVisitStatusFromInt(i));

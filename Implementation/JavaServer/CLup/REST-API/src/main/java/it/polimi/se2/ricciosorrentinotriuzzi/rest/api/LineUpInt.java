@@ -3,6 +3,7 @@ package it.polimi.se2.ricciosorrentinotriuzzi.rest.api;
 import it.polimi.se2.ricciosorrentinotriuzzi.business.components.RequestHandler;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Lineup;
 import org.json.JSONObject;
+
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +23,7 @@ public class LineUpInt {
         String customerID = json.getString("customerID");
         String storeID = json.getString("storeID");
         int numberOfPeople = json.getInt("numberOfPeople");
-        System.out.println("Making lur of "+customerID+"\nfor store: "+storeID+"\nfor "+numberOfPeople);
+        System.out.println("Making lur of " + customerID + "\nfor store: " + storeID + "\nfor " + numberOfPeople);
         Lineup lur = rh.lineup(numberOfPeople, customerID, storeID);
         if (lur != null) {
             System.out.println("LUR accepted");
@@ -32,7 +33,7 @@ public class LineUpInt {
             JSONObject jsonVisitToken = new JSONObject();
             jsonVisitToken.put("uuid", lur.getUuid());
             jsonVisitToken.put("hfid", lur.getHfid());
-            jsonResponse.put("visitToken",jsonVisitToken);
+            jsonResponse.put("visitToken", jsonVisitToken);
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
             System.out.println("LUR rejected");
@@ -42,7 +43,7 @@ public class LineUpInt {
 
     @DELETE
     @Path("/{token}")
-    public Response deleteLineup(@PathParam("token") String uuid)  {
+    public Response deleteLineup(@PathParam("token") String uuid) {
         rh.cancelRequest(uuid);
         return Response.ok().build();
     }

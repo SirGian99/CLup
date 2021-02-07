@@ -41,7 +41,9 @@ public abstract class VisitRequest {
         return dateTimeOfCreation;
     }
 
-    public Timestamp getVisitStartingTime() { return visitStartingTime; }
+    public Timestamp getVisitStartingTime() {
+        return visitStartingTime;
+    }
 
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;
@@ -103,6 +105,8 @@ public abstract class VisitRequest {
         return (state != VisitRequestStatus.COMPLETED);
     }
 
-    public boolean isBooking(){return false;}
+    public boolean isBooking() {
+        return false;
+    }
 
 }

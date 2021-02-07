@@ -18,8 +18,8 @@ public class Chain implements Serializable {
     private String description;
     @Lob
     private byte[] image;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chain", cascade = { CascadeType.PERSIST, CascadeType.REMOVE,
-            CascadeType.REFRESH })
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chain", cascade = {CascadeType.PERSIST, CascadeType.REMOVE,
+            CascadeType.REFRESH})
     private List<Store> stores;
 
     public Chain() {
@@ -29,7 +29,7 @@ public class Chain implements Serializable {
         this.name = name;
         this.description = description;
         this.image = image;
-        if (stores==null)
+        if (stores == null)
             this.stores = new LinkedList<>();
         else
             this.stores = stores;
@@ -44,6 +44,7 @@ public class Chain implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -52,6 +53,7 @@ public class Chain implements Serializable {
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -60,6 +62,7 @@ public class Chain implements Serializable {
     public byte[] getImage() {
         return image;
     }
+
     public void setImage(byte[] image) {
         this.image = image;
     }
@@ -79,10 +82,7 @@ public class Chain implements Serializable {
         return json;
     }
 
-    public void addStore(Store store){
+    public void addStore(Store store) {
         stores.add(store);
     }
-
-
-
 }

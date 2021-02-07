@@ -19,24 +19,25 @@ public class RequestHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.business.components/VisitManager")
     protected VisitManager visitManager;
 
-    public RequestHandler() {}
+    public RequestHandler() {
+    }
 
     public Lineup lineup(int numberOfPeople, String customerID, String storeID) {
         Store store = dataModel.getStore(storeID);
         if (store == null) {
-            System.out.println("Non esiste uno store con id: "+storeID);
+            System.out.println("Non esiste uno store con id: " + storeID);
             return null;
         }
-        if (numberOfPeople > store.getMaximumOccupancy() || numberOfPeople<=0)
+        if (numberOfPeople > store.getMaximumOccupancy() || numberOfPeople <= 0)
             return null;
         Customer customer = dataModel.getCustomer(customerID);
         if (customer == null) {
-            System.out.println("Non esiste un customer con id: "+customerID);
+            System.out.println("Non esiste un customer con id: " + customerID);
             return null;
         }
         List<Lineup> customerLineups = customer.getLineups();
         if (customerLineups != null && !customerLineups.isEmpty()) {
-            for (Lineup l: customerLineups) {
+            for (Lineup l : customerLineups) {
                 if (l.isPending() || l.isReady()) {
                     System.out.println("Il customer è già in coda per un negozio");
                     return null;
@@ -49,8 +50,9 @@ public class RequestHandler {
             return null;
         }
 
-        Lineup newLineup = new Lineup(store, customer,Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID).toLocalDateTime().plus(
-                    Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))), numberOfPeople);
+        Lineup newLineup = new Lineup(store, customer, Timestamp.valueOf(dataModel.getQueueDisposalTime(storeID)
+                .toLocalDateTime().plus(Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),
+                numberOfPeople);
         dataModel.insertRequest(newLineup);
         visitManager.newRequest(newLineup);
         return newLineup;
@@ -61,16 +63,16 @@ public class RequestHandler {
         Store store = dataModel.getStore(storeID);
         //check the store exists
         if (store == null) {
-            System.out.println("Non esiste uno store con id: "+storeID);
+            System.out.println("Non esiste uno store con id: " + storeID);
             return null;
         }
         //check the number of people is suitable according to store's max occupancy
-        if (numberOfPeople > store.getMaximumOccupancy() || numberOfPeople<=0)
+        if (numberOfPeople > store.getMaximumOccupancy() || numberOfPeople <= 0)
             return null;
         Customer customer = dataModel.getCustomer(customerID);
         //Check the app customer exists
         if (customer == null || !customer.isAppCustomer()) {
-            System.out.println("Non esiste un customer con id: "+customerID);
+            System.out.println("Non esiste un customer con id: " + customerID);
             return null;
         }
         //check the store is open
@@ -83,28 +85,29 @@ public class RequestHandler {
             System.out.println("Il booking inizia prima del queue disposal time");
             return null;
         }
-        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
+        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour())
+                .plusMinutes(duration.toLocalTime().getMinute()));
         //check if the customer has an overlapping booking
-        if (dataModel.checkBookings(customerID,desiredStart,end)) {
+        if (dataModel.checkBookings(customerID, desiredStart, end)) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
         }
 
-        // check sulle occupancy
+        // check sull'occupancy
         List<Booking> otherBookings = dataModel.getBookings(storeID, desiredStart, end);
         System.out.println(otherBookings);
         int maxStoreOcc = store.getMaximumOccupancy();
         for (Booking booking : otherBookings) {
             System.out.println(booking.toJson());
             maxStoreOcc -= booking.getNumberOfPeople();
-            if (maxStoreOcc <=0) {
+            if (maxStoreOcc <= 0) {
                 System.out.println("Non c'è abbastanza spazio nello store per questo booking");
                 return null;
             }
         }
 
         List<Productsection> productsections = new LinkedList<>();
-        for (String sid: sectionIDs) {
+        for (String sid : sectionIDs) {
             Productsection ps = dataModel.getSection(Long.valueOf(sid));
             if (ps.getStore().equals(store))
                 productsections.add(ps);
@@ -120,9 +123,9 @@ public class RequestHandler {
         VisitRequest request = dataModel.getVisitRequest(uuid);
         if (request != null && (request.isPending() || request.isReady())) {
             dataModel.removeRequest(request);
-            //check if other customers can enter
+            //check if other customers can enter, asynchronously
             visitManager.checkNewReadyRequest(request.getStore().getId());
         }
-        System.out.println("Request "+uuid+" has been deleted!");
+        System.out.println("Request " + uuid + " has been deleted!");
     }
 }

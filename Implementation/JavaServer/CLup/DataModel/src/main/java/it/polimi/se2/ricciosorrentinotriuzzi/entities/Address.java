@@ -13,7 +13,7 @@ public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String streetName;
     private String streetNumber;
@@ -26,8 +26,7 @@ public class Address implements Serializable {
     public Address() {
     }
 
-
-    public Address(String streetName, String streetNumber, String city, String postalCode, String country, Store store) {
+    public Address(String streetName, String streetNumber, String city, String postalCode, String country, Store store){
         this.streetName = streetName;
         this.streetNumber = streetNumber;
         this.city = city;
@@ -39,6 +38,7 @@ public class Address implements Serializable {
     public long getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -47,6 +47,7 @@ public class Address implements Serializable {
     public String getStreetName() {
         return streetName;
     }
+
     public void setStreetName(String streetName) {
         this.streetName = streetName;
     }
@@ -55,6 +56,7 @@ public class Address implements Serializable {
     public String getStreetNumber() {
         return streetNumber;
     }
+
     public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
     }
@@ -63,6 +65,7 @@ public class Address implements Serializable {
     public String getCity() {
         return city;
     }
+
     public void setCity(String city) {
         this.city = city;
     }
@@ -71,6 +74,7 @@ public class Address implements Serializable {
     public String getPostalCode() {
         return postalCode;
     }
+
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
@@ -79,6 +83,7 @@ public class Address implements Serializable {
     public String getCountry() {
         return country;
     }
+
     public void setCountry(String country) {
         this.country = country;
     }
@@ -87,6 +92,7 @@ public class Address implements Serializable {
     public Store getStore() {
         return store;
     }
+
     public void setStore(Store store) {
         this.store = store;
     }

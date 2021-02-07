@@ -5,9 +5,6 @@ import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Stateless

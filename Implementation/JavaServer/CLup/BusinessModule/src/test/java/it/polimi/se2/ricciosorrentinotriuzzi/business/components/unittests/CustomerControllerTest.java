@@ -74,7 +74,8 @@ class CustomerControllerTest {
         workingHours.add(workingHour);
         store.setWorkingHours(workingHours);
 
-        lineup1.setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
+        lineup1.setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(
+                store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
         lineup1.setCustomer(customer);
         lineup1.setStore(store);
         lineup1.setNumberOfPeople(1);
@@ -91,7 +92,8 @@ class CustomerControllerTest {
         booking1.setDesiredDuration(Time.valueOf("00:05:00"));
         store.getBookings().add(booking1);
 
-        lineup2.setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
+        lineup2.setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now().plus(Duration.ofNanos(
+                store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))));
         lineup2.setCustomer(customer);
         lineup2.setStore(store);
         lineup2.setNumberOfPeople(1);
@@ -112,16 +114,14 @@ class CustomerControllerTest {
     @Test
     void getCustomerActiveBookings() {
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
-        for (Booking actBook: customerController.getCustomerActiveBookings(customer.getId()))
+        for (Booking actBook : customerController.getCustomerActiveBookings(customer.getId()))
             assertTrue(booking1.isActive());
     }
 
     @Test
     void getCustomerActiveLineups() {
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
-        for (Lineup actLur: customerController.getCustomerActiveLineups(customer.getId()))
+        for (Lineup actLur : customerController.getCustomerActiveLineups(customer.getId()))
             assertTrue(actLur.isActive());
     }
-
-
 }

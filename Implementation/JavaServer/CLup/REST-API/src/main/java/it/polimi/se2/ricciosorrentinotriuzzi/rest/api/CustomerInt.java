@@ -22,10 +22,10 @@ public class CustomerInt {
     @Path("registerApp")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response registerApp(String body)  {
+    public Response registerApp(String body) {
         JSONObject json = new JSONObject(body);
         String appid = json.getString("appID");
-        System.out.println("Registering app customer with id: "+appid);
+        System.out.println("Registering app customer with id: " + appid);
         Customer c = cc.registerApp(appid);
         if (c != null) {
             System.out.println("Success while registering appcustomer");
@@ -42,23 +42,19 @@ public class CustomerInt {
     public Response getCustomerRequests(@PathParam("id") String customerID) {
         List<Booking> bookings = cc.getCustomerActiveBookings(customerID);
         List<Lineup> lineups = cc.getCustomerActiveLineups(customerID);
-        if(bookings == null || lineups == null)
+        if (bookings == null || lineups == null)
             return Response.status(Response.Status.BAD_REQUEST).build();
-        System.out.println("Requests of "+customerID);
         JSONObject jsonResponse = new JSONObject();
         JSONArray toAppend = new JSONArray();
-        for(Booking b : bookings) {
+        for (Booking b : bookings) {
             toAppend.put(b.toJson());
         }
-        System.out.println("Bookings:\n"+toAppend);
         jsonResponse.put("bookingRequests", toAppend);
         toAppend = new JSONArray();
-        for(Lineup lu : lineups) {
+        for (Lineup lu : lineups) {
             toAppend.put(lu.toJson());
         }
-        System.out.println("LUR:\n"+toAppend);
         jsonResponse.put("lineupRequests", toAppend);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
-
 }

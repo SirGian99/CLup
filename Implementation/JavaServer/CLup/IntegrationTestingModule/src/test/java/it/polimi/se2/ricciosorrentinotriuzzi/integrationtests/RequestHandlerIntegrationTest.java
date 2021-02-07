@@ -18,7 +18,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-
 class RequestHandlerIntegrationTest {
 
     private TestDataModel dataModel;
@@ -28,8 +27,9 @@ class RequestHandlerIntegrationTest {
     private Store store;
     private Booking booking;
     private Lineup lineup;
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         dataModel = new TestDataModel();
         visitManager = mock(VisitManager.class);
         requestHandler = new TestRequestHandler(dataModel, visitManager);
@@ -37,17 +37,17 @@ class RequestHandlerIntegrationTest {
         Dayinterval workingHour = new Dayinterval(LocalDateTime.now().getDayOfWeek().getValue(),
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59)));
-        store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, null,null,null,
-                null,null,null);
+        store = new Store("test", "descriptionTest", 0, 10,
+                Time.valueOf(LocalTime.of(0, 30)), 10.0, null, null, null,
+                null, null, null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
-        booking = new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)),
-                Time.valueOf(LocalTime.of(0,30)), null);
+        booking = new Booking(store, customer, 1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)),
+                Time.valueOf(LocalTime.of(0, 30)), null);
         // The estimated time of entrance is set to the one the request handler would set when the lineup request is
         // placed, which is equal to now + the average visit duration of the store, since it's queue is empty
         lineup = new Lineup(store, customer, Timestamp.valueOf(LocalDateTime.now().plus(
-                Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),1);
+                Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))), 1);
         dataModel.getEm().getTransaction().begin();
         // Test entities are persisted on the database
         dataModel.getEm().persist(workingHour);
@@ -67,7 +67,7 @@ class RequestHandlerIntegrationTest {
     @Test
     void lineup() {
         // The following request is rejected since it is for a number of people higher than the store maximum occupancy
-        assertNull(requestHandler.lineup(store.getMaximumOccupancy()+1, customer.getId(), store.getId()));
+        assertNull(requestHandler.lineup(store.getMaximumOccupancy() + 1, customer.getId(), store.getId()));
         // The following request is rejected since the number of people is less than 1
         assertNull(requestHandler.lineup(0, customer.getId(), store.getId()));
         // The following requests are rejected since the first customer and the second store do not exist
@@ -75,7 +75,7 @@ class RequestHandlerIntegrationTest {
         assertNull(requestHandler.lineup(1, customer.getId(), "absentInDB"));
 
         // All the following request should be accepted since they verify the constraint on the number of people
-        for (int i = store.getMaximumOccupancy(); i>0; i--) {
+        for (int i = store.getMaximumOccupancy(); i > 0; i--) {
             lineup = requestHandler.lineup(i, customer.getId(), store.getId());
             assertNotNull(lineup);
             assertTrue(store.getLineups().contains(lineup));
@@ -110,29 +110,29 @@ class RequestHandlerIntegrationTest {
         // The following request is rejected since it is for a number of people higher than the store maximum occupancy
         Timestamp desiredStartingTime = Timestamp.valueOf(LocalDateTime.now().plusMinutes(10));
         Time estimatedDuration = Time.valueOf("00:15:00");
-        assertNull(requestHandler.book(store.getMaximumOccupancy()+1, customer.getId(), store.getId(),
-                desiredStartingTime,estimatedDuration, new ArrayList<>()));
+        assertNull(requestHandler.book(store.getMaximumOccupancy() + 1, customer.getId(), store.getId(),
+                desiredStartingTime, estimatedDuration, new ArrayList<>()));
         // The following request is rejected since the number of people is less than 1
         assertNull(requestHandler.book(0, customer.getId(), store.getId(),
-                desiredStartingTime,estimatedDuration, new ArrayList<>()));
+                desiredStartingTime, estimatedDuration, new ArrayList<>()));
         // The following requests are rejected since the first customer and the second store do not exist
         assertNull(requestHandler.book(1, "absentInDB", store.getId(),
-                desiredStartingTime,estimatedDuration, new ArrayList<>()));
+                desiredStartingTime, estimatedDuration, new ArrayList<>()));
         assertNull(requestHandler.book(1, customer.getId(), "absentInDB",
-                desiredStartingTime,estimatedDuration, new ArrayList<>()));
+                desiredStartingTime, estimatedDuration, new ArrayList<>()));
 
         // All the following request should be accepted since they verify the constraint on the number of people
-        for (int i = store.getMaximumOccupancy(); i>0; i--) {
-            booking =  requestHandler.book(i, customer.getId(), store.getId(),
-                    desiredStartingTime,estimatedDuration, new ArrayList<>());
+        for (int i = store.getMaximumOccupancy(); i > 0; i--) {
+            booking = requestHandler.book(i, customer.getId(), store.getId(),
+                    desiredStartingTime, estimatedDuration, new ArrayList<>());
             assertTrue(store.getBookings().contains(booking));
             requestHandler.cancelRequest(booking.getUuid());
         }
 
         booking = requestHandler.book(1, customer.getId(), store.getId(),
-                desiredStartingTime,estimatedDuration, new ArrayList<>());
+                desiredStartingTime, estimatedDuration, new ArrayList<>());
         Booking overlappingBr = requestHandler.book(1, customer.getId(), store.getId(),
-                Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)),estimatedDuration, new ArrayList<>());
+                Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)), estimatedDuration, new ArrayList<>());
         assertNotNull(booking);
 
         // When the customer tries to book a visit for a time interval which overlaps with a booking he previously made
@@ -174,13 +174,13 @@ class RequestHandlerIntegrationTest {
         requestHandler.cancelRequest(lineup.getUuid());
         assertFalse(store.getLineups().contains(lineup));
         Booking booking = requestHandler.book(1, customer.getId(), store.getId(),
-                Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)),Time.valueOf("00:10:00"), new ArrayList<>());
+                Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)), Time.valueOf("00:10:00"), new ArrayList<>());
         requestHandler.cancelRequest(booking.getUuid());
         assertFalse(store.getBookings().contains(booking));
 
     }
 
-    void storeInit(Store store){
+    void storeInit(Store store) {
         store.setCurrentOccupancy(0);
         store.setLineups(new LinkedList<>());
         store.setBookings(new LinkedList<>());

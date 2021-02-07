@@ -1,7 +1,7 @@
 package it.polimi.se2.ricciosorrentinotriuzzi.entities;
 
 public enum VisitRequestStatus {
-    PENDING(0), READY(1), FULFILLED(2), COMPLETED (3);
+    PENDING(0), READY(1), FULFILLED(2), COMPLETED(3);
 
     private final int value;
 

@@ -1,4 +1,5 @@
 package it.polimi.se2.ricciosorrentinotriuzzi.component;
+
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.*;
 
 import javax.ejb.*;
@@ -12,66 +13,37 @@ public class DataModel {
     @PersistenceContext(unitName = "PCLup")
     protected EntityManager em;
 
-    public DataModel() {}
+    public DataModel() {
+    }
 
-    public List<Lineup> getQueue(String storeID){
+    public List<Lineup> getQueue(String storeID) {
         return em.createQuery(
                 "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.state = :pending")
                 .setParameter("storeID", storeID).setParameter("pending", VisitRequestStatus.PENDING)
                 .getResultList();
-        //return em.createNamedQuery("Lineup.getStoreQueue", Lineup.class).setParameter(1, storeID).getResultList();
-                //.setParameter("pending", VisitRequestStatus.PENDING).setParameter("ready", VisitRequestStatus.READY).getResultList();
     }
 
-    public List<Store> getAllStores(){
+    public List<Store> getAllStores() {
         return em.createQuery("select s from Store s").getResultList();
     }
 
-    public List<VisitRequest> getVisitRequests(String storeID, Timestamp date) {
-        List<VisitRequest> toReturn = new ArrayList<>();
-        toReturn.addAll(em.createQuery(
-                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID")
-                .setParameter("storeID", storeID).getResultList());
-        toReturn.addAll(em.createQuery(
-                "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID")
-                .setParameter("storeID", storeID).getResultList());
-        return toReturn;
-    }
-
-/*
-//TODO ERA USATO DAL BEAN PER AGGIORNARE PERIODICAMENTE LA AVG VISIT DUR
-    public List<VisitRequest> getVisitRequest(String storeID, Timestamp date){
-        List<VisitRequest> toReturn = new LinkedList<>();
-        toReturn.addAll(em.createQuery(
-                "SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
-                .setParameter("endingTime", date).setParameter("storeID", storeID).getResultList());
-        toReturn.addAll(em.createQuery(
-                "SELECT l FROM Booking l WHERE l.store.id LIKE :storeID and l.visitCompletionTime > :endingTime")
-                .setParameter("endingTime", date).setParameter("storeID", storeID).getResultList());
-        return toReturn;
-    }*/
-
-    public Timestamp getQueueDisposalTime(String storeID){
+    public Timestamp getQueueDisposalTime(String storeID) {
         List<Lineup> queue = getQueue(storeID);
         int size = queue.size();
-        //System.out.println("La dimensione della coda di "+storeID+" è " + size);
-        if (size>0){
-            /*for (Lineup lineup : queue)
-                System.out.println("Sono una lur: " + lineup.getHfid() +" uuid: " + lineup.getUuid() + "timeofc: " + lineup.getDateTimeOfCreation()
-                + " EstTimeOfEntrance: " + lineup.getEstimatedTimeOfEntrance());*/
-            Timestamp ts = queue.get(queue.size()-1).getEstimatedTimeOfEntrance();
+        if (size > 0) {
+            Timestamp ts = queue.get(queue.size() - 1).getEstimatedTimeOfEntrance();
             return ts.before(Timestamp.valueOf(LocalDateTime.now())) ? Timestamp.valueOf(LocalDateTime.now()) : ts;
         }
         return Timestamp.valueOf(LocalDateTime.now());
     }
 
-    public int checkReadyRequest(String storeID, String visitToken){
+    public int checkReadyRequest(String storeID, String visitToken) {
         VisitRequest request = getVisitRequest(visitToken);
-        //System.out.println("checkreadyReq: " + request.isReady() +" status: " + request.getState()+"\n");
-        return  (request != null && request.getStore().getId().equals(storeID) && request.isReady()) ? request.getNumberOfPeople() : 0;
+        return (request != null && request.getStore().getId().equals(storeID) && request.isReady()) ?
+                request.getNumberOfPeople() : 0;
     }
 
-    public boolean startVisit(String visitToken, String storeID, int numberOfPeople){
+    public boolean startVisit(String visitToken, String storeID, int numberOfPeople) {
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
         if (store.getId().equals(storeID) && request.isReady()) {
@@ -83,7 +55,8 @@ public class DataModel {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
-                    section.setCurrentOccupancy(oldOcc + numberOfPeople * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
+                    section.setCurrentOccupancy(oldOcc + numberOfPeople *
+                            (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
                 }
             }
             return true;
@@ -91,20 +64,16 @@ public class DataModel {
         return false;
     }
 
-    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end){
-        System.out.println("Store ID: " + storeID);
+    public List<Booking> getBookings(String storeID, Timestamp start, Timestamp end) {
         Store store = em.find(Store.class, storeID);
-        LinkedList<Booking> toReturn= new LinkedList<>();
-            System.out.println("start: " + start + " end" + end);
+        LinkedList<Booking> toReturn = new LinkedList<>();
 
-        for(Booking booking : store.getBookings() ){
+        for (Booking booking : store.getBookings()) {
             LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
-            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
-            System.out.println("Booking: " + booking.getHfid() + " start: " + beginning + " end: " + ending +" duration: " + booking.getDesiredDuration());
-            if(beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime())) {
+            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration()
+                    .toLocalTime().toNanoOfDay()));
+            if (beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
                 toReturn.addLast(booking);
-                System.out.println("Aggiunto");
-            }
         }
         return toReturn;
     }
@@ -113,34 +82,35 @@ public class DataModel {
         Customer c = em.find(Customer.class, customerID);
         LinkedList<Booking> toReturn = new LinkedList<>();
 
-        for(Booking booking : c.getBookings()) {
+        for (Booking booking : c.getBookings()) {
             LocalDateTime beginning = booking.getDesiredStartingTime().toLocalDateTime();
-            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration().toLocalTime().toNanoOfDay()));
+            LocalDateTime ending = beginning.plus(Duration.ofNanos(booking.getDesiredDuration()
+                    .toLocalTime().toNanoOfDay()));
             if (beginning.isBefore(end.toLocalDateTime()) && ending.isAfter(start.toLocalDateTime()))
                 toReturn.addLast(booking);
         }
         return toReturn;
     }
 
-    public boolean checkBookings(String customerID, Timestamp start, Timestamp end){
+    public boolean checkBookings(String customerID, Timestamp start, Timestamp end) {
         return !(getCustomerBookings(customerID, start, end).isEmpty());
     }
 
-    public void allowVisitRequest(VisitRequest request){
-        if (request!= null && request.isPending()) {
+    public void allowVisitRequest(VisitRequest request) {
+        if (request != null && request.isPending()) {
             request.setState(VisitRequestStatus.READY);
-            if(!request.isBooking()){
-                ((Lineup)request).setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now()));
-            }
+            if (!request.isBooking())
+                ((Lineup) request).setEstimatedTimeOfEntrance(Timestamp.valueOf(LocalDateTime.now()));
         }
     }
 
-    public int checkFulfilledRequest(String storeID, String visitToken){
+    public int checkFulfilledRequest(String storeID, String visitToken) {
         VisitRequest request = getVisitRequest(visitToken);
-        return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
+        return request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ?
+                request.getNumberOfPeople() : 0;
     }
 
-    public boolean completeVisit(String visitToken, String storeID, int numberOfPeople){
+    public boolean completeVisit(String visitToken, String storeID, int numberOfPeople) {
         VisitRequest request = getVisitRequest(visitToken);
         Store store = request.getStore();
         if (store.getId().equals(storeID) && request.isFulfilled()) {
@@ -151,7 +121,8 @@ public class DataModel {
                 List<Productsection> productsections = ((Booking) request).getProductSections();
                 for (Productsection section : productsections) {
                     double oldOcc = section.getCurrentOccupancy();
-                    section.setCurrentOccupancy(oldOcc - numberOfPeople * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
+                    section.setCurrentOccupancy(oldOcc - numberOfPeople *
+                            (double) section.getMaximumOccupancy() / store.getMaximumOccupancy());
                 }
             }
             return true;
@@ -159,11 +130,12 @@ public class DataModel {
         return false;
     }
 
-    public String getStoreName(String storeID){
+    public String getStoreName(String storeID) {
         return em.find(Store.class, storeID).getName();
     }
 
-    public void insertNewStore(String name, String chain, int currentOcc, int maxOcc, double safetyTh, String managerUsername){
+    public void insertNewStore(String name, String chain, int currentOcc, int maxOcc, double safetyTh,
+                               String managerUsername) {
         Store store = new Store();
         store.setName(name);
         store.setChain(em.find(Chain.class, chain));
@@ -180,16 +152,17 @@ public class DataModel {
         store.addManager(manager);
     }
 
-    public Store getStore(String storeID){
+    public Store getStore(String storeID) {
         return em.find(Store.class, storeID);
     }
 
-    public Manager getManager(String managerUsername){
-        return em.createNamedQuery("Manager.findByUsername", Manager.class).setParameter(1, managerUsername).getSingleResult();
+    public Manager getManager(String managerUsername) {
+        return em.createNamedQuery("Manager.findByUsername", Manager.class)
+                .setParameter(1, managerUsername).getSingleResult();
     }
 
     public void insertRequest(VisitRequest request) {
-        if (request.isBooking()){
+        if (request.isBooking()) {
             request.getStore().addBooking((Booking) request);
             request.getCustomer().addBooking((Booking) request);
         } else {
@@ -197,11 +170,10 @@ public class DataModel {
             request.getCustomer().addLineup((Lineup) request);
         }
         em.persist(request);
-        System.out.println("New request to persist with uuid: "+request.getUuid());
     }
 
     public void removeRequest(VisitRequest request) {
-        if (request!=null) {
+        if (request != null) {
             if (request.isBooking()) {
                 request.getCustomer().getBookings().remove(request);
                 request.getStore().getBookings().remove(request);
@@ -253,7 +225,7 @@ public class DataModel {
         return em.find(Address.class, addressID);
     }
 
-    public List<Address> getAddressesByCity(String city){
+    public List<Address> getAddressesByCity(String city) {
         return em.createNamedQuery("Address.getAllByCity", Address.class).setParameter(1, city).getResultList();
     }
 
@@ -265,8 +237,8 @@ public class DataModel {
         List<VisitRequest> result = new LinkedList<>();
         List<Lineup> lurs =
                 em.createQuery("SELECT l FROM Lineup l WHERE l.store.id LIKE :storeID and l.state <> :completed")
-                .setParameter("storeID", storeID).setParameter("completed", VisitRequestStatus.COMPLETED)
-                .getResultList();
+                        .setParameter("storeID", storeID).setParameter("completed", VisitRequestStatus.COMPLETED)
+                        .getResultList();
         List<Booking> brs =
                 em.createQuery("SELECT b FROM Booking b WHERE b.store.id LIKE :storeID and b.state <> :completed")
                         .setParameter("storeID", storeID).setParameter("completed", VisitRequestStatus.COMPLETED)

@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.UUID;
 
 @Entity
@@ -34,8 +35,8 @@ public class Booking extends VisitRequest implements Serializable {
     private Timestamp visitCompletionTime;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "bookingproduct",
-                joinColumns = @JoinColumn(name = "booking"),
-                inverseJoinColumns = @JoinColumn(name = "productSection"))
+            joinColumns = @JoinColumn(name = "booking"),
+            inverseJoinColumns = @JoinColumn(name = "productSection"))
     private List<Productsection> productSections;
 
     public Booking() {
@@ -47,7 +48,7 @@ public class Booking extends VisitRequest implements Serializable {
                    Time desiredDuration, List<Productsection> productsections) {
         this.uuid = UUID.randomUUID().toString();
         this.dateTimeOfCreation = Timestamp.valueOf(LocalDateTime.now());
-        this.hfid = "B-" + (char)( Integer.parseInt(desiredStartingTime.toString().substring(8, 10)) % 26 + 65) +
+        this.hfid = "B-" + (char) (Integer.parseInt(desiredStartingTime.toString().substring(8, 10)) % 26 + 65) +
                 String.valueOf(Integer.parseInt(this.uuid.substring(4, 8), 16) % 999);
         if (productsections == null)
             this.productSections = new LinkedList<>();
@@ -65,6 +66,7 @@ public class Booking extends VisitRequest implements Serializable {
     public String getUuid() {
         return uuid;
     }
+
     @Override
     public void setUuid(String token) {
         this.uuid = token;
@@ -74,6 +76,7 @@ public class Booking extends VisitRequest implements Serializable {
     public Store getStore() {
         return store;
     }
+
     @Override
     public void setStore(Store store) {
         this.store = store;
@@ -84,6 +87,7 @@ public class Booking extends VisitRequest implements Serializable {
     public Customer getCustomer() {
         return customer;
     }
+
     @Override
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -94,6 +98,7 @@ public class Booking extends VisitRequest implements Serializable {
     public Integer getNumberOfPeople() {
         return numberOfPeople;
     }
+
     @Override
     public void setNumberOfPeople(Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
@@ -103,6 +108,7 @@ public class Booking extends VisitRequest implements Serializable {
     public VisitRequestStatus getState() {
         return state;
     }
+
     @Override
     public void setState(VisitRequestStatus state) {
         this.state = state;
@@ -112,6 +118,7 @@ public class Booking extends VisitRequest implements Serializable {
     public Timestamp getDateTimeOfCreation() {
         return dateTimeOfCreation;
     }
+
     @Override
     public void setDateTimeOfCreation(Timestamp dateTimeOfCreation) {
         this.dateTimeOfCreation = dateTimeOfCreation;
@@ -121,6 +128,7 @@ public class Booking extends VisitRequest implements Serializable {
     public String getHfid() {
         return hfid;
     }
+
     @Override
     public void setHfid(String hfid) {
         this.hfid = hfid;
@@ -130,6 +138,7 @@ public class Booking extends VisitRequest implements Serializable {
     public Timestamp getVisitStartingTime() {
         return visitStartingTime;
     }
+
     @Override
     public void setVisitStartingTime(Timestamp visitStartingTime) {
         this.visitStartingTime = visitStartingTime;
@@ -139,12 +148,16 @@ public class Booking extends VisitRequest implements Serializable {
     public Timestamp getVisitCompletionTime() {
         return visitCompletionTime;
     }
+
     @Override
-    public void setVisitCompletionTime(Timestamp visitCompletionTime) { this.visitCompletionTime = visitCompletionTime; }
+    public void setVisitCompletionTime(Timestamp visitCompletionTime) {
+        this.visitCompletionTime = visitCompletionTime;
+    }
 
     public List<Productsection> getProductSections() {
         return productSections;
     }
+
     public void addProductSection(Productsection ps) {
         productSections.add(ps);
     }
@@ -152,11 +165,15 @@ public class Booking extends VisitRequest implements Serializable {
     public Timestamp getDesiredStartingTime() {
         return desiredStartingTime;
     }
-    public void setDesiredStartingTime(Timestamp desiredStartingTime) { this.desiredStartingTime = desiredStartingTime; }
+
+    public void setDesiredStartingTime(Timestamp desiredStartingTime) {
+        this.desiredStartingTime = desiredStartingTime;
+    }
 
     public Time getDesiredDuration() {
         return desiredDuration;
     }
+
     public void setDesiredDuration(Time desiredDuration) {
         this.desiredDuration = desiredDuration;
     }
@@ -165,29 +182,33 @@ public class Booking extends VisitRequest implements Serializable {
     public boolean isPending() {
         return (state == VisitRequestStatus.PENDING);
     }
+
     @Override
     public boolean isReady() {
         return (state == VisitRequestStatus.READY);
     }
+
     @Override
     public boolean isFulfilled() {
         return (state == VisitRequestStatus.FULFILLED);
     }
+
     @Override
     public boolean isCompleted() {
         return (state == VisitRequestStatus.COMPLETED);
     }
+
     @Override
     public boolean isActive() {
         return (state != VisitRequestStatus.COMPLETED);
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
         JSONObject jsonVisitToken = new JSONObject();
         jsonVisitToken.put("uuid", getUuid());
         jsonVisitToken.put("hfid", getHfid());
-        json.put("visitToken",jsonVisitToken);
+        json.put("visitToken", jsonVisitToken);
         json.put("storeID", getStore().getId());
         json.put("customerID", getCustomer().getId());
         json.put("numberOfPeople", getNumberOfPeople());
@@ -197,14 +218,14 @@ public class Booking extends VisitRequest implements Serializable {
         json.put("desiredTimeInterval", jsonTimeInterval);
         json.put("state", getState().getValue());
         JSONArray jsonProductSections = new JSONArray();
-        for(Productsection ps : getProductSections())
+        for (Productsection ps : getProductSections())
             jsonProductSections.put(ps.getName());
         json.put("productSectionsNames", jsonProductSections);
         return json;
     }
 
     @Override
-    public boolean isBooking(){
+    public boolean isBooking() {
         return true;
     }
 }

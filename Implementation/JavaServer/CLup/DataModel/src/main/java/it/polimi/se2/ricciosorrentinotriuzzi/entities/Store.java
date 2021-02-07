@@ -56,10 +56,10 @@ public class Store implements Serializable {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name="tassaddresses",
-            joinColumns=@JoinColumn(name="store")
+            name = "tassaddresses",
+            joinColumns = @JoinColumn(name = "store")
     )
-    @Column(name="uri")
+    @Column(name = "uri")
     private List<String> tassAddresses;
 
     @Transient
@@ -71,7 +71,9 @@ public class Store implements Serializable {
         this.id = UUID.randomUUID().toString();
     }
 
-    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration, Double safetyThreshold, Chain chain, Address address, List<Manager> managers, List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
+    public Store(String name, String description, int currentOccupancy, int maximumOccupancy, Time averageVisitDuration,
+                 Double safetyThreshold, Chain chain, Address address, List<Manager> managers,
+                 List<Productsection> productSections, List<Dayinterval> workingHours, List<String> tassAddresses) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
@@ -88,18 +90,19 @@ public class Store implements Serializable {
         for (Productsection productSection : this.productSections) {
             this.maximumOccupancy += productSection.getMaximumOccupancy();
         }
-        this.maximumOccupancy = this.maximumOccupancy==0 ? maximumOccupancy : this.maximumOccupancy;
+        this.maximumOccupancy = this.maximumOccupancy == 0 ? maximumOccupancy : this.maximumOccupancy;
         this.workingHours = listInit(workingHours);
         this.tassAddresses = listInit(tassAddresses);
     }
 
-    private <E> List<E> listInit(List<E> list){
-        return list == null ? new LinkedList<E>():list;
+    private <E> List<E> listInit(List<E> list) {
+        return list == null ? new LinkedList<E>() : list;
     }
 
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -112,6 +115,7 @@ public class Store implements Serializable {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -120,6 +124,7 @@ public class Store implements Serializable {
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -128,6 +133,7 @@ public class Store implements Serializable {
     public byte[] getImage() {
         return image;
     }
+
     public void setImage(byte[] image) {
         this.image = image;
     }
@@ -136,6 +142,7 @@ public class Store implements Serializable {
     public int getCurrentOccupancy() {
         return currentOccupancy;
     }
+
     public void setCurrentOccupancy(int currentOccupancy) {
         this.currentOccupancy = currentOccupancy;
     }
@@ -144,6 +151,7 @@ public class Store implements Serializable {
     public int getMaximumOccupancy() {
         return maximumOccupancy;
     }
+
     public void setMaximumOccupancy(int maximumOccupancy) {
         this.maximumOccupancy = maximumOccupancy;
     }
@@ -157,6 +165,7 @@ public class Store implements Serializable {
     public Double getSafetyThreshold() {
         return safetyThreshold;
     }
+
     public void setSafetyThreshold(Double safetyThreshold) {
         this.safetyThreshold = safetyThreshold;
     }
@@ -165,6 +174,7 @@ public class Store implements Serializable {
     public Chain getChain() {
         return chain;
     }
+
     public void setChain(Chain chain) {
         this.chain = chain;
     }
@@ -173,6 +183,7 @@ public class Store implements Serializable {
     public String getPassepartoutuuid() {
         return passepartoutuuid;
     }
+
     public void setPassepartoutuuid(String passepartoutuuid) {
         this.passepartoutuuid = passepartoutuuid;
     }
@@ -181,6 +192,7 @@ public class Store implements Serializable {
     public String getPassepartouthfid() {
         return passepartouthfid;
     }
+
     public void setPassepartouthfid(String passepartouthfid) {
         this.passepartouthfid = passepartouthfid;
     }
@@ -189,9 +201,11 @@ public class Store implements Serializable {
     public List<Booking> getBookings() {
         return bookings;
     }
+
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
+
     public void addBooking(Booking b) {
         if (this.bookings == null) {
             this.bookings = new LinkedList<>();
@@ -203,9 +217,11 @@ public class Store implements Serializable {
     public List<Lineup> getLineups() {
         return lineups;
     }
+
     public void setLineups(List<Lineup> lineups) {
         this.lineups = lineups;
     }
+
     public void addLineup(Lineup l) {
         if (this.lineups == null) {
             this.lineups = new LinkedList<>();
@@ -217,6 +233,7 @@ public class Store implements Serializable {
     public List<Manager> getManagers() {
         return managers;
     }
+
     public void addManager(Manager manager) {
         if (this.managers == null) {
             this.managers = new LinkedList<>();
@@ -229,6 +246,7 @@ public class Store implements Serializable {
     public List<Productsection> getProductSections() {
         return productSections;
     }
+
     public void setProductSections(List<Productsection> productSections) {
         this.productSections = productSections;
     }
@@ -250,6 +268,7 @@ public class Store implements Serializable {
     public List<String> getTassAddresses() {
         return tassAddresses;
     }
+
     public void setTassAddresses(List<String> tassAddresses) {
         this.tassAddresses = tassAddresses;
     }
@@ -258,6 +277,7 @@ public class Store implements Serializable {
     public Address getAddress() {
         return address;
     }
+
     public void setAddress(Address address) {
         this.address = address;
         address.setStore(this);
@@ -266,7 +286,7 @@ public class Store implements Serializable {
 
     public boolean isOpenAt(LocalDateTime datetime) {
         int dayOfWeek = datetime.getDayOfWeek().getValue();
-        for (Dayinterval di: workingHours) {
+        for (Dayinterval di : workingHours) {
             if (
                     dayOfWeek == di.getDayOfTheWeek() &&
                             datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
@@ -280,11 +300,12 @@ public class Store implements Serializable {
 
     public boolean isOpenAt(LocalDateTime datetime, LocalTime duration) {
         int dayOfWeek = datetime.getDayOfWeek().getValue();
-        for (Dayinterval di: workingHours) {
+        for (Dayinterval di : workingHours) {
             if (
                     dayOfWeek == di.getDayOfTheWeek() &&
                             datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
-                            datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
+                            datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute())
+                                    .isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }
@@ -292,24 +313,23 @@ public class Store implements Serializable {
         return false;
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        if(getAddress() != null)
+        if (getAddress() != null)
             json.put("address", getAddress().toJson());
         json.put("name", getName());
         json.put("id", getId());
         json.put("description", getDescription());
-        if(getChain() != null)
+        if (getChain() != null)
             json.put("chainName", getChain().getName());
         json.put("currentOccupancy", getCurrentOccupancy());
         json.put("maximumOccupancy", getMaximumOccupancy());
-        //TODO CONTROLLA CHE SIANO SENSATI
         json.put("estimatedQueueDisposalTime", queueDisposalTime);
         json.put("queueLenght", queueLength);
         json.put("averageVisitDuration", getAverageVisitDuration());
         json.put("safetyThreshold", getSafetyThreshold());
         JSONArray productSections = new JSONArray();
-        for (Productsection ps: getProductSections())
+        for (Productsection ps : getProductSections())
             productSections.put(ps.toJson());
         json.put("productSections", productSections);
         JSONArray workingHours = new JSONArray();

@@ -19,22 +19,22 @@ public class VisitManager {
     public VisitManager() {
     }
 
-    public int validateAccess(String visitToken, String storeID){
+    public int validateAccess(String visitToken, String storeID) {
         return dataModel.checkReadyRequest(storeID, visitToken);
     }
 
-    public boolean confirmAccess(String visitToken, String storeID, int numberOfPeople){
+    public boolean confirmAccess(String visitToken, String storeID, int numberOfPeople) {
         int oldNumberOfPeople = dataModel.getVisitRequest(visitToken).getNumberOfPeople();
         boolean toReturn = dataModel.startVisit(visitToken, storeID, numberOfPeople);
-        if (oldNumberOfPeople>numberOfPeople){
+        if (oldNumberOfPeople > numberOfPeople) {
             checkNewReadyRequest(storeID);
         }
         return toReturn;
     }
 
-    public int validateExit(String visitToken, String storeID){
+    public int validateExit(String visitToken, String storeID) {
         VisitRequest request = dataModel.getVisitRequest(visitToken);
-        return  request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
+        return request != null && request.getStore().getId().equals(storeID) && request.isFulfilled() ? request.getNumberOfPeople() : 0;
     }
 
     public boolean confirmExit(String visitToken, String storeID, int numberOfPeople) {
@@ -43,78 +43,31 @@ public class VisitManager {
         return toReturn;
     }
 
-//    @Asynchronous
-//    public void newRequest(String token){
-//        System.out.println("NEW REQUEST! UUID: " + token);
-//
-//        VisitRequest request = dataModel.getVisitRequest(token);
-//        Store store = dataModel.getVisitRequest(token).getStore();
-//        int currentReadyOccupancy = store.getCurrentOccupancy();
-//        for (VisitRequest visitRequest: store.getLineups()) {
-//            if (visitRequest.isReady())
-//                currentReadyOccupancy += visitRequest.getNumberOfPeople();
-//        }
-//        for (VisitRequest visitRequest: store.getBookings()) {
-//            if (visitRequest.isReady())
-//                currentReadyOccupancy += visitRequest.getNumberOfPeople();
-//        }
-//
-//        if(request.isBooking()){
-//            System.out.println("Parto!");
-//            Date date = ((Booking) request).getDesiredStartingTime();
-//            Timer timer = new Timer();
-//            int finalCurrentReadyOccupancy = currentReadyOccupancy;
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
-//                    for (Productsection section : ((Booking)request).getProductSections()) {
-//                        if(section.getCurrentOccupancy() +
-//                                request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
-//                                section.getMaximumOccupancy())
-//                            return;
-//                    }
-//                    System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
-//                    if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
-//                        setReadyRequest(token);
-//                    }
-//                }
-//            }, date);
-//        }
-//        else {
-//            if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
-//                setReadyRequest(token); ///TODO controlla che si possano passare
-//            }
-//        }
-//    }
-
     @Asynchronous
-    public void newRequest(VisitRequest request){
-        System.out.println("NEW REQUEST! UUID: " + request.getUuid());
+    public void newRequest(VisitRequest request) {
         Store store = request.getStore();
         int currentReadyOccupancy = store.getCurrentOccupancy();
-        for (VisitRequest visitRequest: store.getLineups()) {
+        for (VisitRequest visitRequest : store.getLineups()) {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
-        for (VisitRequest visitRequest: store.getBookings()) {
+        for (VisitRequest visitRequest : store.getBookings()) {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
 
-        if(request.isBooking()){
+        if (request.isBooking()) {
             Date date = ((Booking) request).getDesiredStartingTime();
             Timer timer = new Timer();
             int finalCurrentReadyOccupancy = currentReadyOccupancy;
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    scheduleBooking((Booking)request, finalCurrentReadyOccupancy, store);
+                    scheduleBooking((Booking) request, finalCurrentReadyOccupancy, store);
                 }
             }, date);
-        }
-        else {
-            System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy());
+        } else {
+            System.out.println(request.getNumberOfPeople() + " + " + currentReadyOccupancy + " <= " + store.getMaximumOccupancy() +"?");
             if (request.getNumberOfPeople() + currentReadyOccupancy <= store.getMaximumOccupancy()) {
                 dataModel.allowVisitRequest(request);
             }
@@ -126,70 +79,54 @@ public class VisitManager {
     // over lineups. Bookings are considered in order of "desired starting time", from the earliest to the latest, if
     // its value is past the current time, while lineups in order of "time of creation", from the earliest to the latest
     @Asynchronous
-    public void checkNewReadyRequest(String storeID){
+    public void checkNewReadyRequest(String storeID) {
         Store store = dataModel.getStore(storeID);
         int currentReadyOccupancy = store.getCurrentOccupancy();
-        System.out.println("Current occ: " + currentReadyOccupancy);
-        for (VisitRequest visitRequest: store.getLineups()) {
+        for (VisitRequest visitRequest : store.getLineups()) {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
-        for (VisitRequest visitRequest: store.getBookings()) {
+        for (VisitRequest visitRequest : store.getBookings()) {
             if (visitRequest.isReady())
                 currentReadyOccupancy += visitRequest.getNumberOfPeople();
         }
-        System.out.println("The current ready occupancy is " + currentReadyOccupancy);
         List<Booking> pendingBookings = dataModel.getBookings(storeID, Timestamp.valueOf(LocalDate.now().atStartOfDay()), Timestamp.valueOf(LocalDateTime.now()));
-        for (Booking booking:pendingBookings) {
-            System.out.println("Booking analyzed: " + booking.getHfid() + " status: " + booking.getState() + " isPending: " + booking.isPending());
+        for (Booking booking : pendingBookings) {
             if (booking.isPending()) {
                 if (currentReadyOccupancy + booking.getNumberOfPeople() <= store.getMaximumOccupancy()) {
                     for (Productsection section : booking.getProductSections()) {
-                        if(section.getCurrentOccupancy() +
-                                booking.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
+                        if (section.getCurrentOccupancy() +
+                                booking.getNumberOfPeople() * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy() >
                                 section.getMaximumOccupancy())
                             return;
                     }
                     dataModel.allowVisitRequest(booking);
-                    //lancia un th.asynch. che tra X tempo vee, e se è ancora ready la rende completed e rilancia questo metodo
                     currentReadyOccupancy += booking.getNumberOfPeople();
                 } else return;
             }
         }
 
-        for (Lineup lineup : store.getLineups()){
-            if (lineup.isPending()){
-                if (currentReadyOccupancy + lineup.getNumberOfPeople() <= store.getMaximumOccupancy()){
+        for (Lineup lineup : store.getLineups()) {
+            if (lineup.isPending()) {
+                if (currentReadyOccupancy + lineup.getNumberOfPeople() <= store.getMaximumOccupancy()) {
                     dataModel.allowVisitRequest(lineup);
                     currentReadyOccupancy += lineup.getNumberOfPeople();
                 }
             }
         }
-        /*
-        Prendo tutti i booking non ancora ready i cui time interval si overlappano con (now, quando)?.
-        Dopodiché, vedo se possono entrare. Per fare ciò, mi salvo localmente la curr.occ. dello store
-        e la incremento mano mano, finché non raggiunge il suo massimo.
-
-         */
     }
 
-    protected void scheduleBooking(Booking request, int finalCurrentReadyOccupancy, Store store){
-        System.out.println("Vengo lanciato alle ore: "+ LocalTime.now());
+    protected void scheduleBooking(Booking request, int finalCurrentReadyOccupancy, Store store) {
+        System.out.println("Scheduled for booking " + request.getHfid() + " at " + request.getDateTimeOfCreation());
+        System.out.println("Checking if at " + request.getDesiredStartingTime() + " the request can be set to ready");
         for (Productsection section : (request).getProductSections()) {
-            if(section.getCurrentOccupancy() +
-                    request.getNumberOfPeople() * (double)section.getMaximumOccupancy()/store.getMaximumOccupancy() >
+            if (section.getCurrentOccupancy() +
+                    request.getNumberOfPeople() * (double) section.getMaximumOccupancy() / store.getMaximumOccupancy() >
                     section.getMaximumOccupancy())
                 return;
         }
-        System.out.println(request.getNumberOfPeople() + " + " + finalCurrentReadyOccupancy + " <= " + store.getMaximumOccupancy());
         if (request.getNumberOfPeople() + finalCurrentReadyOccupancy <= store.getMaximumOccupancy()) {
             dataModel.allowVisitRequest(request);
         }
-    }
-
-    @Asynchronous
-    public void removedRequest(){
-        //TODO
-        //Dovrebbe prendere l'indice della richiesta, mod
     }
 }

@@ -29,8 +29,8 @@ class StoreStatusHandlerIntegrationTest {
     public void setUp() {
         dataModel = new TestDataModel();
         ssh = new TestStoreStatusHandler(dataModel);
-        chain = new Chain("PoliMi","Politecnico");
-        Dayinterval workingHour = new Dayinterval (
+        chain = new Chain("PoliMi", "Politecnico");
+        Dayinterval workingHour = new Dayinterval(
                 DayOfWeek.from(LocalDateTime.now()).getValue(),
                 Time.valueOf("00:00:00"),
                 Time.valueOf("23:00:00")
@@ -140,7 +140,7 @@ class StoreStatusHandlerIntegrationTest {
     }
 
     @Test
-    void getAutonomousStores(){
+    void getAutonomousStores() {
         List<Store> stores = ssh.getAutonomousStores(cityOneAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store2));
         stores = ssh.getAutonomousStores(cityTwoAddresses.get(0).getCity());
