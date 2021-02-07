@@ -28,7 +28,7 @@ public class StoreInfoInt {
     @GET
     @Path("chainstore")
     @Produces("application/json")
-    public Response getChainsAndAutonomousStores(@QueryParam("city") String city) {
+    public Response getChainsAndAutonomousStores(@QueryParam("city") String city){
         Set<Chain> chains = ssh.getChains(city);
         List<Store> autstores = ssh.getAutonomousStores(city);
         JSONObject jsonResponse = new JSONObject();
