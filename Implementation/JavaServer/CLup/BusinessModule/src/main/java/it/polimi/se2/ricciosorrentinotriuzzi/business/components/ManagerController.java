@@ -21,30 +21,24 @@ public class ManagerController {
     }
 
     public List<Booking> getPendingBookings(String storeID) {
-        List<Booking> bookings = dataModel.getBookings(storeID, Timestamp.valueOf(LocalDate.now().atStartOfDay()),
+        List<Booking> bookings = dataModel.getBookings(storeID, Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.MAX));
-        if(bookings != null)
-            bookings.removeIf(b -> !(b.isPending() && b.isActive()));
-
+        if (bookings != null)
+            bookings.removeIf(b -> !(b.isPending()));
         return bookings;
     }
 
     public List<VisitRequest> getCompletedVisits(String storeID) {
-        List<VisitRequest> requests = dataModel.getVisitRequests(storeID, Timestamp.valueOf(LocalDate.now()
-                .atTime(LocalTime.now())));
-        if(requests != null)
+        List<VisitRequest> requests = dataModel.getVisitRequests(storeID, Timestamp.valueOf(LocalDateTime.now()));
+        if (requests != null)
             requests.removeIf(r -> !r.isCompleted());
-
         return requests;
-
     }
 
-    public List<VisitRequest> getCurrentVisits(String storeID) {
-        List<VisitRequest> requests = dataModel.getVisitRequests(storeID, Timestamp.valueOf(LocalDate.now()
-                .atTime(LocalTime.now())));
-        if(requests != null)
+    public List<VisitRequest> getVisitsInProgress(String storeID) {
+        List<VisitRequest> requests = dataModel.getVisitRequests(storeID, Timestamp.valueOf(LocalDateTime.now()));
+        if (requests != null)
             requests.removeIf(r -> !r.isFulfilled());
-
         return requests;
     }
 }

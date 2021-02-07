@@ -93,7 +93,7 @@ public class Store implements Serializable {
         this.tassAddresses = listInit(tassAddresses);
     }
 
-     private <E> List<E> listInit(List<E> list){
+    private <E> List<E> listInit(List<E> list){
         return list == null ? new LinkedList<E>():list;
     }
 
@@ -269,8 +269,8 @@ public class Store implements Serializable {
         for (Dayinterval di: workingHours) {
             if (
                     dayOfWeek == di.getDayOfTheWeek() &&
-                    datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
-                    datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
+                            datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                            datetime.toLocalTime().isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }
@@ -282,9 +282,9 @@ public class Store implements Serializable {
         int dayOfWeek = datetime.getDayOfWeek().getValue();
         for (Dayinterval di: workingHours) {
             if (
-                dayOfWeek == di.getDayOfTheWeek() &&
-                datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
-                datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
+                    dayOfWeek == di.getDayOfTheWeek() &&
+                            datetime.toLocalTime().isAfter(di.getStart().toLocalTime()) &&
+                            datetime.toLocalTime().plusHours(duration.getHour()).plusMinutes(duration.getMinute()).isBefore(di.getEnd().toLocalTime())
             ) {
                 return true;
             }

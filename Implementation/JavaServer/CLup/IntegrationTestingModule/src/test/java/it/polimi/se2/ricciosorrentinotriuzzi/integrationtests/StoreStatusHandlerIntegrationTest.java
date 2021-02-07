@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Mockito.mock;
-
 class StoreStatusHandlerIntegrationTest {
 
     private TestDataModel dataModel;
@@ -158,6 +156,4 @@ class StoreStatusHandlerIntegrationTest {
         stores = ssh.getChainStores(chain.getName(), cityTwoAddresses.get(0).getCity());
         assert (stores.size() == 1 && stores.contains(store3));
     }
-
-
 }

@@ -33,18 +33,31 @@ class RequestHandlerTest {
         dataModel = mock(DataModel.class);
         visitManager = mock(VisitManager.class);
         requestHandler = new TestRequestHandler(dataModel, visitManager);
-
-        store = new Store();
         customer = new Customer("customerTestID",true);
-        Dayinterval workingHour = new Dayinterval();
-        Address address = new Address("Piazza Leonardo da Vinci","1","Milano","21100","Italia",null);
-
-        workingHour.setDayOfTheWeek(DayOfWeek.from(LocalDateTime.now()).getValue());
-        workingHour.setStart(Time.valueOf("00:00:00"));
-        workingHour.setEnd(Time.valueOf("23:00:00"));
-        workingHour.setId(0);
-
-        store = new Store("testName","Test description",0,10,Time.valueOf("00:30:00"),0.0,null,address,null,null,null,null);
+        Dayinterval workingHour = new Dayinterval (
+            DayOfWeek.from(LocalDateTime.now()).getValue(),
+            Time.valueOf("00:00:00"),
+            Time.valueOf("23:00:00")
+        );
+        Address address = new Address(
+                "Piazza Leonardo da Vinci",
+                "1",
+                "Milano",
+                "21100",
+                "Italia",
+                null);
+        store = new Store(
+                "testName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                null,address,
+                null,
+                null,
+                null,
+                null);
         store.addWorkingHour(workingHour);
         address.setStore(store);
     }

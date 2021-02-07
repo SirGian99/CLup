@@ -21,7 +21,6 @@ public class StoreStatusHandler {
         return store;
     }
 
-    //TODO SPEZZA IN DUE, FORSE NO A CAUSA DELLA GET QUEUE DISPOSAL TIME
     public Set<Chain> getChains(String city) {
         List<Address> addresses = new ArrayList<>();
         Set<Chain> chains = new HashSet<>();
@@ -53,7 +52,6 @@ public class StoreStatusHandler {
         return stores;
     }
 
-    ///TODO DEVE RESTITUIRE UNA LISTA DI STORE, FORSE NO COME SOPRA
     public List<Store> getChainStores(String chain, String city) {
         List<Store> stores = new LinkedList<>();
         if (city != null) {

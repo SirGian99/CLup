@@ -43,7 +43,7 @@ public class ManagerInt {
     @Produces("application/json")
     public Response getNextBookings(@PathParam("storeID") String store)  {
         List<Booking> bookings = mc.getPendingBookings(store);
-        if(bookings != null) {
+        if (bookings != null) {
             JSONObject jsonResponse = new JSONObject();
             JSONArray toAppend = new JSONArray();
             for (Booking b : bookings)
@@ -51,7 +51,7 @@ public class ManagerInt {
             jsonResponse.put("bookings", toAppend);
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
-            System.out.println("Error while getting future bookings");
+            System.out.println("Error while getting pending bookings");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
@@ -65,42 +65,42 @@ public class ManagerInt {
             JSONObject jsonResponse = getJsonFromRequests(requests);
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
-            System.out.println("Error while getting future bookings");
+            System.out.println("Error while getting completed visits");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
 
     @GET
-    @Path("store/{storeID}/currentVisits")
+    @Path("store/{storeID}/visitsInProgress")
     @Produces("application/json")
-    public Response getCurrentVisits(@PathParam("storeID") String store) {
-        List<VisitRequest> requests = mc.getCurrentVisits(store);
+    public Response getVisitsInProgress(@PathParam("storeID") String store) {
+        List<VisitRequest> requests = mc.getVisitsInProgress(store);
         if (requests != null) {
             JSONObject jsonResponse = getJsonFromRequests(requests);
             return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
         } else {
-            System.out.println("Error while getting future bookings");
+            System.out.println("Error while getting visits in progress");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
     }
 
     private JSONObject getJsonFromRequests(List<VisitRequest> requests) {
-            JSONObject json = new JSONObject();
-            JSONObject toAppend = new JSONObject();
-            JSONArray bookings = new JSONArray();
-            JSONArray lineups = new JSONArray();
-            for (VisitRequest vr : requests) {
-                if (vr.isBooking())
-                    bookings.put(((Booking) vr).toJson());
-                else
-                    lineups.put(((Lineup) vr).toJson());
-            }
-            toAppend.put("bookings", bookings);
-            toAppend.put("lineups", lineups);
-        json.put("visitRequests", toAppend);
-            return json;
+        JSONObject json = new JSONObject();
+        JSONObject toAppend = new JSONObject();
+        JSONArray bookings = new JSONArray();
+        JSONArray lineups = new JSONArray();
+        for (VisitRequest vr : requests) {
+            if (vr.isBooking())
+                bookings.put(((Booking) vr).toJson());
+            else
+                lineups.put(((Lineup) vr).toJson());
         }
+        toAppend.put("bookings", bookings);
+        toAppend.put("lineups", lineups);
+        json.put("visitRequests", toAppend);
+        return json;
     }
+}
 
     /* ALTERNATIVA a getJsonFromRequests
         JSONObject jsonResponse = new JSONObject();
