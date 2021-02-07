@@ -99,15 +99,14 @@ class RequestHandlerTest {
         lur = requestHandler.lineup(1, customer.getId(), store.getId());
         //The customer cannot line up since the store is closed
         assertFalse(store.getLineups().contains(lur));
-
     }
 
     @Test
     void book() {
         Booking br1;
-        List<Booking> overlappingBookings = new LinkedList<>();
         Timestamp estimatedDisposalTime = Timestamp.valueOf(LocalDateTime.now());
         Timestamp desiredStart = Timestamp.valueOf(LocalDateTime.now().plusMinutes(3));
+        Time duration = Time.valueOf("00:10:00");
         when(dataModel.getStore(store.getId())).thenReturn(store);
         when(dataModel.getCustomer(customer.getId())).thenReturn(customer);
         when(dataModel.getQueueDisposalTime(store.getId())).thenReturn(estimatedDisposalTime);
@@ -122,16 +121,19 @@ class RequestHandlerTest {
             }
             return true;
         }).when(dataModel).insertRequest(any(VisitRequest.class));
-        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, Time.valueOf("00:10:00"), new ArrayList<>());
+        br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart, duration, new ArrayList<>());
         br1 = br;
         assertTrue(store.getBookings().contains(br));
 
 
         //The customer tries to book a visit for a time interval which overlaps with a request he previously made (the previous one). So,
-        //the getCustomerBookings will provide the request handler with a list containing the previous booking
-        when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
+        //the checkBookings will provide the request handler a "true" value
+        //when(dataModel.getCustomerBookings(anyString(), any(), any())).thenReturn(customer.getBookings());
+        duration = Time.valueOf("00:05:00");
+        Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
+        when(dataModel.checkBookings(customer.getId(), desiredStart, end)).thenReturn(true);
         br = requestHandler.book(3, customer.getId(), store.getId(), desiredStart,
-                Time.valueOf("00:05:00"), new ArrayList<>());
+                duration, new ArrayList<>());
         assertNull(br);
 
         //The customer tries to book a visit before the estimated queue disposal time
