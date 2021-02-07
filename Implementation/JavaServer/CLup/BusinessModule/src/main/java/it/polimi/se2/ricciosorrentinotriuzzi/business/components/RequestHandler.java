@@ -59,29 +59,33 @@ public class RequestHandler {
     public Booking book(int numberOfPeople, String customerID, String storeID,
                         Timestamp desiredStart, Time duration, ArrayList<String> sectionIDs) {
         Store store = dataModel.getStore(storeID);
+        //check the store exists
         if (store == null) {
             System.out.println("Non esiste uno store con id: "+storeID);
             return null;
         }
+        //check the number of people is suitable according to store's max occupancy
         if (numberOfPeople > store.getMaximumOccupancy() || numberOfPeople<=0)
             return null;
         Customer customer = dataModel.getCustomer(customerID);
+        //Check the app customer exists
         if (customer == null || !customer.isAppCustomer()) {
             System.out.println("Non esiste un customer con id: "+customerID);
             return null;
         }
+        //check the store is open
         if (!store.isOpenAt(desiredStart.toLocalDateTime(), duration.toLocalTime())) {
             System.out.println("Lo store è chiuso nell'orario selezionato");
             return null;
         }
+        //check the booking starts after the queue disposal time
         if (desiredStart.before(dataModel.getQueueDisposalTime(storeID))) {
             System.out.println("Il booking inizia prima del queue disposal time");
             return null;
         }
         Timestamp end = Timestamp.valueOf(desiredStart.toLocalDateTime().plusHours(duration.toLocalTime().getHour()).plusMinutes(duration.toLocalTime().getMinute()));
-        List<Booking> overlappingBookings = dataModel.getCustomerBookings(customerID,desiredStart,end);
-        System.out.println("start: "+ desiredStart+ " end: " + end);
-        if (!overlappingBookings.isEmpty()) {
+        //check if the customer has an overlapping booking
+        if (dataModel.checkBookings(customerID,desiredStart,end)) {
             System.out.println("Il customer ha un overlapping booking");
             return null;
         }

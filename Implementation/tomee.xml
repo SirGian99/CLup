@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomee>
+  <!-- see http://tomee.apache.org/containers-and-resources.html -->
+
+<Resource id="clup_db" type="DataSource">
+  JdbcDriver com.mysql.cj.jdbc.Driver
+  <!-- 
+    if needed, change the port according to your MySQL configuration
+    if needed, change localhost with the IP of the database machine if it is different from the one running the server
+  -->
+  JdbcUrl jdbc:mysql://localhost:3306/clup_db 
+  UserName root
+  Password EmaGiaVin123 <!-- change the password according to your MySQL configuration -->
+</Resource>
+
+</tomee>
