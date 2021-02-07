@@ -35,13 +35,10 @@ public class Chain implements Serializable {
             this.stores = stores;
     }
 
-    public Chain(String name, String description, List<Store> stores) {
+    public Chain(String name, String description) {
         this.name = name;
         this.description = description;
-        if (stores==null)
-            this.stores = new LinkedList<>();
-        else
-            this.stores = stores;
+        this.stores = new LinkedList<>();
     }
 
     public String getName() {

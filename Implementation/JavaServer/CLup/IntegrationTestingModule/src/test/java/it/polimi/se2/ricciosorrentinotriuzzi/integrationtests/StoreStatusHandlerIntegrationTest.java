@@ -13,8 +13,6 @@ import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class StoreStatusHandlerIntegrationTest {
 
     private TestStoreStatusHandler storeStatusHandler;
@@ -31,7 +29,7 @@ class StoreStatusHandlerIntegrationTest {
         dataModel = new TestDataModel();
         storeStatusHandler = new TestStoreStatusHandler(dataModel);
 
-        chain = new Chain("chainTest", "Chain of test", null);
+        chain = new Chain("chainTest", "Chain of test");
         address1 = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
                 "21133", "Italy", null);
         address2 = new Address("Via Ernesto Di Marino", "0", "Cava de' Tirreni",
@@ -42,11 +40,11 @@ class StoreStatusHandlerIntegrationTest {
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59))));
         store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address1,null,
-                null,null,null,workingHours,null);
+                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address1,
+                null,null,workingHours,null);
         chainstore = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address2,null,
-                null,null,null,workingHours,null);
+                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address2,
+                null,null,workingHours,null);
         address1.setStore(store);
         address2.setStore(chainstore);
         dataModel.getEm().getTransaction().begin();

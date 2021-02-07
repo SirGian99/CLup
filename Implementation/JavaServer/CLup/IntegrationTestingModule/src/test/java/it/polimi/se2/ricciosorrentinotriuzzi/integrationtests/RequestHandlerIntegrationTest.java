@@ -38,8 +38,8 @@ class RequestHandlerIntegrationTest {
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59)));
         store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, null,null,null,
-                null,null,null,null,null);
+                Time.valueOf(LocalTime.of(0,30)),10.0, null,null,
+                null,null,null,null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
         booking = new Booking(store, customer,1, Timestamp.valueOf(LocalDateTime.now().plusSeconds(3)),

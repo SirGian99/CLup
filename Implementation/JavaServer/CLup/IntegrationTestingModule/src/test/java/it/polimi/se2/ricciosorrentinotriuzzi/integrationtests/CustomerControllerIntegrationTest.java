@@ -33,8 +33,8 @@ class CustomerControllerIntegrationTest {
 
         List<Dayinterval> workingHours = new LinkedList<>();
         Store store = new Store("test", "descriptionTest", 0, 10,
-                Time.valueOf(LocalTime.of(0, 30)), 10.0, null, null, null,
-                null, null, null, null, null);
+                Time.valueOf(LocalTime.of(0, 30)), 10.0, null, null,
+                null, null, null, null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
 
