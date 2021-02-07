@@ -31,7 +31,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             Text("AMS Simulator\nStoreID: \(si.storeID)").font(.title2)
             if token == nil {
                 CodeScannerView(codeTypes: [.qr], scanMode: .continuous, scanInterval: 4.0) {res in
@@ -46,8 +46,8 @@ struct ContentView: View {
             HStack {
                 Button(action: {
                     Server.controller.requestAccess(token: token!) { error in
-                        if error != nil {self.reset(); self.showAlert = true}
-                        else {self.previousButtonPressed = .access; self.showOkPopup = true}
+                        if error != nil {print(error!); self.reset(); self.showAlert = true}
+                        else {print("Good!"); self.previousButtonPressed = .access; self.showOkPopup = true}
                     }
                 }) {
                     Text("ReqAccess")
@@ -55,8 +55,8 @@ struct ContentView: View {
                 Spacer()
                 Button(action: {
                     Server.controller.confirmAccess() { error in
-                        if error != nil {self.showAlert = true}
-                        else {self.showOkPopup = true}
+                        if error != nil {print(error!); self.showAlert = true}
+                        else {print("Good!"); self.showOkPopup = true}
                         self.reset()
                     }
                 }) {
@@ -66,8 +66,8 @@ struct ContentView: View {
             HStack {
                 Button(action: {
                     Server.controller.requestExit(token: token!) { error in
-                        if error != nil {self.reset(); self.showAlert = true}
-                        else {self.previousButtonPressed = .exit; self.showOkPopup = true}
+                        if error != nil {print(error!); self.reset(); self.showAlert = true}
+                        else {print("Good!"); self.previousButtonPressed = .exit; self.showOkPopup = true}
                     }
                 }) {
                     Text("ReqExit")
@@ -75,8 +75,8 @@ struct ContentView: View {
                 Spacer()
                 Button(action: {
                     Server.controller.confirmExit() { error in
-                        if error != nil {self.showAlert = true}
-                        else {self.showOkPopup = true}
+                        if error != nil {print(error!); self.showAlert = true}
+                        else {print("Good!"); self.showOkPopup = true}
                         self.reset()
                     }
                 }) {
