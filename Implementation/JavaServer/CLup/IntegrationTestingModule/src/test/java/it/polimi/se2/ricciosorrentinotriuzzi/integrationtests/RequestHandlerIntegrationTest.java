@@ -49,8 +49,6 @@ class RequestHandlerIntegrationTest {
         lineup = new Lineup(store, customer, Timestamp.valueOf(LocalDateTime.now().plus(
                 Duration.ofNanos(store.getAverageVisitDuration().toLocalTime().toNanoOfDay()))),1);
         dataModel.getEm().getTransaction().begin();
-        // The database is emptied
-        dataModel.dbInit();
         // Test entities are persisted on the database
         dataModel.getEm().persist(workingHour);
         dataModel.getEm().persist(store);
