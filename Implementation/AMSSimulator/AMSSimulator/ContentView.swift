@@ -33,8 +33,7 @@ struct ElementPickerGUI: View {
             .labelsHidden()
             HStack{Spacer()}
         }
-        .frame(height: 200)
-        .background(Color.gray)
+        .frame(height: 150)
     }
 }
 
