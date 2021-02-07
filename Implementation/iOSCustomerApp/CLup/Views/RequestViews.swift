@@ -75,7 +75,7 @@ struct LURDetails: View {
                     HStack {
                         Text("Estimated time of entrance")
                         Spacer()
-                        Text(lur.ete?.getTime() ?? "")
+                        Text(lur.ete?.getTime() ?? "Now")
                     }.font(.subheadline)
                 }.padding(.horizontal)
                 SizedDivider(height: 6)
