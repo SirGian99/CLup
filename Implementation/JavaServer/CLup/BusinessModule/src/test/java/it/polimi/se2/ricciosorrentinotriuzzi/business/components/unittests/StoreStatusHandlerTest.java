@@ -85,6 +85,7 @@ class StoreStatusHandlerTest {
         when(dataModel.getAddressesByCity(address.getCity())).thenReturn(addresses);
         JSONObject json = ssh.getChainsAndAutonomousStores(address.getCity());
         JSONArray autStores = json.getJSONArray("autonomousStores");
+        System.out.println(autStores);
         assertEquals(autStores.get(0).toString(), store.toJson().toString());
     }
 

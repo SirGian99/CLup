@@ -185,7 +185,7 @@ public class DataModel {
     }
 
     public void insertRequest(VisitRequest request) {
-        em.persist(request);
+
         if (request.isBooking()){
             request.getStore().addBooking((Booking) request);
             request.getCustomer().addBooking((Booking) request);
@@ -194,7 +194,8 @@ public class DataModel {
             request.getStore().addLineup((Lineup) request);
             request.getCustomer().addLineup((Lineup) request);
         }
-        //System.out.println("New request to persist with uuid: "+request.getUuid());
+        em.persist(request);
+        System.out.println("New request to persist with uuid: "+request.getUuid());
     }
 
     public void removeRequest(VisitRequest request) {
