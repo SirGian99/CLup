@@ -89,7 +89,7 @@ struct LineUpButton: View {
                 Text("Line-up now")
                     .fontWeight(.semibold)
                     .font(.body)
-                Text("Estimated waiting: \(store.estimatedQueueDisposalTime) min")
+                Text("Queue disposal time: \(store.estimatedQueueDisposalTime) min")
                     .font(.subheadline)
                 SizedDivider(height: 5)
             }

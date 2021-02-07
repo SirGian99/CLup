@@ -33,7 +33,7 @@ struct LURDetails: View {
         let timeToWait = lur.ete != nil ? Int(Date().distance(to: lur.ete!)/60) : 0
         let timeToWaitStr: String!
         if timeToWait < 0 {
-            timeToWaitStr = "We are sorry, you need to wait a bit more"
+            timeToWaitStr = "It seems there is a delay"
         } else {
             timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Enter now!"
         }
@@ -75,29 +75,30 @@ struct LURDetails: View {
                     HStack {
                         Text("Estimated time of entrance")
                         Spacer()
-                        Text(lur.ete?.getTime() ?? "Now")
+                        Text(lur.ete?.getTime() ?? "")
                     }.font(.subheadline)
                 }.padding(.horizontal)
                 SizedDivider(height: 6)
             }
             .lightBlueCard()
-            VStack(alignment: .center, spacing: 0) {
-                VStack(spacing: 0) {
-                    SizedDivider(height: 5)
-                    Text(timeToWaitStr)
-                        .fontWeight(.medium)
-                        .font(.title)
-                        .multilineTextAlignment(.center)
-                    SizedDivider(height: 5)
-                    HStack{Spacer()}
-                }.padding().background(.lightBlueHeaderBG)
-                SizedDivider(height: 8)
-                Text("Time to wait")
-                    .font(.subheadline)
-                SizedDivider(height: 8)
+            if lur.state != .fulfilled {
+                VStack(alignment: .center, spacing: 0) {
+                    VStack(spacing: 0) {
+                        SizedDivider(height: 5)
+                        Text(timeToWaitStr)
+                            .fontWeight(.medium)
+                            .font(.title)
+                            .multilineTextAlignment(.center)
+                        SizedDivider(height: 5)
+                        HStack{Spacer()}
+                    }.padding().background(.lightBlueHeaderBG)
+                    SizedDivider(height: 8)
+                    Text("Time to wait")
+                        .font(.subheadline)
+                    SizedDivider(height: 8)
+                }
+                .blueCard()
             }
-            .blueCard()
-            
             VStack(alignment: .center, spacing: 5) {
                 SizedDivider(height: 3)
                 Text(qrCodeDescription)
@@ -113,30 +114,33 @@ struct LURDetails: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    .blurIf(lur.state != .ready)
+                    .blurIf(lur.state == .pending)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
             .lightBlueCard()
-            Button(action: {
-                SI.controller.deleteLUR(lur: lur) { error in
-                    guard error == nil else {print(error!); self.showAlert = true; return}
-                    print("LUR deleted")
-                    self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.lurs[lur.visitToken.uuid] = nil }
-                }
-            }){
-                VStack (spacing: 0) {
-                    SizedDivider(height: 15)
-                    Text("Cancel request")
-                        .fontWeight(.semibold)
-                        .font(.body)
-                    SizedDivider(height: 15)
-                    HStack{Spacer()}
-                }
-                .tint(.blueLabel)
-            }.customButtonStyle()
-            .blueCard()
+            
+            if lur.state != .fulfilled {
+                Button(action: {
+                    SI.controller.deleteLUR(lur: lur) { error in
+                        guard error == nil else {print(error!); self.showAlert = true; return}
+                        print("LUR deleted")
+                        self.presentationMode.dismiss()
+                        DispatchQueue.main.async { Repository.singleton.lurs[lur.visitToken.uuid] = nil }
+                    }
+                }){
+                    VStack (spacing: 0) {
+                        SizedDivider(height: 15)
+                        Text("Cancel request")
+                            .fontWeight(.semibold)
+                            .font(.body)
+                        SizedDivider(height: 15)
+                        HStack{Spacer()}
+                    }
+                    .tint(.blueLabel)
+                }.customButtonStyle()
+                .blueCard()
+            }
             Spacer()
         }.tint(.blueLabel).alert(isPresented: $showAlert) {defAlert}
     }
@@ -218,31 +222,33 @@ struct BRDetails: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    .blurIf(br.state != .ready)
+                    .blurIf(br.state == .pending)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
             .lightBlueCard()
             
-            Button(action: {
-                SI.controller.deleteBR(br: br) { error in
-                    guard error == nil else {print(error!); self.showAlert = true; return}
-                    print("BR deleted")
-                    self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.brs[br.visitToken.uuid] = nil }
-                }
-            }){
-                VStack (spacing: 0) {
-                    SizedDivider(height: 15)
-                    Text("Cancel request")
-                        .fontWeight(.semibold)
-                        .font(.body)
-                    SizedDivider(height: 15)
-                    HStack{Spacer()}
-                }
-                .tint(.blueLabel)
-            }.customButtonStyle()
-            .blueCard()
+            if br.state != .fulfilled {
+                Button(action: {
+                    SI.controller.deleteBR(br: br) { error in
+                        guard error == nil else {print(error!); self.showAlert = true; return}
+                        print("BR deleted")
+                        self.presentationMode.dismiss()
+                        DispatchQueue.main.async { Repository.singleton.brs[br.visitToken.uuid] = nil }
+                    }
+                }){
+                    VStack (spacing: 0) {
+                        SizedDivider(height: 15)
+                        Text("Cancel request")
+                            .fontWeight(.semibold)
+                            .font(.body)
+                        SizedDivider(height: 15)
+                        HStack{Spacer()}
+                    }
+                    .tint(.blueLabel)
+                }.customButtonStyle()
+                .blueCard()
+            }
             Spacer()
         }.tint(.blueLabel)
     }
