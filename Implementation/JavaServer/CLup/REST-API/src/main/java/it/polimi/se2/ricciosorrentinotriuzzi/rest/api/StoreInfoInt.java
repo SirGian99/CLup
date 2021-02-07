@@ -25,14 +25,15 @@ public class StoreInfoInt {
     @Path("store/{storeID}/generalInfo")
     @Produces("application/json")
     public Response getStoreGeneralInfo(@PathParam("storeID") String storeID) {
-        JSONObject jsonResponse = ssh.getStoreGeneralInfo(storeID);
+        JSONObject jsonResponse = ssh.getStoreGeneralInfo(storeID).toJson();
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
-
+/*
     @GET
     @Path("chainstore")
     @Produces("application/json")
     public Response getChainsAndAutonomousStores(@QueryParam("city") String city) {
+
         JSONObject jsonResponse = ssh.getChainsAndAutonomousStores(city);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
@@ -45,4 +46,6 @@ public class StoreInfoInt {
         JSONObject jsonResponse = ssh.getChainStores(chainName, city);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
     }
+
+ */
 }

@@ -24,7 +24,7 @@ class VisitManagerIntegrationTest {
     void setUp(){
         dataModel = new TestDataModel();
         visitManager = new TestVisitManager(dataModel);
-        Chain chain = new Chain("chainTest", "Chain of test", null);
+        Chain chain = new Chain("chainTest", "Chain of test");
         Address address = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
                 "21133", "Italy", null);
         Manager manager = new Manager("username", "password", "name");
@@ -32,7 +32,7 @@ class VisitManagerIntegrationTest {
                 Time.valueOf(LocalTime.of(0, 0)),
                 Time.valueOf(LocalTime.of(23, 59, 59)));
         store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain,null,null,
+                Time.valueOf(LocalTime.of(0,30)),10.0, chain,
                 null,null,null,null,null);
 
         Customer customer = new Customer(UUID.randomUUID().toString(), true);
@@ -45,6 +45,8 @@ class VisitManagerIntegrationTest {
 
 
         dataModel.getEm().getTransaction().begin();
+        // The database is emptied
+        dataModel.dbInit();
         // Test entities are persisted on the database
         dataModel.getEm().persist(chain);
         dataModel.getEm().persist(address);

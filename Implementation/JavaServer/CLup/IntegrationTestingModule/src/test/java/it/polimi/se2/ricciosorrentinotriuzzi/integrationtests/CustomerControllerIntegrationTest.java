@@ -34,7 +34,7 @@ class CustomerControllerIntegrationTest {
         List<Dayinterval> workingHours = new LinkedList<>();
         Store store = new Store("test", "descriptionTest", 0, 10,
                 Time.valueOf(LocalTime.of(0, 30)), 10.0, null, null, null,
-                null, null, null, null, null);
+                null, null, null);
 
         customer = new Customer(UUID.randomUUID().toString(), true);
 
@@ -55,6 +55,9 @@ class CustomerControllerIntegrationTest {
         }
 
         dataModel.getEm().getTransaction().begin();
+        // The database is emptied
+        dataModel.dbInit();
+
         // Test entities are persisted on the database
 
         // After this foreach loop the store is always open

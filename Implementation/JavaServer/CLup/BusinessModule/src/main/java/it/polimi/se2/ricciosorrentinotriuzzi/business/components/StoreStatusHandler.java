@@ -4,66 +4,77 @@ import it.polimi.se2.ricciosorrentinotriuzzi.component.DataModel;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Address;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Chain;
 import it.polimi.se2.ricciosorrentinotriuzzi.entities.Store;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 @Stateless
 public class StoreStatusHandler {
     @EJB(name = "it.polimi.se2.ricciosorrentinotriuzzi.component/DataModel")
     protected DataModel dataModel;
 
-    public JSONObject getStoreGeneralInfo(String storeID) {
+    public Store getStoreGeneralInfo(String storeID) {
         Store store = dataModel.getStore(storeID);
-        return store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(storeID)).put("queueLength", dataModel.getQueue(storeID).size());
+        store.setQueueDisposalTime(dataModel.getQueueDisposalTime(storeID));
+        store.setQueueLength(dataModel.getQueue(storeID).size());
+        return store;
     }
-//TODO SPEZZA IN DUE, FORSE NO A CAUSA DELLA GET QUEUE DISPOSAL TIME
-    public JSONObject getChainsAndAutonomousStores(String city) {
-        JSONObject json = new JSONObject();
-        JSONArray chains = new JSONArray();
-        JSONArray stores = new JSONArray();
+
+    //TODO SPEZZA IN DUE, FORSE NO A CAUSA DELLA GET QUEUE DISPOSAL TIME
+    public Set<Chain> getChains(String city) {
         List<Address> addresses = new ArrayList<>();
-        if(city != null) {
+        Set<Chain> chains = new HashSet<>();
+        if (city != null) {
             addresses = dataModel.getAddressesByCity(city);
         }
-        for(Address a : addresses) {
+        for (Address a : addresses) {
             Store store = a.getStore();
-            if(store != null) {
-                Chain chain = store.getChain();
-                if (chain != null) {
-                    chains.put(chain.toJson());
-                } else {
-                    stores.put(store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(store.getId())));
-                }
-             }
+            if (store != null && store.getChain() != null)
+                chains.add(store.getChain());
         }
-        json.put("chains", chains);
-        json.put("autonomousStores", stores);
-        return json;
+        return chains;
     }
-///TODO DEVE RESTITUIRE UNA LISTA DI STORE, FORSE NO COME SOPRA
-    public JSONObject getChainStores(String chain, String city) {
-        JSONObject json = new JSONObject();
-        JSONArray stores = new JSONArray();
+
+    public List<Store> getAutonomousStores(String city) {
+        List<Address> addresses = new ArrayList<>();
+        List<Store> stores = new LinkedList<>();
+        if (city != null) {
+            addresses = dataModel.getAddressesByCity(city);
+        }
+        for (Address a : addresses) {
+            Store store = a.getStore();
+            if (store != null && store.getChain() == null) {
+                store.setQueueDisposalTime(dataModel.getQueueDisposalTime(store.getId()));
+                store.setQueueLength(dataModel.getQueue(store.getId()).size());
+                stores.add(store);
+            }
+        }
+        return stores;
+    }
+
+    ///TODO DEVE RESTITUIRE UNA LISTA DI STORE, FORSE NO COME SOPRA
+    public List<Store> getChainStores(String chain, String city) {
+        List<Store> stores = new LinkedList<>();
         if (city != null) {
             List<Address> addresses = dataModel.getAddressesByCity(city);
-            for (Address a: addresses) {
+            for (Address a : addresses) {
                 Store store = a.getStore();
-                if(store != null && store.getChain() != null && store.getChain().getName().equals(chain)) {
-                    System.out.println(store.getId()+" queue disp time: "+dataModel.getQueueDisposalTime(store.getId()));
-                    stores.put(store.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(store.getId())));
+                if (store != null && store.getChain() != null && store.getChain().getName().equals(chain)) {
+                    store.setQueueDisposalTime(dataModel.getQueueDisposalTime(store.getId()));
+                    store.setQueueLength(dataModel.getQueue(store.getId()).size());
+                    stores.add(store);
                 }
             }
         } else {
             Chain c = dataModel.getChainByName(chain);
-            if(c != null)
-                for(Store s : c.getStoreList())
-                    stores.put(s.toJson().put("estimatedQueueDisposalTime", dataModel.getQueueDisposalTime(s.getId())));
+            if (c != null)
+                for (Store store : c.getStoreList()) {
+                    store.setQueueDisposalTime(dataModel.getQueueDisposalTime(store.getId()));
+                    store.setQueueLength(dataModel.getQueue(store.getId()).size());
+                    stores.add(store);
+                }
         }
-        json.put("stores", stores);
-        return json;
+        return stores;
     }
 }

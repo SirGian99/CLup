@@ -8,54 +8,118 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class StoreStatusHandlerIntegrationTest {
 
-    private TestStoreStatusHandler storeStatusHandler;
     private TestDataModel dataModel;
+    private TestStoreStatusHandler ssh;
     private Chain chain;
-    private Address address1;
-    private Address address2;
-    private Manager manager;
-    private Store store;
-    private Store chainstore;
+    private Store store1;
+    private Store store2;
+    private Store store3;
+    private List<Address> cityOneAddresses = new LinkedList<>();
+    private List<Address> cityTwoAddresses = new LinkedList<>();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         dataModel = new TestDataModel();
-        storeStatusHandler = new TestStoreStatusHandler(dataModel);
+        ssh = new TestStoreStatusHandler(dataModel);
+        chain = new Chain("PoliMi","Politecnico");
+        Dayinterval workingHour = new Dayinterval (
+                DayOfWeek.from(LocalDateTime.now()).getValue(),
+                Time.valueOf("00:00:00"),
+                Time.valueOf("23:00:00")
+        );
+        Address address1 = new Address(
+                "Piazza Leonardo da Vinci",
+                "1",
+                "Milano",
+                "21100",
+                "Italia",
+                null);
+        Address address2 = new Address(
+                "Piazzale Loreto",
+                "2",
+                "Milano",
+                "21100",
+                "Italia",
+                null);
+        Address address3 = new Address(
+                "Corso Castelfidardo",
+                "2",
+                "Torino",
+                "10138",
+                "Italia",
+                null);
+        store1 = new Store(
+                "testName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                chain,
+                address1,
+                null,
+                null,
+                null,
+                null);
+        store1.addWorkingHour(workingHour);
+        store2 = new Store(
+                "secondTestName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                null,
+                address2,
+                null,
+                null,
+                null,
+                null);
+        store3 = new Store(
+                "thirdTestName",
+                "Test description",
+                0,
+                10,
+                Time.valueOf("00:30:00"),
+                0.0,
+                chain,
+                address3,
+                null,
+                null,
+                null,
+                null);
+        store2.addWorkingHour(workingHour);
+        chain.addStore(store1);
+        chain.addStore(store3);
+        address1.setStore(store1);
+        address2.setStore(store2);
+        address3.setStore(store3);
+        cityOneAddresses.add(address1);
+        cityOneAddresses.add(address2);
+        cityTwoAddresses.add(address3);
 
-        chain = new Chain("chainTest", "Chain of test", null);
-        address1 = new Address("Piazza Leonardo Da Vinci", "32", "Milan",
-                "21133", "Italy", null);
-        address2 = new Address("Via Ernesto Di Marino", "0", "Cava de' Tirreni",
-                "84013", "Italy", null);
-        manager = new Manager("username", "password", "name");
-        List<Dayinterval> workingHours = new LinkedList<>();
-        workingHours.add(new Dayinterval(LocalDateTime.now().getDayOfWeek().getValue(),
-                Time.valueOf(LocalTime.of(0, 0)),
-                Time.valueOf(LocalTime.of(23, 59, 59))));
-        store = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address1,null,
-                null,null,null,workingHours,null);
-        chainstore = new Store("test", "descriptionTest",0, 10,
-                Time.valueOf(LocalTime.of(0,30)),10.0, chain, address2,null,
-                null,null,null,workingHours,null);
-        address1.setStore(store);
-        address2.setStore(chainstore);
         dataModel.getEm().getTransaction().begin();
+        // The database is emptied
+        dataModel.dbInit();
         // Test entities are persisted on the database
-        dataModel.getEm().persist(workingHours.get(0));
+        dataModel.getEm().persist(workingHour);
         dataModel.getEm().persist(address1);
         dataModel.getEm().persist(address2);
-        dataModel.getEm().persist(store);
-        dataModel.getEm().persist(chainstore);
+        dataModel.getEm().persist(address3);
+        dataModel.getEm().persist(chain);
+        dataModel.getEm().persist(store1);
+        dataModel.getEm().persist(store2);
+        dataModel.getEm().persist(store3);
     }
 
     @AfterEach
@@ -65,10 +129,35 @@ class StoreStatusHandlerIntegrationTest {
     }
 
     @Test
-    void getChainsAndAutonomousStores() {
+    void getStoreGeneralInfo() {
+        assert (ssh.getStoreGeneralInfo(store1.getId()).equals(store1));
+    }
+
+    @Test
+    void getChains() {
+        Set<Chain> chains = ssh.getChains(cityOneAddresses.get(0).getCity());
+        assert (chains.size() == 1 && chains.contains(chain));
+        chains = ssh.getChains(cityTwoAddresses.get(0).getCity());
+        assert (chains.size() == 1 && chains.contains(chain));
+    }
+
+    @Test
+    void getAutonomousStores(){
+        List<Store> stores = ssh.getAutonomousStores(cityOneAddresses.get(0).getCity());
+        assert (stores.size() == 1 && stores.contains(store2));
+        stores = ssh.getAutonomousStores(cityTwoAddresses.get(0).getCity());
+        assert (stores.size() == 0);
     }
 
     @Test
     void getChainStores() {
+        List<Store> stores = ssh.getChainStores(chain.getName(), null);
+        assert (stores.size() == 2 && stores.contains(store1) && stores.contains(store3));
+        stores = ssh.getChainStores(chain.getName(), cityOneAddresses.get(0).getCity());
+        assert (stores.size() == 1 && stores.contains(store1));
+        stores = ssh.getChainStores(chain.getName(), cityTwoAddresses.get(0).getCity());
+        assert (stores.size() == 1 && stores.contains(store3));
     }
+
+
 }

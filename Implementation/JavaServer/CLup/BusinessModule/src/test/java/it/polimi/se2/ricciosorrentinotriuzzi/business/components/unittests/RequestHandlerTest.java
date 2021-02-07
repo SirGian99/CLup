@@ -28,7 +28,6 @@ class RequestHandlerTest {
     private Booking br;
     private Lineup lur;
 
-
     @BeforeEach
     void setUp() {
         dataModel = mock(DataModel.class);
@@ -45,7 +44,7 @@ class RequestHandlerTest {
         workingHour.setEnd(Time.valueOf("23:00:00"));
         workingHour.setId(0);
 
-        store = new Store("testName","Test description",0,10,Time.valueOf("00:30:00"),0.0,null,address,null,null,null,null,null,null);
+        store = new Store("testName","Test description",0,10,Time.valueOf("00:30:00"),0.0,null,address,null,null,null,null);
         store.addWorkingHour(workingHour);
         address.setStore(store);
     }
