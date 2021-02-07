@@ -38,7 +38,7 @@ class RequestHandlerTest {
         Dayinterval workingHour = new Dayinterval(
                 DayOfWeek.from(LocalDateTime.now()).getValue(),
                 Time.valueOf("00:00:00"),
-                Time.valueOf("23:00:00")
+                Time.valueOf("23:59:59")
         );
         Address address = new Address(
                 "Piazza Leonardo da Vinci",
