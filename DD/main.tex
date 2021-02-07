@@ -66,9 +66,9 @@
 % Command for correctly spaced coloured text
 \newcommand{\red}[1]{\begingroup\color{punct}#1\endgroup}
 
-\title{\LARGE{DD -- Design Document}}
+\title{\LARGE{CLup -- Design Document}}
 \author{Vincenzo Riccio, Giancarlo Sorrentino, Emanuele Triuzzi}
-\date{January 10th, 2021}
+\date{February 7th, 2021}
 \begin{document}
 
 \begin{titlingpage} 
@@ -96,8 +96,8 @@
         \textbf{Deliverable:}   & DD\\
         \textbf{Title:}         & Design Document \\
         \textbf{Authors:}       & Vincenzo Riccio, Giancarlo Sorrentino, \newline Emanuele Triuzzi \\
-        \textbf{Version:}       & 1.0 \\ 
-        \textbf{Date:}          & January 10th, 2021 \\
+        \textbf{Version:}       & 1.1 \\ 
+        \textbf{Date:}          & February 7th, 2021 \\
         \textbf{Download page:} & https://github.com/SirGian99/RiccioSorrentinoTriuzzi \\
         \textbf{Copyright:}     & Copyright © 2021, Vincenzo Riccio, Giancarlo Sorrentino, Emanuele Triuzzi -- All rights reserved \\
         \hline
@@ -165,8 +165,12 @@
     \label{table:definitions_acronyms_abbreviations}
     \end{longtable}
 
-    \subsection{Revision history}
-    1.0 -- First version of the document (January 10th, 2021).
+    \section{Revision history}
+    \begin{itemize}
+        \item[\textbf{1.0}] First version of the document (January 10th, 2021);
+        \item[\textbf{1.1}] Some responses of some interfaces updated and typos corrected. In particular, the StoreStatusInt responses now include the field "state" in each visit request. Furthermore, some of the responses which include a store have been updated, since they were not complete. (February 7th, 2021).
+    \end{itemize}
+    
     
     \section{Reference documents}
     \begin{itemize}
@@ -185,7 +189,7 @@
     \subsubsection{Chapter 3} 
     Chapter 3 focuses on the design of the user interfaces. It also illustrates the users interactions with the system through mock-ups.
     \subsubsection{Chapter 4} 
-    Chapter 4 better details the connections between goals and requirements already mapped in the RASD, taking into account the system components identified in Chapter 2
+    Chapter 4 better details the connections between goals and requirements already mapped in the RASD, taking into account the system components identified in Chapter 2.
     \subsubsection{Chapter 5}
     Chapter 5 focuses on future plans about the implementation, the integration and the testing of the system components.
     \subsubsection{Chapter 6}
@@ -356,15 +360,15 @@
         POST & /manager/login & It allows a manager to initiate a session starting from a login. The request body has the following structure: 
         \begin{lstlisting}[language=jsonDD]
 {
- "username" : "VALUE",
- "password" : "VALUE"
+  "username" : "VALUE",
+  "password" : "VALUE"
 }
         \end{lstlisting}
         The response body has the following structure:
         \begin{lstlisting}[language=jsonDD]
 {
- "managerID" : "VALUE",
- "authenticationToken": "VALUE"
+  "managerID" : "VALUE",
+  "authenticationToken": "VALUE"
 }
         \end{lstlisting}
         Further details on the authentication token are provided in section \ref{section:design_decisions} \\ \hline
@@ -395,55 +399,60 @@
 }
         \end{lstlisting} \\ \hline
         POST & /manager/\{id\}/ addManager & It adds an existing manager to a store. The manager identified by \texttt{\{id\}} is the responsible for the operation. The request body has the following structure:
-\begin{lstlisting}[language=jsonDD]
+        \begin{lstlisting}[language=jsonDD]
 {
   "newManagerUsername": "VALUE",
   "storeID" : "VALUE"
 }
-\end{lstlisting} \\ \hline
+        \end{lstlisting} \\ \hline
         POST & /manager/\{id\}/ removeManager & It removes an existing manager to a store. The manager identified by \texttt{\{id\}} is the responsible for the operation. The request body has the following structure:
-\begin{lstlisting}[language=jsonDD]
+        \begin{lstlisting}[language=jsonDD]
 {
   "managerToRemoveUsername": "VALUE",
   "storeID" : "VALUE"
 }
-\end{lstlisting} \\ \hline
+        \end{lstlisting} \\ \hline
         PATCH & /manager/\{id\}/ store/\{storeID\} & It modifies the store identified by the parameter \texttt{\{storeID\}}. The manager identified by {id} is the responsible for the operation. As detailed in section \ref{section:design_decisions}, it may have an impact on customers’ visit requests. The parameters which will be modified are the ones in the request body, which admits the following parameters:
-\begin{lstlisting}[language=jsonDD]
-"name" : "VALUE"
-"address" :  {
-     "streetName" : "VALUE",
-     "streetNumber" : "VALUE",
-     "city" : "VALUE",
-     "postalCode" : "VALUE",
-     "country" : "VALUE"
- }
-"workingHours" : [
-   {"day" : "VALUE",
-    "start": "VALUE",
-    "end": "VALUE"},
-    ...
-]
-"maximumOccupancy" : "VALUE"
-"safetyThreshold" : "VALUE"
-\end{lstlisting} 
+        \begin{lstlisting}[language=jsonDD]
+{
+  "name" : "VALUE"
+  "address" : {
+    "streetName" : "VALUE",
+    "streetNumber" : "VALUE",
+    "city" : "VALUE",
+    "postalCode" : "VALUE",
+    "country" : "VALUE"
+  }
+  "workingHours" : [
+     {"day" : "VALUE",
+      "start": "VALUE",
+      "end": "VALUE"},
+     ...
+  ]
+  "maximumOccupancy" : "VALUE"
+  "safetyThreshold" : "VALUE"
+}
+        \end{lstlisting} 
         As detailed in section \ref{section:design_decisions}, the maximum occupancy of a store is specified (and can be modified) by the manager only when the store is not divided in product sections \\ \hline
         PUT & /manager/\{id\}/ store/\{storeID\}/ addSection & It adds a new section to the store identified by the parameter \texttt{\{storeID\}}. The manager identified by \texttt{\{id\}} is the responsible for the operation. The request body has the following structure:
-\begin{lstlisting}[language=jsonDD]
+        \begin{lstlisting}[language=jsonDD]
+{
+  "name" : "VALUE",
+}
+        \end{lstlisting}
+        The response body has the following structure:
+        \begin{lstlisting}[language=jsonDD]
+{
+  "sectionID" : "VALUE"
+}
+        \end{lstlisting} \\ \hline
+        PATCH & /manager/\{id\}/ store/\{storeID\}/ section/ \{sectionID\} & It modifies the section with id \texttt{\{sectionID\}} of the store identified by the parameter \texttt{\{storeID\}}. The manager identified by {id} is the responsible for the operation. As detailed in section \ref{section:design_decisions}, it may have an impact on customers’ visit requests. The parameters which will be modified are the ones in the request body, which admits the following parameters:
+        \begin{lstlisting}[language=jsonDD]
 {
   "name" : "VALUE",
   "maximumOccupancy" : "VALUE"
 }
-The response body has the following structure:
-{
-  "sectionID" : "VALUE"
-}
-\end{lstlisting} \\ \hline
-        PATCH & /manager/\{id\}/ store/\{storeID\}/ section/ \{sectionID\} & It modifies the section with id \texttt{\{sectionID\}} of the store identified by the parameter \texttt{\{storeID\}}. The manager identified by {id} is the responsible for the operation. As detailed in section \ref{section:design_decisions}, it may have an impact on customers’ visit requests. The parameters which will be modified are the ones in the request body, which admits the following parameters:
-\begin{lstlisting}[language=jsonDD]
-"name" : "VALUE",
-"maximumOccupancy" : "VALUE"
-\end{lstlisting} \\ \hline
+        \end{lstlisting} \\ \hline
         DELETE & /manager/\{id\}/ store/\{storeID\}/ section/ \{sectionID\} & It deletes the section with id \texttt{\{sectionID\}} of the store identified by the parameter \texttt{\{storeID\}}. The manager, identified by \texttt{\{id\}}, is the responsible for the operation. As detailed in section \ref{section:design_decisions}, it may have an impact on customers’ visit requests
         \\ \hline
         GET & /manager/\{id\}/ store/\{storeID\}/ passepartout & It returns the passepartout token of the store identified by \texttt{\{storeID\}}. The manager, identified by \texttt{\{id\}}, is the responsible for the operation. The response body has the following structure:
@@ -457,51 +466,55 @@ The response body has the following structure:
         \label{table:manager_int}
     \end{longtable}
     
+    \newpage
     \subsubsection{CustomerInt}
     It is the interface provided by the CustomerController. It is used by the MobileApplication to interact with the system. Furthermore, it is used by the Proxy to perform its registration in the system. The interface includes:
-    \newpage
     \begin{longtable}[c] { |>{\centering\arraybackslash}P{0.11\textwidth}|>{\centering\arraybackslash\ttfamily}H{0.23\textwidth}|H{0.50\textwidth}| }
         \hline
         \textbf{HTTP verb} & \textrm{\textbf{URI}} & \textbf{\textbf{Description}} \\ \hline
         PUT & /customer/ registerProxy & It allows the (automatic) registration of a new proxy. The request body has the following structure: 
         \begin{lstlisting}[language=jsonDD]
 {
-   "proxyID" : "VALUE"
+  "proxyID" : "VALUE"
 }
         \end{lstlisting} Details about the proxy id in section \ref{section:design_decisions} \\ \hline
         PUT & /customer/ registerApp & It allows the (automatic) registration of a new app-customer at the first launch of the app. The request body has the following structure:
         \begin{lstlisting}[language=jsonDD]
 {
-   "appID" : "VALUE"
+  "appID" : "VALUE"
 }
         \end{lstlisting} Details about the app id in section \ref{section:design_decisions} \\ \hline
         GET & /customer/\{id\} & It returns all the active visit requests of the customer identified by \texttt{\{id\}}. The response body has the following structure:
         \begin{lstlisting}[language=jsonDD]
 {
-   "lineupRequest" : {
-        "visitToken" : {
-            "hfid" : "VALUE",
-            "uuid" : "VALUE"
-         },
-        "storeID" : "VALUE"
-        "numberOfPeople" : "VALUE",
-        "estimatedTimeOfEntrance" : "VALUE"
-   },
+  "lineupRequests" : [
+      {"visitToken" : {
+        "hfid" : "VALUE",
+        "uuid" : "VALUE"
+      },
+      "storeID" : "VALUE"
+      "numberOfPeople" : "VALUE",
+      "estimatedTimeOfEntrance" : "VALUE",
+      "state" : "VALUE"
+      },
+      ...
+    ]
   "bookingRequests" : [
-        {"visitToken" : {
-            "hfid" : "VALUE",
-            "uuid" : "VALUE"
-          }
-         "storeID" : "VALUE"
-         "numberOfPeople" : "VALUE",
-         "desiredTimeInterval" : {
-             "date" : "VALUE",
-             "start" : "VALUE",
-             "duration" : "VALUE"
-          },
-         "productSectionsNames": ["VALUE", ...]
-        },
-        ...
+      {"visitToken" : {
+        "hfid" : "VALUE",
+        "uuid" : "VALUE"
+      },
+      "storeID" : "VALUE",
+      "numberOfPeople" : "VALUE",
+      "state" : "VALUE"
+      "desiredTimeInterval" : {
+        "date" : "VALUE",
+        "start" : "VALUE",
+        "duration" : "VALUE"
+      },
+      "productSectionsNames": ["VALUE", ...]
+    },
+    ...
    ]
 }
         \end{lstlisting} \\ \hline
@@ -546,15 +559,16 @@ The response body has the following structure:
         \caption{CustomerInt}
         \label{table:customer_int}
     \end{longtable}
-    
+    \pagebreak
     \subsubsection{StoreInfoInt}
     It is the interface provided by the StoreStatusHandler. It is used by the AdministrativeTool and by the MobileApplication in order to retrieve information about a store or a chain, plus the list of all the chains managed by the system. The interface includes:
     \begin{longtable}[c] { |>{\centering\arraybackslash}P{0.11\textwidth}|>{\centering\arraybackslash\ttfamily}H{0.23\textwidth}|H{0.50\textwidth}| }
         \hline
         \textbf{HTTP verb} & \textrm{\textbf{URI}} & \textbf{\textbf{Description}} \\ \hline
-        GET &/manager/\{id\}/ generalInfo & It returns general information about the store identified by the parameter \texttt{\{id\}}. The response body has the following structure:
+        GET &/store/\{id\}/ generalInfo & It returns general information about the store identified by the parameter \texttt{\{id\}}. The response body has the following structure:
         \begin{lstlisting}[language=jsonDD]
 {  
+  "id" : "VALUE",
   "chainName" : "VALUE",
   "name" : "VALUE",
   "address" : {
@@ -577,7 +591,14 @@ The response body has the following structure:
       "start": "VALUE",
       "end": "VALUE"},
     ...
-   ]
+   ],
+  "productSections": [
+    {"id" : "VALUE",
+     "name" : "VALUE",
+     "currentOccupancy", "VALUE",
+     "maximumOccupancy", "VALUE"},
+    ...
+  ]
 }
         \end{lstlisting} \\ \hline
         GET & /store/\{id\}/ activeRequest & It returns all the active requests associated with the store identified by the parameter \texttt{\{id\}}. The response body has the following structure:
@@ -647,32 +668,24 @@ The response body has the following structure:
       "description" : "VALUE",
       "image" : "VALUE"}, 
     ...
-   ],
- "autonomousStores" :  [
-     {"name": "VALUE",
-      "description" : "VALUE",
-      "image" : "VALUE"}, 
+  ],
+  "autonomousStores" :  [
+    storeInfo, 
     ...
-   ]
+  ]
 }
-        \end{lstlisting} \\ \hline
-                GET & /chain/\{name\}/ stores?city=value & It returns the identifier, the name and the address of all the stores of the selected chain. If the city parameter is specified, the results are limited to the stores located in that city. The response body has the following structure:
+        \end{lstlisting} 
+        Where \texttt{storeInfo} is an alias for the response of the \texttt{store/\{id\}/generalInfo} endpoint \\ \hline
+        GET & /chain/\{name\}/ stores?city=value & It returns the identifier, the name and the address of all the stores of the selected chain. If the city parameter is specified, the results are limited to the stores located in that city. The response body has the following structure:
         \begin{lstlisting}[language=jsonDD]
 {
    "stores" : [
-    {"id" : "VALUE",
-     "name" : "VALUE",
-      "address" : {
-          "streetName" : "VALUE",
-          "streetNumber" : "VALUE",
-          "city" : "VALUE",
-          "postalCode" : "VALUE",
-          "country" : "VALUE"}
-    },
-    ...
+     storeInfo,
+     ...
    ]
 }
-        \end{lstlisting} \\ \hline
+        \end{lstlisting} 
+        Where \texttt{storeInfo} is an alias for the response of the \texttt{store/\{id\}/generalInfo} endpoint \\ \hline
         \caption{StoreInfoInt}
         \label{table:storeinfo_int}
     \end{longtable}
@@ -696,8 +709,8 @@ The response body has the following structure:
    "validated" : "VALUE",
    "estimatedTimeOfEntrance" : "VALUE",
    "visitToken" : {
-          "hfid" : "VALUE",
-          "uuid" : "VALUE"
+      "hfid" : "VALUE",
+      "uuid" : "VALUE"
     }
 }
         \end{lstlisting}  \\ \hline
@@ -719,7 +732,7 @@ The response body has the following structure:
    "numberOfPeople" : "VALUE",
    "customerID" : "VALUE",
    "desiredTimeInterval" : {
-       "date" : "VALUE",
+     "date" : "VALUE",
        "start" : "VALUE",
        "duration" : "VALUE"
     },
@@ -732,8 +745,8 @@ The response body has the following structure:
 {
    "validated" : "VALUE",
    "visitToken" : {
-       "hfid" : "VALUE",
-       "uuid" : "VALUE"
+      "hfid" : "VALUE",
+      "uuid" : "VALUE"
     },
    "alternativeTimeIntervals" : [
      {"date" : "VALUE",
@@ -838,15 +851,16 @@ The response body has the following structure:
     \subsubsection{RequestInt}
     It is an interface provided by the VisitManager. It is used by the RequestHandler in order to inform the VisitManager about a new visit request. The interface includes:
     \begin{itemize}
-       \item \texttt{newRequest(token: \red{Token})}
+       \item \texttt{newRequest(vr: \red{VisitRequest})}
    \end{itemize}
    
     \subsubsection{ModelInt}
     It is an interface provided by the DataModel. It is used by all the components that need access to the data layer. The interface includes:
     \begin{itemize}
-       \item \texttt{getChains(city: \red{String}) -> [\red{Chain}]}: \newline returns all the available chains and independent stores in the city specified by the homonym parameter;
+       \item \texttt{getChain(name: \red{String}) -> \red{Chain}}: \newline returns the chain identified by parameter \texttt{name};
        \item \texttt{getChain(storeID: \red{ID}) -> \red{Chain}}: \newline 
        returns the chain of the store identified by parameter \texttt{storeID};
+       \item \texttt{getChains(city: \red{String}) -> [\red{Chain}]}: \newline returns all the available chains and independent stores in the city specified by the homonym parameter;
        \item \texttt{getStores(chainName: \red{String}, city: \red{String}) -> [\red{Store}]}:\newline
        returns all the stores belonging to the chain specified by parameter \texttt{chainName} and located in the city specified by the homonym parameter. The result depends on which parameters have a defined value;
        \item \texttt{getStores(managerID: \red{ID}) -> [\red{Store}]}: \newline
@@ -861,7 +875,7 @@ The response body has the following structure:
        persists the manager passed as input;
        \item \texttt{validateCredentials(username: \red{String}, password: \red{String}) -> \newline (\red{ID}, \red{String})}: \newline
        checks the credentials and returns the corresponding manager id and a new generated authentication token;
-       \item \texttt{managerLogout(managerID: \red{ID}}: \newline
+       \item \texttt{managerLogout(managerID: \red{ID}}): \newline
        invalidates the authentication token used by the manager identified by parameter \texttt{managerID};
        \item \texttt{getManager(username: \red{String}) -> \red{Manager}}: \newline returns the manager identified by parameter \texttt{username};
        \item \texttt{getManager(id: \red{ID}) -> \red{Manager}}: \newline
@@ -881,15 +895,15 @@ The response body has the following structure:
        \item \texttt{getActiveRequests(customerID: \red{ID}) -> [\red{VisitRequest}]}: returns all the active requests of the customer identified by parameter \texttt{customerID};
        \item \texttt{getActiveRequests(storeID: \red{ID}) -> [\red{VisitRequest}]}: \newline
        returns all the active requests of the store identified by parameter \texttt{storeID};
-       \item \texttt{getLineUpRequest(appID: \red{ID}) -> \red{LineUpRequest}}: \newline
-       returns the active line-up request placed by the app-customer identified by parameter \texttt{appID};
+       \item \texttt{getLineUpRequests(appID: \red{ID}) -> [\red{LineUpRequest}]}: \newline
+       returns the active line-up requests placed by the app-customer identified by parameter \texttt{appID};
        \item \texttt{getBookings(storeID: \red{ID}, timeInterval: \red{TimeInterval}) -> \newline [\red{BookingRequest}]}: \newline
        returns the set of booking requests already placed for the store identified by parameter \texttt{storeID} whose time intervals overlap with the one specified by parameter \texttt{timeInterval};
        \item \texttt{checkBookings(appID: \red{ID}, timeInterval: \red{TimeInterval}) -> \red{Bool}}: \newline
        returns \texttt{True} if the customer identified by parameter \texttt{appID} has placed at least one booking in the time interval specified by the homonym parameter. \texttt{False} otherwise;
        \item \texttt{checkReadyRequest(visitToken: \red{Token}) -> \red{Bool}}: \newline
        returns \texttt{True} if the request identified by parameter \texttt{visitToken} is in the ready state. \texttt{False} otherwise;
-       \item \texttt{allowVisitRequest(visitToken: \red{Token})}: \newline
+       \item \texttt{allowVisitRequest(vr: \red{VisitRequest})}: \newline
        marks the visit request identified by parameter \texttt{visitToken} as ready;
        \item \texttt{startVisit(visitToken: \red{Token})}: \newline
        marks the visit request identified by parameter \texttt{visitToken} as fulfilled and creates a visit associated with it;
