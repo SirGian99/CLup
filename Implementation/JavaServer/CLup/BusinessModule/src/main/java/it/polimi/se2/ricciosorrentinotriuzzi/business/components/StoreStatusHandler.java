@@ -76,4 +76,8 @@ public class StoreStatusHandler {
         }
         return stores;
     }
+
+    public List<VisitRequest> getActiveRequests(String storeID) {
+        return dataModel.getActiveRequests(storeID);
+    }
 }

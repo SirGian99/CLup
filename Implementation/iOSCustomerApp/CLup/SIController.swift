@@ -34,7 +34,7 @@ class SI { //Server Interactions Controller
                 let ete = lurJson["estimatedTimeOfEntrance"].stringValue
                 self.getStoreFromID(storeID: storeID) { (store, error) in
                     guard error == nil else {return completion(error!)}
-                    let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store!)
+                    let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: uuid), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store!)
                     print("Downloaded ",lur)
                     DispatchQueue.main.async { Repository.singleton.lurs[uuid] = lur }
                 }
@@ -57,7 +57,7 @@ class SI { //Server Interactions Controller
                             sect.name == sectName ? sect : nil
                         }.first!)
                     }
-                    let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sectionArray, store: store!)
+                    let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: uuid), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sectionArray, store: store!)
                     print("Downloaded ",br)
                     DispatchQueue.main.async { Repository.singleton.brs[uuid] = br }
                 }
@@ -95,7 +95,7 @@ class SI { //Server Interactions Controller
                 let hfid = jsonResponse["visitToken"]["hfid"].stringValue
                 let uuid = jsonResponse["visitToken"]["uuid"].stringValue
                 let state = jsonResponse["state"].intValue
-                let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store)
+                let lur = LineUpRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: uuid), state: VRState(rawValue: state)!, ete: state == 1 ? nil : self.serverDateTimeFormatter(date: ete), store: store)
                 completion(lur, nil)
             }.resume()
         } catch let error {completion(nil, "Error in \(#function). The error is:\n" + error.localizedDescription)}
@@ -103,7 +103,7 @@ class SI { //Server Interactions Controller
     
     func deleteLUR(lur: LineUpRequest, completion: @escaping (String?) -> Void) { // (error)
         print("*** DB - \(#function) ***")
-        let request = initJSONRequest(urlString: ServerRoutes.lineup+"/\(lur.visitToken.uuid.uuidString)", body: Data(), httpMethod: "DELETE")
+        let request = initJSONRequest(urlString: ServerRoutes.lineup+"/\(lur.visitToken.uuid)", body: Data(), httpMethod: "DELETE")
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {return completion("Error in \(#function). The error is:\n\(error!.localizedDescription)")}
             guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in \(#function). Invalid response!")}
@@ -138,7 +138,7 @@ class SI { //Server Interactions Controller
                 let hfid = jsonResponse["visitToken"]["hfid"].stringValue
                 let uuid = jsonResponse["visitToken"]["uuid"].stringValue
                 let state = jsonResponse["state"].intValue
-                let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: UUID(uuidString: uuid)!), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sections, store: store)
+                let br = BookingRequest(numberOfPeople: numberOfPeople, visitToken: Token(hfid: hfid, uuid: uuid), state: VRState(rawValue: state)!, desiredTimeInterval: desiredTimeInterval, sections: sections, store: store)
                 completion(br, nil)
             }.resume()
         } catch let error {completion(nil, "Error in \(#function). The error is:\n" + error.localizedDescription)}
@@ -146,7 +146,7 @@ class SI { //Server Interactions Controller
     
     func deleteBR(br: BookingRequest, completion: @escaping (String?) -> Void) { // (error)
         print("*** DB - \(#function) ***")
-        let request = initJSONRequest(urlString: ServerRoutes.booking+"/\(br.visitToken.uuid.uuidString)", body: Data(), httpMethod: "DELETE")
+        let request = initJSONRequest(urlString: ServerRoutes.booking+"/\(br.visitToken.uuid)", body: Data(), httpMethod: "DELETE")
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {return completion("Error in \(#function). The error is:\n\(error!.localizedDescription)")}
             guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in \(#function). Invalid response!")}

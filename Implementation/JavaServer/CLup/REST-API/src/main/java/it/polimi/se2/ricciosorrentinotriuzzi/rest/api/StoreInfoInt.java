@@ -28,7 +28,7 @@ public class StoreInfoInt {
     @GET
     @Path("chainstore")
     @Produces("application/json")
-    public Response getChainsAndAutonomousStores(@QueryParam("city") String city) {
+    public Response getChainsAndAutonomousStores(@QueryParam("city") String city){
         Set<Chain> chains = ssh.getChains(city);
         List<Store> autstores = ssh.getAutonomousStores(city);
         JSONObject jsonResponse = new JSONObject();
@@ -58,5 +58,37 @@ public class StoreInfoInt {
         }
         jsonResponse.put("stores",storesJArray);
         return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
+    }
+
+
+    @GET
+    @Path("store/{storeID}/activeRequests")
+    @Produces("application/json")
+    public Response getVisitsInProgress(@PathParam("storeID") String store) {
+        List<VisitRequest> requests = ssh.getActiveRequests(store);
+        if (requests != null) {
+            JSONObject jsonResponse = getJsonFromRequests(requests);
+            return Response.ok().entity(jsonResponse.toString()).type(MediaType.APPLICATION_JSON).build();
+        } else {
+            System.out.println("Error while getting visits in progress");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+    }
+
+    private JSONObject getJsonFromRequests(List<VisitRequest> requests) {
+        JSONObject json = new JSONObject();
+        JSONObject toAppend = new JSONObject();
+        JSONArray bookings = new JSONArray();
+        JSONArray lineups = new JSONArray();
+        for (VisitRequest vr : requests) {
+            if (vr.isBooking())
+                bookings.put(((Booking) vr).toJson());
+            else
+                lineups.put(((Lineup) vr).toJson());
+        }
+        toAppend.put("bookings", bookings);
+        toAppend.put("lineups", lineups);
+        json.put("visitRequests", toAppend);
+        return json;
     }
 }

@@ -12,7 +12,22 @@ class Shared {
     static let instance = Shared()
     private init(){}
     
-    let storeID = "44af9545-64ac-11eb-a3e0-dca632747890"
+    //In ordine!
+    let storeIDs = [
+        "44af7f16-64ac-11eb-a3e0-dca632747890",
+        "44af9545-64ac-11eb-a3e0-dca632747890",
+        "a8224c0b-6552-11eb-a3e0-dca632747890",
+        "b9ab1420-6481-11eb-a3e0-dca632747890",
+        "bbab1410-6481-11eb-a3e0-dca632747890"
+    ]
+    let storeNames = [
+        "Rubattino",
+        "Lambrate",
+        "StoreDiTest",
+        "RST Groceries",
+        "FilledStore"
+    ]
+    
     var numberOfPeople: Int? = nil
     var token: String? = nil
     
