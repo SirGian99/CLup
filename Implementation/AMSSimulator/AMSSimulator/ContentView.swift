@@ -62,7 +62,7 @@ struct ContentView: View {
                 }) {
                     Text("ConfAccess")
                 }.disabled(token == nil || previousButtonPressed != .access)
-            }.padding()
+            }.padding().alert(isPresented: $showAlert){defAlert}
             HStack {
                 Button(action: {
                     Server.controller.requestExit(token: token!) { error in
@@ -82,13 +82,13 @@ struct ContentView: View {
                 }) {
                     Text("ConfExit")
                 }.disabled(token == nil || previousButtonPressed != .exit)
-            }.padding()
+            }.padding().alert(isPresented: $showOkPopup){okPopup}
             Button(action: {
                 self.reset()
             }) {
                 Text("Reset")
             }
-        }.alert(isPresented: $showAlert){defAlert}.alert(isPresented: $showOkPopup){okPopup}
+        }
     }
 }
 
