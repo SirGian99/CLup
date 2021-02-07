@@ -123,7 +123,7 @@ public class DataModel {
     }
 
     public boolean checkBookings(String customerID, Timestamp start, Timestamp end){
-        return !getCustomerBookings(customerID, start, end).isEmpty();
+        return !(getCustomerBookings(customerID, start, end).isEmpty());
     }
 
     public void allowVisitRequest(VisitRequest request){
