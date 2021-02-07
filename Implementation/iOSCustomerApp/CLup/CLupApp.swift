@@ -13,16 +13,25 @@ import SwiftUI
 struct CLupApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("deviceToken") var devToken: String = ""
     @State var showAlert = false
     
     var body: some Scene {
         WindowGroup {
             TabViewController().accentColor(getColor(.blueLabel)).alert(isPresented: $showAlert) {defAlert}
-        }.onChange(of: scenePhase) { newScenePhase in
-            if scenePhase == .inactive && newScenePhase == .active {
-                SI.controller.getMyRequests() { error in
-                    if error != nil {print(error!); self.showAlert = true}
+        }
+        .onChange(of: scenePhase) { newScenePhase in
+            if newScenePhase == .active {
+                if self.devToken != "" {
+                    SI.controller.getMyRequests() { error in
+                        if error != nil {print(error!); self.showAlert = true}
+                    }
                 }
+            }
+        }
+        .onChange(of: scenePhase) { newScenePhase in
+            if newScenePhase == .background {
+                Repository.singleton.reset()
             }
         }
     }
@@ -32,13 +41,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     @AppStorage("deviceToken") var devToken: String = ""
     override init() {
         super.init()
-//        UNUserNotificationCenter.current().delegate = self
-//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .provisional]) { granted, error in
-//            guard error == nil else {return}
-//            DispatchQueue.main.sync { UIApplication.shared.registerForRemoteNotifications() }
-//        }
         if devToken == "" {
-            let temp = UUID().uuidString
+            let temp = UUID().uuidString.lowercased()
             print("Registro con \(temp)")
             SI.controller.register(token: temp) { error in
                 if error != nil {fatalError(error!)}
@@ -49,14 +53,4 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             print("appID: \(devToken)")
         }
     }
-    
-//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        let tokenParts = deviceToken.map { data in return String(format: "%02.2hhx", data) }
-//        devToken = tokenParts.joined()
-//        print("Registered for remote notifications with deviceToken \(devToken)")
-//    }
-//
-//    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-//        print("Failed to register for remote notifications: \(error.localizedDescription)")
-//    }
 }

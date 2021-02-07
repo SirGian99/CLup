@@ -10,11 +10,11 @@ import Foundation
 import UIKit
 
 typealias HFID = String
-typealias CUUID = UUID
+typealias CUUID = String
 typealias Duration = Int //minuti
 
 struct Token: CustomStringConvertible {
-    public var description: String {return "\(uuid.uuidString) - "+hfid}
+    public var description: String {return "\(uuid) - \(hfid)"}
     let hfid: HFID
     let uuid: CUUID
 }

@@ -30,5 +30,12 @@ class Repository: ObservableObject {
         stores = [:]
         chains = [:]
     }
+    
+    func reset() {
+        stores = [:]
+        chains = [:]
+        lurs = [:]
+        brs = [:]
+    }
 
 }

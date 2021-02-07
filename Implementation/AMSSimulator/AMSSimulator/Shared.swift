@@ -12,7 +12,7 @@ class Shared {
     static let instance = Shared()
     private init(){}
     
-    let storeID = "44af9545-64ac-11eb-a3e0-dca632747890"
+    let storeID = "a8224c0b-6552-11eb-a3e0-dca632747890"
     var numberOfPeople: Int? = nil
     var token: String? = nil
     

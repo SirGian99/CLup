@@ -37,6 +37,16 @@ struct LURDetails: View {
         } else {
             timeToWaitStr = timeToWait != 0 ? (timeToWait >= 60 ? ">1hr" : "\(timeToWait) min") : "Enter now!"
         }
+        let qrCodeDescription: String!
+        if lur.state == .pending {
+            qrCodeDescription = "Please wait for this code to be announced before entering the store"
+        } else if lur.state == .ready {
+            qrCodeDescription = "Please show the following code to access the store"
+        } else if lur.state == .fulfilled {
+            qrCodeDescription = "Please show the following code to exit the store"
+        } else {
+            qrCodeDescription = "This is a completed request"
+        }
         return VStack(alignment: .center, spacing: 10) {
             SizedDivider(height: 5)
             VStack (spacing: 0) {
@@ -76,7 +86,8 @@ struct LURDetails: View {
                     SizedDivider(height: 5)
                     Text(timeToWaitStr)
                         .fontWeight(.medium)
-                        .font(.largeTitle)
+                        .font(.title)
+                        .multilineTextAlignment(.center)
                     SizedDivider(height: 5)
                     HStack{Spacer()}
                 }.padding().background(.lightBlueHeaderBG)
@@ -89,7 +100,7 @@ struct LURDetails: View {
             
             VStack(alignment: .center, spacing: 5) {
                 SizedDivider(height: 3)
-                Text(lur.state != .ready ? "Please wait for this code to be announced before entering the store" : "Please show the following code to access the store")
+                Text(qrCodeDescription)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .font(.subheadline)
@@ -97,12 +108,12 @@ struct LURDetails: View {
                 Text(lur.visitToken.hfid)
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                Image(uiImage: UIImage(qrFrom: lur.visitToken.uuid.uuidString))
+                Image(uiImage: UIImage(qrFrom: lur.visitToken.uuid))
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    .blur(radius: 9, opaque: lur.state != .ready)
+                    .blurIf(lur.state != .ready)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
@@ -112,7 +123,7 @@ struct LURDetails: View {
                     guard error == nil else {print(error!); self.showAlert = true; return}
                     print("LUR deleted")
                     self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.lurs[lur.visitToken.uuid.uuidString] = nil }
+                    DispatchQueue.main.async { Repository.singleton.lurs[lur.visitToken.uuid] = nil }
                 }
             }){
                 VStack (spacing: 0) {
@@ -137,7 +148,17 @@ struct BRDetails: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack(alignment: .center, spacing: 10) {
+        let qrCodeDescription: String!
+        if br.state == .pending {
+            qrCodeDescription = "Please wait for this code to be announced before entering the store"
+        } else if br.state == .ready {
+            qrCodeDescription = "Please show the following code to access the store"
+        } else if br.state == .fulfilled {
+            qrCodeDescription = "Please show the following code to exit the store"
+        } else {
+            qrCodeDescription = "This is a completed request"
+        }
+        return VStack(alignment: .center, spacing: 10) {
             SizedDivider(height: 5)
             VStack (spacing: 0) {
                 Text(br.store.name)
@@ -186,18 +207,18 @@ struct BRDetails: View {
             
             VStack(alignment: .center, spacing: 5) {
                 SizedDivider(height: 6)
-                Text(br.state != .ready ? "Please wait for this code to be announced before entering the store" : "Please show the following code to access the store")
+                Text(qrCodeDescription)
                     .multilineTextAlignment(.center)
                     .font(.subheadline)
                 Text(br.visitToken.hfid)
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                Image(uiImage: UIImage(qrFrom: br.visitToken.uuid.uuidString))
+                Image(uiImage: UIImage(qrFrom: br.visitToken.uuid))
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 250)
-                    .blur(radius: 9, opaque: br.state != .ready)
+                    .blurIf(br.state != .ready)
                 SizedDivider(height: 6)
                 HStack{Spacer()}
             }
@@ -208,7 +229,7 @@ struct BRDetails: View {
                     guard error == nil else {print(error!); self.showAlert = true; return}
                     print("BR deleted")
                     self.presentationMode.dismiss()
-                    DispatchQueue.main.async { Repository.singleton.brs[br.visitToken.uuid.uuidString] = nil }
+                    DispatchQueue.main.async { Repository.singleton.brs[br.visitToken.uuid] = nil }
                 }
             }){
                 VStack (spacing: 0) {
